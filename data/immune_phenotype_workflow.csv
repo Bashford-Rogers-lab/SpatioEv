@@ -1,0 +1,8 @@
+﻿,,COL4A1,Vimentin,CD68,PCK,CD3,NaKATPase,CD90,PDPN,Tenascin,COL6A1,SMA,FN,CD45,HLADR,CD11c,CD4,CD14
+all,other immune cells,,,anypos,,anypos,,,,,,,,anypos,,anypos,,anypos
+other immune cells,T cells,,,,,pos,,,,,,,,,,,,
+other immune cells,Myeloid Lineage,,,anypos,,,,,,,,,,,,anypos,,anypos
+T cells,CD4 T cells,,,,,,,,,,,,,,,,pos,
+Myeloid Lineage,Macrophages,,,pos,,,,,,,,,,,,,,
+Myeloid Lineage,Monocytes,,,,,,,,,,,,,,,,,pos
+Myeloid Lineage,Dendritic cells,,,,,,,,,,,,,,,pos,,

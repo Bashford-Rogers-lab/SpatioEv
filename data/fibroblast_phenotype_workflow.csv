@@ -1,0 +1,5 @@
+﻿,,COL4A1,Vimentin,CD68,PCK,CD3,NaKATPase,CD90,PDPN,Tenascin,COL6A1,SMA,FN,CD45,HLADR,CD11c,CD4,CD14
+all,Endothelial cells,anypos,,,,,,,,,,,,,,,,
+all,myCAFs,neg,,,,,,,,,,pos,,,,,,
+all,PDPN+ CAFs,neg,,,,,,,pos,,,,,,,,,
+all,CD90+ CAFs,neg,,,,,,pos,,,,,,,,,,

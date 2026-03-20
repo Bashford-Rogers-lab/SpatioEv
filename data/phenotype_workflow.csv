@@ -1,0 +1,17 @@
+﻿,,COL4A1,Vimentin,CD68,PCK,CD3,NaKATPase,CD90,PDPN,Tenascin,COL6A1,SMA,FN,CD45,HLADR,CD11c,CD4,CD14
+all,Other Immune cells,,,,,,,,,,,,,pos,,,,
+all,Non-immune cells,,,,,,,,,,,,,neg,,,,
+Non-immune cells,Endothelial cells,pos,,,,,,,,,,,,,,,,
+Non-immune cells,Tumour cells,,,,pos,,,,,,,,,,,,,
+Non-immune cells,panCAFs,,anypos,,,,,anypos,anypos,anypos,anypos,anypos,anypos,,,,,
+Other Immune cells,T cells,,,,,pos,,,,,,,,,,,,
+Other Immune cells,Myeloid Lineage,,,anypos,,,,,,,,,,,,anypos,,anypos
+panCAFs,myCAFs,,,,,,,,,,,pos,,,,,,
+panCAFs,apCAFs,,,,,,,,,,,,,,pos,,,
+panCAFs,COL6A1+ CAFs,,,,,,,,,,pos,,,,,,,
+panCAFs,PDPN+ CAFs,,,,,,,,pos,,,,,,,,,
+panCAFs,Tenascin+ CAFs,,,,,,,,,pos,,,,,,,,
+T cells,CD4 T cells,,,,,,,,,,,,,,,,pos,
+Myeloid Lineage,Macrophages,,,pos,,,,,,,,,,,,,,
+Myeloid Lineage,Monocytes,,,,,,,,,,,,,,,,,pos
+Myeloid Lineage,Dendritic cells,,,,,,,,,,,,,,,pos,,

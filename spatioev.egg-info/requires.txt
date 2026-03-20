@@ -1,0 +1,12 @@
+scimap[napari]
+igraph
+leidenalg
+
+[dev]
+pytest
+black
+ruff
+
+[scverse]
+squidpy
+spatialdata

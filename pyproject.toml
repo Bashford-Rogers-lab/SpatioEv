@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spatioev"
+version = "0.1.0"
+description = "Spatial feature extraction and spatial evolution framework for multiplexed imaging"
+authors = [
+    { name = "Shihong Wu, Sakina Amin, Liezel Tamon, Rachael Bashford-Rogers" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    # "numpy",
+    # "pandas",
+    # "scipy",
+    # "matplotlib",
+    # "seaborn",
+    # "anndata",
+    # "scikit-image",
+    # "scanpy",
+    "scimap[napari]",
+    "igraph",
+    "leidenalg"
+]
+
+[project.optional-dependencies]
+
+scverse = [
+    "squidpy",
+    "spatialdata"
+]
+
+dev = [
+    "pytest",
+    "black",
+    "ruff"
+]
+
+[tool.setuptools.packages.find]
+include = ["spatioev*"]
