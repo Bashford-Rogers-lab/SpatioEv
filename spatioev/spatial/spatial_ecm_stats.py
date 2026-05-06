@@ -326,7 +326,7 @@ def _map_cell_feature_to_fibers(
 
     merged["weight"] = np.exp(-merged["distance"] / weight_scale)
 
-    return merged.groupby("fiber_id").apply(
+    return merged.groupby("fiber_id")[[cell_feature, "weight"]].apply(
         lambda x: np.average(x[cell_feature], weights=x["weight"])
     )
 
@@ -475,6 +475,7 @@ def fiber_density_near_cells(
     phenotype_key=None,
     phenotype=None,
     normalize=False,
+    density_radius=50,
 ):
     """
     Count ECM fibers within radius of each cell.
@@ -512,7 +513,11 @@ def fiber_density_near_cells(
     phenotype : str or list, optional
         Cell phenotype label or list of labels to keep. Use ``None`` to keep all cells.
     normalize : bool
-        If ``True``, divide counts by the area of a fixed 50-pixel radius circle.
+        If ``True``, divide counts by the area of a circle with radius
+        ``density_radius``.
+    density_radius : float
+        Radius used for density normalization in the same units as coordinates.
+        This should usually match the radius used to build ``links_df``.
     """
 
     fibers = _filter_fibers(fiber_df, 
@@ -530,7 +535,7 @@ def fiber_density_near_cells(
     density = links.groupby("cell_id").size()
 
     if normalize:
-        density = density / (np.pi * 50**2)
+        density = density / (np.pi * density_radius**2)
 
     col = f"{_label_suffix(fiber_type, 'fiber')}_density"
     adata.obs[col] = np.nan
@@ -552,6 +557,7 @@ def cross_ripleys_k(
     fiber_type=None,
     phenotype_key=None,
     phenotype=None,
+    check_radius=True,
 ):
     """
     Cross Ripley's K statistic between cells and ECM fibers.
@@ -587,6 +593,10 @@ def cross_ripleys_k(
         Column in ``adata.obs`` containing cell phenotype labels.
     phenotype : str or list, optional
         Cell phenotype label or list of labels to keep. Use ``None`` to keep all cells.
+    check_radius : bool
+        If ``True``, raise when the filtered link table does not contain links out to
+        the largest requested radius. Set to ``False`` when you know ``links_df`` was
+        built with a radius that covers ``radii``.
     """
 
     fibers = _filter_fibers(fiber_df, 
@@ -606,6 +616,7 @@ def cross_ripleys_k(
         fibers,
         links,
         radii,
+        check_radius=check_radius,
     )
 
 
@@ -623,6 +634,7 @@ def cross_ripleys_k_permutation_envelope(
     image_key="imageid",
     fiber_image_key="imageid",
     random_state=None,
+    check_radius=True,
 ):
     """
     Permutation envelope for cell-ECM cross Ripley's K.
@@ -647,6 +659,10 @@ def cross_ripleys_k_permutation_envelope(
         Column in ``adata.obs`` identifying which image each cell belongs to.
     fiber_image_key : str
         Column in ``fiber_df`` identifying which image each fiber belongs to.
+    check_radius : bool
+        If ``True``, raise when the observed filtered link table does not contain
+        links out to the largest requested radius. Set to ``False`` when ``links_df``
+        was built with a known radius that covers ``radii``.
 
     Returns
     -------
@@ -678,6 +694,7 @@ def cross_ripleys_k_permutation_envelope(
         fibers,
         links,
         radii,
+        check_radius=check_radius,
     )
 
     if observed.empty:

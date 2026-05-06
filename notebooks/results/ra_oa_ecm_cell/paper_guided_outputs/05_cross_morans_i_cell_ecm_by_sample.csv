@@ -1,0 +1,217 @@
+imageid,pathology,phenotype,fiber_type,feature_fiber,cell_feature,cross_morans_i,cell_fiber_pair
+JRP112,RA,Monocytes,COL6A1,alignment_score,is_Monocytes,0.03012382243206658,Monocytes vs COL6A1
+JRP112,RA,Monocytes,COL6A1,area,is_Monocytes,0.02810420998893087,Monocytes vs COL6A1
+JRP112,RA,Monocytes,COL6A1,major_axis_length,is_Monocytes,0.03561889336033879,Monocytes vs COL6A1
+JRP112,RA,Monocytes,COL6A1,eccentricity,is_Monocytes,-0.012684733634919582,Monocytes vs COL6A1
+JRP112,RA,Macrophages,COL6A1,alignment_score,is_Macrophages,0.014683394115195099,Macrophages vs COL6A1
+JRP112,RA,Macrophages,COL6A1,area,is_Macrophages,-0.004470948477506853,Macrophages vs COL6A1
+JRP112,RA,Macrophages,COL6A1,major_axis_length,is_Macrophages,-0.012752653323411252,Macrophages vs COL6A1
+JRP112,RA,Macrophages,COL6A1,eccentricity,is_Macrophages,-0.006616385567831907,Macrophages vs COL6A1
+JRP112,RA,MERTK+ Macrophages,COL6A1,alignment_score,is_MERTKpos_Macrophages,-0.05848604867163052,MERTK+ Macrophages vs COL6A1
+JRP112,RA,MERTK+ Macrophages,COL6A1,area,is_MERTKpos_Macrophages,0.005852014175519037,MERTK+ Macrophages vs COL6A1
+JRP112,RA,MERTK+ Macrophages,COL6A1,major_axis_length,is_MERTKpos_Macrophages,-0.004966014399224977,MERTK+ Macrophages vs COL6A1
+JRP112,RA,MERTK+ Macrophages,COL6A1,eccentricity,is_MERTKpos_Macrophages,-0.015757665017840265,MERTK+ Macrophages vs COL6A1
+JRP112,RA,CD4 T cells,COL6A1,alignment_score,is_CD4_T_cells,0.024422103317862126,CD4 T cells vs COL6A1
+JRP112,RA,CD4 T cells,COL6A1,area,is_CD4_T_cells,-0.012166093309505455,CD4 T cells vs COL6A1
+JRP112,RA,CD4 T cells,COL6A1,major_axis_length,is_CD4_T_cells,-0.01744112218538154,CD4 T cells vs COL6A1
+JRP112,RA,CD4 T cells,COL6A1,eccentricity,is_CD4_T_cells,0.017159878670370103,CD4 T cells vs COL6A1
+JRP112,RA,CD8 T cells,COL6A1,alignment_score,is_CD8_T_cells,0.05991042675581001,CD8 T cells vs COL6A1
+JRP112,RA,CD8 T cells,COL6A1,area,is_CD8_T_cells,0.01678677645987246,CD8 T cells vs COL6A1
+JRP112,RA,CD8 T cells,COL6A1,major_axis_length,is_CD8_T_cells,-0.0027008009459448938,CD8 T cells vs COL6A1
+JRP112,RA,CD8 T cells,COL6A1,eccentricity,is_CD8_T_cells,-0.027767422075946915,CD8 T cells vs COL6A1
+JRP112,RA,B cells,COL6A1,alignment_score,is_B_cells,0.011441208195018138,B cells vs COL6A1
+JRP112,RA,B cells,COL6A1,area,is_B_cells,-0.012909365440406046,B cells vs COL6A1
+JRP112,RA,B cells,COL6A1,major_axis_length,is_B_cells,-0.016824871735840137,B cells vs COL6A1
+JRP112,RA,B cells,COL6A1,eccentricity,is_B_cells,0.011258352095469359,B cells vs COL6A1
+JRP112,RA,Monocytes,CHP,alignment_score,is_Monocytes,-0.003955448021057235,Monocytes vs CHP
+JRP112,RA,Monocytes,CHP,area,is_Monocytes,0.0016115332114299025,Monocytes vs CHP
+JRP112,RA,Monocytes,CHP,major_axis_length,is_Monocytes,0.024604488138705936,Monocytes vs CHP
+JRP112,RA,Monocytes,CHP,eccentricity,is_Monocytes,0.058395970415078005,Monocytes vs CHP
+JRP112,RA,Macrophages,CHP,alignment_score,is_Macrophages,0.08503384524394927,Macrophages vs CHP
+JRP112,RA,Macrophages,CHP,area,is_Macrophages,-0.0163086506773162,Macrophages vs CHP
+JRP112,RA,Macrophages,CHP,major_axis_length,is_Macrophages,-0.03936163885332202,Macrophages vs CHP
+JRP112,RA,Macrophages,CHP,eccentricity,is_Macrophages,-0.008754498382375187,Macrophages vs CHP
+JRP112,RA,Vascular cells,COL4A1,alignment_score,is_Vascular_cells,-0.29190127441663916,Vascular cells vs COL4A1
+JRP112,RA,Vascular cells,COL4A1,area,is_Vascular_cells,0.07707726701747443,Vascular cells vs COL4A1
+JRP112,RA,Vascular cells,COL4A1,major_axis_length,is_Vascular_cells,0.07434724592551016,Vascular cells vs COL4A1
+JRP112,RA,Vascular cells,COL4A1,eccentricity,is_Vascular_cells,-0.02607785257163635,Vascular cells vs COL4A1
+JRP122,RA,Monocytes,COL6A1,alignment_score,is_Monocytes,0.022313878842958917,Monocytes vs COL6A1
+JRP122,RA,Monocytes,COL6A1,area,is_Monocytes,0.011674357592660285,Monocytes vs COL6A1
+JRP122,RA,Monocytes,COL6A1,major_axis_length,is_Monocytes,0.01645283100443789,Monocytes vs COL6A1
+JRP122,RA,Monocytes,COL6A1,eccentricity,is_Monocytes,-0.016256307137363434,Monocytes vs COL6A1
+JRP122,RA,Macrophages,COL6A1,alignment_score,is_Macrophages,-0.018091427091908457,Macrophages vs COL6A1
+JRP122,RA,Macrophages,COL6A1,area,is_Macrophages,0.0036548528375733563,Macrophages vs COL6A1
+JRP122,RA,Macrophages,COL6A1,major_axis_length,is_Macrophages,0.011048474859033283,Macrophages vs COL6A1
+JRP122,RA,Macrophages,COL6A1,eccentricity,is_Macrophages,0.006087318849343638,Macrophages vs COL6A1
+JRP122,RA,MERTK+ Macrophages,COL6A1,alignment_score,is_MERTKpos_Macrophages,0.007880760353856252,MERTK+ Macrophages vs COL6A1
+JRP122,RA,MERTK+ Macrophages,COL6A1,area,is_MERTKpos_Macrophages,-0.014975368172895643,MERTK+ Macrophages vs COL6A1
+JRP122,RA,MERTK+ Macrophages,COL6A1,major_axis_length,is_MERTKpos_Macrophages,-0.018678246687364897,MERTK+ Macrophages vs COL6A1
+JRP122,RA,MERTK+ Macrophages,COL6A1,eccentricity,is_MERTKpos_Macrophages,-0.00951463588240385,MERTK+ Macrophages vs COL6A1
+JRP122,RA,CD4 T cells,COL6A1,alignment_score,is_CD4_T_cells,-0.03543681613658741,CD4 T cells vs COL6A1
+JRP122,RA,CD4 T cells,COL6A1,area,is_CD4_T_cells,-0.004625728412150636,CD4 T cells vs COL6A1
+JRP122,RA,CD4 T cells,COL6A1,major_axis_length,is_CD4_T_cells,0.00047876040107301904,CD4 T cells vs COL6A1
+JRP122,RA,CD4 T cells,COL6A1,eccentricity,is_CD4_T_cells,0.019895078388120487,CD4 T cells vs COL6A1
+JRP122,RA,CD8 T cells,COL6A1,alignment_score,is_CD8_T_cells,-0.01942898841254913,CD8 T cells vs COL6A1
+JRP122,RA,CD8 T cells,COL6A1,area,is_CD8_T_cells,-0.009559501957000317,CD8 T cells vs COL6A1
+JRP122,RA,CD8 T cells,COL6A1,major_axis_length,is_CD8_T_cells,-0.005406839339406732,CD8 T cells vs COL6A1
+JRP122,RA,CD8 T cells,COL6A1,eccentricity,is_CD8_T_cells,0.00029327546603555803,CD8 T cells vs COL6A1
+JRP122,RA,B cells,COL6A1,alignment_score,is_B_cells,-0.022686830903762566,B cells vs COL6A1
+JRP122,RA,B cells,COL6A1,area,is_B_cells,-0.019022239879872747,B cells vs COL6A1
+JRP122,RA,B cells,COL6A1,major_axis_length,is_B_cells,-0.019939799019374888,B cells vs COL6A1
+JRP122,RA,B cells,COL6A1,eccentricity,is_B_cells,0.029151386320201818,B cells vs COL6A1
+JRP122,RA,Monocytes,CHP,alignment_score,is_Monocytes,0.04692781660010012,Monocytes vs CHP
+JRP122,RA,Monocytes,CHP,area,is_Monocytes,0.01900904397942799,Monocytes vs CHP
+JRP122,RA,Monocytes,CHP,major_axis_length,is_Monocytes,0.031264142490417014,Monocytes vs CHP
+JRP122,RA,Monocytes,CHP,eccentricity,is_Monocytes,0.0062650485358093375,Monocytes vs CHP
+JRP122,RA,Macrophages,CHP,alignment_score,is_Macrophages,-0.039639632321404696,Macrophages vs CHP
+JRP122,RA,Macrophages,CHP,area,is_Macrophages,-0.01559662026770606,Macrophages vs CHP
+JRP122,RA,Macrophages,CHP,major_axis_length,is_Macrophages,0.0035533987873097293,Macrophages vs CHP
+JRP122,RA,Macrophages,CHP,eccentricity,is_Macrophages,0.0221569227167749,Macrophages vs CHP
+JRP122,RA,Vascular cells,COL4A1,alignment_score,is_Vascular_cells,0.0177634815367058,Vascular cells vs COL4A1
+JRP122,RA,Vascular cells,COL4A1,area,is_Vascular_cells,0.013584372233287376,Vascular cells vs COL4A1
+JRP122,RA,Vascular cells,COL4A1,major_axis_length,is_Vascular_cells,-0.008887711922555436,Vascular cells vs COL4A1
+JRP122,RA,Vascular cells,COL4A1,eccentricity,is_Vascular_cells,-0.04025101594371362,Vascular cells vs COL4A1
+JRP141,RA,Monocytes,COL6A1,alignment_score,is_Monocytes,0.028481052583008492,Monocytes vs COL6A1
+JRP141,RA,Monocytes,COL6A1,area,is_Monocytes,0.04558004226798881,Monocytes vs COL6A1
+JRP141,RA,Monocytes,COL6A1,major_axis_length,is_Monocytes,0.029919356838044284,Monocytes vs COL6A1
+JRP141,RA,Monocytes,COL6A1,eccentricity,is_Monocytes,-0.054557675947450784,Monocytes vs COL6A1
+JRP141,RA,Macrophages,COL6A1,alignment_score,is_Macrophages,-0.027102564053442076,Macrophages vs COL6A1
+JRP141,RA,Macrophages,COL6A1,area,is_Macrophages,-0.006536218366179055,Macrophages vs COL6A1
+JRP141,RA,Macrophages,COL6A1,major_axis_length,is_Macrophages,-0.0018434298051548295,Macrophages vs COL6A1
+JRP141,RA,Macrophages,COL6A1,eccentricity,is_Macrophages,0.015801820192588977,Macrophages vs COL6A1
+JRP141,RA,MERTK+ Macrophages,COL6A1,alignment_score,is_MERTKpos_Macrophages,-0.026638802999508087,MERTK+ Macrophages vs COL6A1
+JRP141,RA,MERTK+ Macrophages,COL6A1,area,is_MERTKpos_Macrophages,0.011997488766952655,MERTK+ Macrophages vs COL6A1
+JRP141,RA,MERTK+ Macrophages,COL6A1,major_axis_length,is_MERTKpos_Macrophages,0.01754176742118306,MERTK+ Macrophages vs COL6A1
+JRP141,RA,MERTK+ Macrophages,COL6A1,eccentricity,is_MERTKpos_Macrophages,0.007443482500657235,MERTK+ Macrophages vs COL6A1
+JRP141,RA,CD4 T cells,COL6A1,alignment_score,is_CD4_T_cells,-0.05359525569503792,CD4 T cells vs COL6A1
+JRP141,RA,CD4 T cells,COL6A1,area,is_CD4_T_cells,-0.013867385108853566,CD4 T cells vs COL6A1
+JRP141,RA,CD4 T cells,COL6A1,major_axis_length,is_CD4_T_cells,0.00043425115724609703,CD4 T cells vs COL6A1
+JRP141,RA,CD4 T cells,COL6A1,eccentricity,is_CD4_T_cells,0.03773989846914325,CD4 T cells vs COL6A1
+JRP141,RA,CD8 T cells,COL6A1,alignment_score,is_CD8_T_cells,-0.031055513588945545,CD8 T cells vs COL6A1
+JRP141,RA,CD8 T cells,COL6A1,area,is_CD8_T_cells,0.013656884726013875,CD8 T cells vs COL6A1
+JRP141,RA,CD8 T cells,COL6A1,major_axis_length,is_CD8_T_cells,0.01741260848392843,CD8 T cells vs COL6A1
+JRP141,RA,CD8 T cells,COL6A1,eccentricity,is_CD8_T_cells,0.018534215380662453,CD8 T cells vs COL6A1
+JRP141,RA,B cells,COL6A1,alignment_score,is_B_cells,-0.005264793529731294,B cells vs COL6A1
+JRP141,RA,B cells,COL6A1,area,is_B_cells,-0.014352315129428975,B cells vs COL6A1
+JRP141,RA,B cells,COL6A1,major_axis_length,is_B_cells,-0.008591247755080854,B cells vs COL6A1
+JRP141,RA,B cells,COL6A1,eccentricity,is_B_cells,0.021279467140890712,B cells vs COL6A1
+JRP141,RA,Monocytes,CHP,alignment_score,is_Monocytes,0.05092833162021476,Monocytes vs CHP
+JRP141,RA,Monocytes,CHP,area,is_Monocytes,-0.01554780320174159,Monocytes vs CHP
+JRP141,RA,Monocytes,CHP,major_axis_length,is_Monocytes,-0.003328317526277409,Monocytes vs CHP
+JRP141,RA,Monocytes,CHP,eccentricity,is_Monocytes,-0.00631863939520446,Monocytes vs CHP
+JRP141,RA,Macrophages,CHP,alignment_score,is_Macrophages,-0.01473483219348821,Macrophages vs CHP
+JRP141,RA,Macrophages,CHP,area,is_Macrophages,-0.012437662177498813,Macrophages vs CHP
+JRP141,RA,Macrophages,CHP,major_axis_length,is_Macrophages,-0.014677511346143278,Macrophages vs CHP
+JRP141,RA,Macrophages,CHP,eccentricity,is_Macrophages,-0.0027510491925989925,Macrophages vs CHP
+JRP141,RA,Vascular cells,COL4A1,alignment_score,is_Vascular_cells,-0.003942425254579808,Vascular cells vs COL4A1
+JRP141,RA,Vascular cells,COL4A1,area,is_Vascular_cells,0.046863327876688565,Vascular cells vs COL4A1
+JRP141,RA,Vascular cells,COL4A1,major_axis_length,is_Vascular_cells,0.020437836883900756,Vascular cells vs COL4A1
+JRP141,RA,Vascular cells,COL4A1,eccentricity,is_Vascular_cells,0.02153983817246169,Vascular cells vs COL4A1
+JRP144,OA,Monocytes,COL6A1,alignment_score,is_Monocytes,0.023107562888864678,Monocytes vs COL6A1
+JRP144,OA,Monocytes,COL6A1,area,is_Monocytes,0.04161914984827092,Monocytes vs COL6A1
+JRP144,OA,Monocytes,COL6A1,major_axis_length,is_Monocytes,0.03511728366568417,Monocytes vs COL6A1
+JRP144,OA,Monocytes,COL6A1,eccentricity,is_Monocytes,-0.01719738343313958,Monocytes vs COL6A1
+JRP144,OA,Macrophages,COL6A1,alignment_score,is_Macrophages,-0.017881255904684087,Macrophages vs COL6A1
+JRP144,OA,Macrophages,COL6A1,area,is_Macrophages,-0.03456085132932157,Macrophages vs COL6A1
+JRP144,OA,Macrophages,COL6A1,major_axis_length,is_Macrophages,-0.026308489931195028,Macrophages vs COL6A1
+JRP144,OA,Macrophages,COL6A1,eccentricity,is_Macrophages,0.022297113925022996,Macrophages vs COL6A1
+JRP144,OA,MERTK+ Macrophages,COL6A1,alignment_score,is_MERTKpos_Macrophages,-0.009135010742501963,MERTK+ Macrophages vs COL6A1
+JRP144,OA,MERTK+ Macrophages,COL6A1,area,is_MERTKpos_Macrophages,-0.028521441621378388,MERTK+ Macrophages vs COL6A1
+JRP144,OA,MERTK+ Macrophages,COL6A1,major_axis_length,is_MERTKpos_Macrophages,-0.02596108750211014,MERTK+ Macrophages vs COL6A1
+JRP144,OA,MERTK+ Macrophages,COL6A1,eccentricity,is_MERTKpos_Macrophages,0.02220491161134944,MERTK+ Macrophages vs COL6A1
+JRP144,OA,CD4 T cells,COL6A1,alignment_score,is_CD4_T_cells,-0.0017458461837391674,CD4 T cells vs COL6A1
+JRP144,OA,CD4 T cells,COL6A1,area,is_CD4_T_cells,0.006670570663011026,CD4 T cells vs COL6A1
+JRP144,OA,CD4 T cells,COL6A1,major_axis_length,is_CD4_T_cells,0.011419281371107412,CD4 T cells vs COL6A1
+JRP144,OA,CD4 T cells,COL6A1,eccentricity,is_CD4_T_cells,0.013468924697716413,CD4 T cells vs COL6A1
+JRP144,OA,CD8 T cells,COL6A1,alignment_score,is_CD8_T_cells,-0.0049361752707397216,CD8 T cells vs COL6A1
+JRP144,OA,CD8 T cells,COL6A1,area,is_CD8_T_cells,-0.002285708362672611,CD8 T cells vs COL6A1
+JRP144,OA,CD8 T cells,COL6A1,major_axis_length,is_CD8_T_cells,-0.0022209599068788357,CD8 T cells vs COL6A1
+JRP144,OA,CD8 T cells,COL6A1,eccentricity,is_CD8_T_cells,0.00043183514856388834,CD8 T cells vs COL6A1
+JRP144,OA,B cells,COL6A1,alignment_score,is_B_cells,-0.004249272744818471,B cells vs COL6A1
+JRP144,OA,B cells,COL6A1,area,is_B_cells,-0.0016290526043381602,B cells vs COL6A1
+JRP144,OA,B cells,COL6A1,major_axis_length,is_B_cells,0.003238548095769474,B cells vs COL6A1
+JRP144,OA,B cells,COL6A1,eccentricity,is_B_cells,0.003937433071931021,B cells vs COL6A1
+JRP144,OA,Monocytes,CHP,alignment_score,is_Monocytes,0.05217441158029851,Monocytes vs CHP
+JRP144,OA,Monocytes,CHP,area,is_Monocytes,-0.01851134304998712,Monocytes vs CHP
+JRP144,OA,Monocytes,CHP,major_axis_length,is_Monocytes,-0.01824547446359792,Monocytes vs CHP
+JRP144,OA,Monocytes,CHP,eccentricity,is_Monocytes,-0.007697228804484352,Monocytes vs CHP
+JRP144,OA,Macrophages,CHP,alignment_score,is_Macrophages,-0.024057532087819248,Macrophages vs CHP
+JRP144,OA,Macrophages,CHP,area,is_Macrophages,-0.03751946561794528,Macrophages vs CHP
+JRP144,OA,Macrophages,CHP,major_axis_length,is_Macrophages,-0.03601272492001346,Macrophages vs CHP
+JRP144,OA,Macrophages,CHP,eccentricity,is_Macrophages,-0.014708143437055751,Macrophages vs CHP
+JRP144,OA,Vascular cells,COL4A1,alignment_score,is_Vascular_cells,-0.009629336362881175,Vascular cells vs COL4A1
+JRP144,OA,Vascular cells,COL4A1,area,is_Vascular_cells,0.08503672630555653,Vascular cells vs COL4A1
+JRP144,OA,Vascular cells,COL4A1,major_axis_length,is_Vascular_cells,0.06524430852250099,Vascular cells vs COL4A1
+JRP144,OA,Vascular cells,COL4A1,eccentricity,is_Vascular_cells,-0.05109524167685038,Vascular cells vs COL4A1
+S00292623,OA,Monocytes,COL6A1,alignment_score,is_Monocytes,-0.0054769780694533,Monocytes vs COL6A1
+S00292623,OA,Monocytes,COL6A1,area,is_Monocytes,-0.002939849796940513,Monocytes vs COL6A1
+S00292623,OA,Monocytes,COL6A1,major_axis_length,is_Monocytes,-0.005808476917835302,Monocytes vs COL6A1
+S00292623,OA,Monocytes,COL6A1,eccentricity,is_Monocytes,-0.011261230077246706,Monocytes vs COL6A1
+S00292623,OA,Macrophages,COL6A1,alignment_score,is_Macrophages,-0.007145788328963366,Macrophages vs COL6A1
+S00292623,OA,Macrophages,COL6A1,area,is_Macrophages,-0.0062416760588100565,Macrophages vs COL6A1
+S00292623,OA,Macrophages,COL6A1,major_axis_length,is_Macrophages,-0.0010626805122929375,Macrophages vs COL6A1
+S00292623,OA,Macrophages,COL6A1,eccentricity,is_Macrophages,-0.0058798163562367054,Macrophages vs COL6A1
+S00292623,OA,MERTK+ Macrophages,COL6A1,alignment_score,is_MERTKpos_Macrophages,-0.0010315882881358162,MERTK+ Macrophages vs COL6A1
+S00292623,OA,MERTK+ Macrophages,COL6A1,area,is_MERTKpos_Macrophages,0.00015651933833035105,MERTK+ Macrophages vs COL6A1
+S00292623,OA,MERTK+ Macrophages,COL6A1,major_axis_length,is_MERTKpos_Macrophages,-0.0009165296346390317,MERTK+ Macrophages vs COL6A1
+S00292623,OA,MERTK+ Macrophages,COL6A1,eccentricity,is_MERTKpos_Macrophages,-0.004127819993231365,MERTK+ Macrophages vs COL6A1
+S00292623,OA,CD4 T cells,COL6A1,alignment_score,is_CD4_T_cells,0.00019470223130280852,CD4 T cells vs COL6A1
+S00292623,OA,CD4 T cells,COL6A1,area,is_CD4_T_cells,-0.0034701070180493147,CD4 T cells vs COL6A1
+S00292623,OA,CD4 T cells,COL6A1,major_axis_length,is_CD4_T_cells,-0.01019044418174789,CD4 T cells vs COL6A1
+S00292623,OA,CD4 T cells,COL6A1,eccentricity,is_CD4_T_cells,0.010029446031291252,CD4 T cells vs COL6A1
+S00292623,OA,CD8 T cells,COL6A1,alignment_score,is_CD8_T_cells,-0.021263514525565016,CD8 T cells vs COL6A1
+S00292623,OA,CD8 T cells,COL6A1,area,is_CD8_T_cells,-0.007573958087484303,CD8 T cells vs COL6A1
+S00292623,OA,CD8 T cells,COL6A1,major_axis_length,is_CD8_T_cells,-0.009859671465258617,CD8 T cells vs COL6A1
+S00292623,OA,CD8 T cells,COL6A1,eccentricity,is_CD8_T_cells,0.013447970632159661,CD8 T cells vs COL6A1
+S00292623,OA,B cells,COL6A1,alignment_score,is_B_cells,0.010480284028133044,B cells vs COL6A1
+S00292623,OA,B cells,COL6A1,area,is_B_cells,-0.007715684924998938,B cells vs COL6A1
+S00292623,OA,B cells,COL6A1,major_axis_length,is_B_cells,-0.014666518012898498,B cells vs COL6A1
+S00292623,OA,B cells,COL6A1,eccentricity,is_B_cells,0.01359266936774376,B cells vs COL6A1
+S00292623,OA,Monocytes,CHP,alignment_score,is_Monocytes,-0.003596502622196287,Monocytes vs CHP
+S00292623,OA,Monocytes,CHP,area,is_Monocytes,-0.005186682324247486,Monocytes vs CHP
+S00292623,OA,Monocytes,CHP,major_axis_length,is_Monocytes,0.0015968661576366994,Monocytes vs CHP
+S00292623,OA,Monocytes,CHP,eccentricity,is_Monocytes,0.015204406779025919,Monocytes vs CHP
+S00292623,OA,Macrophages,CHP,alignment_score,is_Macrophages,-0.007416244648482715,Macrophages vs CHP
+S00292623,OA,Macrophages,CHP,area,is_Macrophages,-0.014366362404431692,Macrophages vs CHP
+S00292623,OA,Macrophages,CHP,major_axis_length,is_Macrophages,-0.018817792019464513,Macrophages vs CHP
+S00292623,OA,Macrophages,CHP,eccentricity,is_Macrophages,-0.0074691736443361235,Macrophages vs CHP
+S00292623,OA,Vascular cells,COL4A1,alignment_score,is_Vascular_cells,-0.01018541837339771,Vascular cells vs COL4A1
+S00292623,OA,Vascular cells,COL4A1,area,is_Vascular_cells,0.061448211219198426,Vascular cells vs COL4A1
+S00292623,OA,Vascular cells,COL4A1,major_axis_length,is_Vascular_cells,0.05826111076045125,Vascular cells vs COL4A1
+S00292623,OA,Vascular cells,COL4A1,eccentricity,is_Vascular_cells,-0.00258091714202499,Vascular cells vs COL4A1
+S00293087,OA,Monocytes,COL6A1,alignment_score,is_Monocytes,0.03027354718271731,Monocytes vs COL6A1
+S00293087,OA,Monocytes,COL6A1,area,is_Monocytes,0.034071551784527344,Monocytes vs COL6A1
+S00293087,OA,Monocytes,COL6A1,major_axis_length,is_Monocytes,0.019723755279521447,Monocytes vs COL6A1
+S00293087,OA,Monocytes,COL6A1,eccentricity,is_Monocytes,-0.03258834356574,Monocytes vs COL6A1
+S00293087,OA,Macrophages,COL6A1,alignment_score,is_Macrophages,-0.041413220763947156,Macrophages vs COL6A1
+S00293087,OA,Macrophages,COL6A1,area,is_Macrophages,0.018327544887217315,Macrophages vs COL6A1
+S00293087,OA,Macrophages,COL6A1,major_axis_length,is_Macrophages,0.026709169639396374,Macrophages vs COL6A1
+S00293087,OA,Macrophages,COL6A1,eccentricity,is_Macrophages,0.006468588422078944,Macrophages vs COL6A1
+S00293087,OA,MERTK+ Macrophages,COL6A1,alignment_score,is_MERTKpos_Macrophages,-0.007901452915805018,MERTK+ Macrophages vs COL6A1
+S00293087,OA,MERTK+ Macrophages,COL6A1,area,is_MERTKpos_Macrophages,0.0007952544983519161,MERTK+ Macrophages vs COL6A1
+S00293087,OA,MERTK+ Macrophages,COL6A1,major_axis_length,is_MERTKpos_Macrophages,0.003284360485284391,MERTK+ Macrophages vs COL6A1
+S00293087,OA,MERTK+ Macrophages,COL6A1,eccentricity,is_MERTKpos_Macrophages,0.009267889759221807,MERTK+ Macrophages vs COL6A1
+S00293087,OA,CD4 T cells,COL6A1,alignment_score,is_CD4_T_cells,0.00969353036696882,CD4 T cells vs COL6A1
+S00293087,OA,CD4 T cells,COL6A1,area,is_CD4_T_cells,0.0006659605043525609,CD4 T cells vs COL6A1
+S00293087,OA,CD4 T cells,COL6A1,major_axis_length,is_CD4_T_cells,0.00229445211482557,CD4 T cells vs COL6A1
+S00293087,OA,CD4 T cells,COL6A1,eccentricity,is_CD4_T_cells,0.01126083958168493,CD4 T cells vs COL6A1
+S00293087,OA,CD8 T cells,COL6A1,alignment_score,is_CD8_T_cells,0.013287579363976497,CD8 T cells vs COL6A1
+S00293087,OA,CD8 T cells,COL6A1,area,is_CD8_T_cells,0.0006004392841866037,CD8 T cells vs COL6A1
+S00293087,OA,CD8 T cells,COL6A1,major_axis_length,is_CD8_T_cells,-0.0020681093726821645,CD8 T cells vs COL6A1
+S00293087,OA,CD8 T cells,COL6A1,eccentricity,is_CD8_T_cells,0.012263603083699288,CD8 T cells vs COL6A1
+S00293087,OA,B cells,COL6A1,alignment_score,is_B_cells,0.0021225349324920134,B cells vs COL6A1
+S00293087,OA,B cells,COL6A1,area,is_B_cells,0.002749445872899327,B cells vs COL6A1
+S00293087,OA,B cells,COL6A1,major_axis_length,is_B_cells,0.0006098617806662091,B cells vs COL6A1
+S00293087,OA,B cells,COL6A1,eccentricity,is_B_cells,-0.006980873698416061,B cells vs COL6A1
+S00293087,OA,Monocytes,CHP,alignment_score,is_Monocytes,0.028207921051009572,Monocytes vs CHP
+S00293087,OA,Monocytes,CHP,area,is_Monocytes,-0.03397250842196404,Monocytes vs CHP
+S00293087,OA,Monocytes,CHP,major_axis_length,is_Monocytes,-0.02399830674920545,Monocytes vs CHP
+S00293087,OA,Monocytes,CHP,eccentricity,is_Monocytes,-0.01502006497775243,Monocytes vs CHP
+S00293087,OA,Macrophages,CHP,alignment_score,is_Macrophages,-0.0366275158424585,Macrophages vs CHP
+S00293087,OA,Macrophages,CHP,area,is_Macrophages,-0.02700476877689147,Macrophages vs CHP
+S00293087,OA,Macrophages,CHP,major_axis_length,is_Macrophages,-0.016451617846649898,Macrophages vs CHP
+S00293087,OA,Macrophages,CHP,eccentricity,is_Macrophages,0.036891631607133955,Macrophages vs CHP
+S00293087,OA,Vascular cells,COL4A1,alignment_score,is_Vascular_cells,-0.02698632464463467,Vascular cells vs COL4A1
+S00293087,OA,Vascular cells,COL4A1,area,is_Vascular_cells,0.01928260019283733,Vascular cells vs COL4A1
+S00293087,OA,Vascular cells,COL4A1,major_axis_length,is_Vascular_cells,0.03194457705490053,Vascular cells vs COL4A1
+S00293087,OA,Vascular cells,COL4A1,eccentricity,is_Vascular_cells,0.012617071148764819,Vascular cells vs COL4A1

@@ -1,7 +1,11 @@
 import networkx as nx
 import numpy as np
 from networkx.algorithms import bipartite
-import community as community_louvain
+
+try:
+    import community as community_louvain
+except ImportError:
+    community_louvain = None
 
 
 def _fiber_node_id(fiber_id):
@@ -151,11 +155,53 @@ def project_fiber_graph_per_image(graphs):
 
     return projected
 
-def detect_ecm_niches_per_image(fiber_graphs, weight="weight", resolution=1.0):
+
+def _best_louvain_partition(G, weight="weight", resolution=1.0, random_state=None):
+    """
+    Run Louvain community detection with either python-louvain or NetworkX.
+    """
+    if community_louvain is not None:
+        return community_louvain.best_partition(
+            G,
+            weight=weight,
+            resolution=resolution,
+            random_state=random_state,
+        )
+
+    if not hasattr(nx.algorithms.community, "louvain_communities"):
+        raise ImportError(
+            "ECM niche detection requires either the 'python-louvain' package "
+            "or a NetworkX version with louvain_communities."
+        )
+
+    communities = nx.algorithms.community.louvain_communities(
+        G,
+        weight=weight,
+        resolution=resolution,
+        seed=random_state,
+    )
+
+    partition = {}
+    for niche, nodes in enumerate(communities):
+        for node in nodes:
+            partition[node] = niche
+
+    return partition
+
+
+def detect_ecm_niches_per_image(
+    fiber_graphs,
+    weight="weight",
+    resolution=1.0,
+    random_state=None,
+):
     """
     Detect ECM niches separately per image.
 
     Runs Louvain community detection on each projected fiber graph.
+
+    Uses the optional ``python-louvain`` package when installed. If it is not
+    available, falls back to NetworkX's built-in Louvain implementation.
     """
 
     niche_maps = {}
@@ -165,10 +211,11 @@ def detect_ecm_niches_per_image(fiber_graphs, weight="weight", resolution=1.0):
         if len(G.nodes) < 2 or G.number_of_edges() == 0:
             continue
 
-        partition = community_louvain.best_partition(
+        partition = _best_louvain_partition(
             G,
             weight=weight,
             resolution=resolution,
+            random_state=random_state,
         )
 
         niche_maps[img] = partition

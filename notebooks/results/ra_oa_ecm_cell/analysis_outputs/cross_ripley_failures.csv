@@ -1,0 +1,397 @@
+imageid,phenotype,fiber_type,error
+JRP112,CD4 T cells,CHP,Increase link radius to cover all radii
+JRP112,CD4 T cells,COL1A1bis,Increase link radius to cover all radii
+JRP112,CD4 T cells,COL4A1,Increase link radius to cover all radii
+JRP112,CD4 T cells,COL6A1,Increase link radius to cover all radii
+JRP112,CD4 T cells,FN,Increase link radius to cover all radii
+JRP112,CD4 T cells,MFAP5,Increase link radius to cover all radii
+JRP112,CD8 T cells,CHP,Increase link radius to cover all radii
+JRP112,CD8 T cells,COL1A1bis,Increase link radius to cover all radii
+JRP112,CD8 T cells,COL4A1,Increase link radius to cover all radii
+JRP112,CD8 T cells,COL6A1,Increase link radius to cover all radii
+JRP112,CD8 T cells,FN,Increase link radius to cover all radii
+JRP112,CD8 T cells,MFAP5,Increase link radius to cover all radii
+JRP112,T cells,CHP,Increase link radius to cover all radii
+JRP112,T cells,COL1A1bis,Increase link radius to cover all radii
+JRP112,T cells,COL4A1,Increase link radius to cover all radii
+JRP112,T cells,COL6A1,Increase link radius to cover all radii
+JRP112,T cells,FN,Increase link radius to cover all radii
+JRP112,T cells,MFAP5,Increase link radius to cover all radii
+JRP112,B cells,CHP,Increase link radius to cover all radii
+JRP112,B cells,COL1A1bis,Increase link radius to cover all radii
+JRP112,B cells,COL4A1,Increase link radius to cover all radii
+JRP112,B cells,COL6A1,Increase link radius to cover all radii
+JRP112,B cells,FN,Increase link radius to cover all radii
+JRP112,B cells,MFAP5,Increase link radius to cover all radii
+JRP112,Plasma cells,CHP,Increase link radius to cover all radii
+JRP112,Plasma cells,COL1A1bis,Increase link radius to cover all radii
+JRP112,Plasma cells,COL4A1,Increase link radius to cover all radii
+JRP112,Plasma cells,COL6A1,Increase link radius to cover all radii
+JRP112,Plasma cells,FN,Increase link radius to cover all radii
+JRP112,Plasma cells,MFAP5,Increase link radius to cover all radii
+JRP112,Macrophages,CHP,Increase link radius to cover all radii
+JRP112,Macrophages,COL1A1bis,Increase link radius to cover all radii
+JRP112,Macrophages,COL4A1,Increase link radius to cover all radii
+JRP112,Macrophages,COL6A1,Increase link radius to cover all radii
+JRP112,Macrophages,FN,Increase link radius to cover all radii
+JRP112,Macrophages,MFAP5,Increase link radius to cover all radii
+JRP112,MERTK+ Macrophages,CHP,Increase link radius to cover all radii
+JRP112,MERTK+ Macrophages,COL1A1bis,Increase link radius to cover all radii
+JRP112,MERTK+ Macrophages,COL4A1,Increase link radius to cover all radii
+JRP112,MERTK+ Macrophages,COL6A1,Increase link radius to cover all radii
+JRP112,MERTK+ Macrophages,FN,Increase link radius to cover all radii
+JRP112,MERTK+ Macrophages,MFAP5,Increase link radius to cover all radii
+JRP112,Monocytes,CHP,Increase link radius to cover all radii
+JRP112,Monocytes,COL1A1bis,Increase link radius to cover all radii
+JRP112,Monocytes,COL4A1,Increase link radius to cover all radii
+JRP112,Monocytes,COL6A1,Increase link radius to cover all radii
+JRP112,Monocytes,FN,Increase link radius to cover all radii
+JRP112,Monocytes,MFAP5,Increase link radius to cover all radii
+JRP112,Dendritic cells,CHP,Increase link radius to cover all radii
+JRP112,Dendritic cells,COL1A1bis,Increase link radius to cover all radii
+JRP112,Dendritic cells,COL4A1,Increase link radius to cover all radii
+JRP112,Dendritic cells,COL6A1,Increase link radius to cover all radii
+JRP112,Dendritic cells,FN,Increase link radius to cover all radii
+JRP112,Dendritic cells,MFAP5,Increase link radius to cover all radii
+JRP112,Neutrophils,CHP,Increase link radius to cover all radii
+JRP112,Neutrophils,COL1A1bis,Increase link radius to cover all radii
+JRP112,Neutrophils,COL4A1,Increase link radius to cover all radii
+JRP112,Neutrophils,COL6A1,Increase link radius to cover all radii
+JRP112,Neutrophils,FN,Increase link radius to cover all radii
+JRP112,Neutrophils,MFAP5,Increase link radius to cover all radii
+JRP112,Vascular cells,CHP,Increase link radius to cover all radii
+JRP112,Vascular cells,COL1A1bis,Increase link radius to cover all radii
+JRP112,Vascular cells,COL4A1,Increase link radius to cover all radii
+JRP112,Vascular cells,COL6A1,Increase link radius to cover all radii
+JRP112,Vascular cells,FN,Increase link radius to cover all radii
+JRP112,Vascular cells,MFAP5,Increase link radius to cover all radii
+JRP122,CD4 T cells,CHP,Increase link radius to cover all radii
+JRP122,CD4 T cells,COL1A1bis,Increase link radius to cover all radii
+JRP122,CD4 T cells,COL4A1,Increase link radius to cover all radii
+JRP122,CD4 T cells,COL6A1,Increase link radius to cover all radii
+JRP122,CD4 T cells,FN,Increase link radius to cover all radii
+JRP122,CD4 T cells,MFAP5,Increase link radius to cover all radii
+JRP122,CD8 T cells,CHP,Increase link radius to cover all radii
+JRP122,CD8 T cells,COL1A1bis,Increase link radius to cover all radii
+JRP122,CD8 T cells,COL4A1,Increase link radius to cover all radii
+JRP122,CD8 T cells,COL6A1,Increase link radius to cover all radii
+JRP122,CD8 T cells,FN,Increase link radius to cover all radii
+JRP122,CD8 T cells,MFAP5,Increase link radius to cover all radii
+JRP122,T cells,CHP,Increase link radius to cover all radii
+JRP122,T cells,COL1A1bis,Increase link radius to cover all radii
+JRP122,T cells,COL4A1,Increase link radius to cover all radii
+JRP122,T cells,COL6A1,Increase link radius to cover all radii
+JRP122,T cells,FN,Increase link radius to cover all radii
+JRP122,T cells,MFAP5,Increase link radius to cover all radii
+JRP122,B cells,CHP,Increase link radius to cover all radii
+JRP122,B cells,COL1A1bis,Increase link radius to cover all radii
+JRP122,B cells,COL4A1,Increase link radius to cover all radii
+JRP122,B cells,COL6A1,Increase link radius to cover all radii
+JRP122,B cells,FN,Increase link radius to cover all radii
+JRP122,B cells,MFAP5,Increase link radius to cover all radii
+JRP122,Plasma cells,CHP,Increase link radius to cover all radii
+JRP122,Plasma cells,COL1A1bis,Increase link radius to cover all radii
+JRP122,Plasma cells,COL4A1,Increase link radius to cover all radii
+JRP122,Plasma cells,COL6A1,Increase link radius to cover all radii
+JRP122,Plasma cells,FN,Increase link radius to cover all radii
+JRP122,Plasma cells,MFAP5,Increase link radius to cover all radii
+JRP122,Macrophages,CHP,Increase link radius to cover all radii
+JRP122,Macrophages,COL1A1bis,Increase link radius to cover all radii
+JRP122,Macrophages,COL4A1,Increase link radius to cover all radii
+JRP122,Macrophages,COL6A1,Increase link radius to cover all radii
+JRP122,Macrophages,FN,Increase link radius to cover all radii
+JRP122,Macrophages,MFAP5,Increase link radius to cover all radii
+JRP122,MERTK+ Macrophages,CHP,Increase link radius to cover all radii
+JRP122,MERTK+ Macrophages,COL1A1bis,Increase link radius to cover all radii
+JRP122,MERTK+ Macrophages,COL4A1,Increase link radius to cover all radii
+JRP122,MERTK+ Macrophages,COL6A1,Increase link radius to cover all radii
+JRP122,MERTK+ Macrophages,FN,Increase link radius to cover all radii
+JRP122,MERTK+ Macrophages,MFAP5,Increase link radius to cover all radii
+JRP122,Monocytes,CHP,Increase link radius to cover all radii
+JRP122,Monocytes,COL1A1bis,Increase link radius to cover all radii
+JRP122,Monocytes,COL4A1,Increase link radius to cover all radii
+JRP122,Monocytes,COL6A1,Increase link radius to cover all radii
+JRP122,Monocytes,FN,Increase link radius to cover all radii
+JRP122,Monocytes,MFAP5,Increase link radius to cover all radii
+JRP122,Dendritic cells,CHP,Increase link radius to cover all radii
+JRP122,Dendritic cells,COL1A1bis,Increase link radius to cover all radii
+JRP122,Dendritic cells,COL4A1,Increase link radius to cover all radii
+JRP122,Dendritic cells,COL6A1,Increase link radius to cover all radii
+JRP122,Dendritic cells,FN,Increase link radius to cover all radii
+JRP122,Dendritic cells,MFAP5,Increase link radius to cover all radii
+JRP122,Neutrophils,CHP,Increase link radius to cover all radii
+JRP122,Neutrophils,COL1A1bis,Increase link radius to cover all radii
+JRP122,Neutrophils,COL4A1,Increase link radius to cover all radii
+JRP122,Neutrophils,COL6A1,Increase link radius to cover all radii
+JRP122,Neutrophils,FN,Increase link radius to cover all radii
+JRP122,Neutrophils,MFAP5,Increase link radius to cover all radii
+JRP122,Vascular cells,CHP,Increase link radius to cover all radii
+JRP122,Vascular cells,COL1A1bis,Increase link radius to cover all radii
+JRP122,Vascular cells,COL4A1,Increase link radius to cover all radii
+JRP122,Vascular cells,COL6A1,Increase link radius to cover all radii
+JRP122,Vascular cells,FN,Increase link radius to cover all radii
+JRP122,Vascular cells,MFAP5,Increase link radius to cover all radii
+JRP141,CD4 T cells,CHP,Increase link radius to cover all radii
+JRP141,CD4 T cells,COL1A1bis,Increase link radius to cover all radii
+JRP141,CD4 T cells,COL4A1,Increase link radius to cover all radii
+JRP141,CD4 T cells,COL6A1,Increase link radius to cover all radii
+JRP141,CD4 T cells,FN,Increase link radius to cover all radii
+JRP141,CD4 T cells,MFAP5,Increase link radius to cover all radii
+JRP141,CD8 T cells,CHP,Increase link radius to cover all radii
+JRP141,CD8 T cells,COL1A1bis,Increase link radius to cover all radii
+JRP141,CD8 T cells,COL4A1,Increase link radius to cover all radii
+JRP141,CD8 T cells,COL6A1,Increase link radius to cover all radii
+JRP141,CD8 T cells,FN,Increase link radius to cover all radii
+JRP141,CD8 T cells,MFAP5,Increase link radius to cover all radii
+JRP141,T cells,CHP,Increase link radius to cover all radii
+JRP141,T cells,COL1A1bis,Increase link radius to cover all radii
+JRP141,T cells,COL4A1,Increase link radius to cover all radii
+JRP141,T cells,COL6A1,Increase link radius to cover all radii
+JRP141,T cells,FN,Increase link radius to cover all radii
+JRP141,T cells,MFAP5,Increase link radius to cover all radii
+JRP141,B cells,CHP,Increase link radius to cover all radii
+JRP141,B cells,COL1A1bis,Increase link radius to cover all radii
+JRP141,B cells,COL4A1,Increase link radius to cover all radii
+JRP141,B cells,COL6A1,Increase link radius to cover all radii
+JRP141,B cells,FN,Increase link radius to cover all radii
+JRP141,B cells,MFAP5,Increase link radius to cover all radii
+JRP141,Plasma cells,CHP,Increase link radius to cover all radii
+JRP141,Plasma cells,COL1A1bis,Increase link radius to cover all radii
+JRP141,Plasma cells,COL4A1,Increase link radius to cover all radii
+JRP141,Plasma cells,COL6A1,Increase link radius to cover all radii
+JRP141,Plasma cells,FN,Increase link radius to cover all radii
+JRP141,Plasma cells,MFAP5,Increase link radius to cover all radii
+JRP141,Macrophages,CHP,Increase link radius to cover all radii
+JRP141,Macrophages,COL1A1bis,Increase link radius to cover all radii
+JRP141,Macrophages,COL4A1,Increase link radius to cover all radii
+JRP141,Macrophages,COL6A1,Increase link radius to cover all radii
+JRP141,Macrophages,FN,Increase link radius to cover all radii
+JRP141,Macrophages,MFAP5,Increase link radius to cover all radii
+JRP141,MERTK+ Macrophages,CHP,Increase link radius to cover all radii
+JRP141,MERTK+ Macrophages,COL1A1bis,Increase link radius to cover all radii
+JRP141,MERTK+ Macrophages,COL4A1,Increase link radius to cover all radii
+JRP141,MERTK+ Macrophages,COL6A1,Increase link radius to cover all radii
+JRP141,MERTK+ Macrophages,FN,Increase link radius to cover all radii
+JRP141,MERTK+ Macrophages,MFAP5,Increase link radius to cover all radii
+JRP141,Monocytes,CHP,Increase link radius to cover all radii
+JRP141,Monocytes,COL1A1bis,Increase link radius to cover all radii
+JRP141,Monocytes,COL4A1,Increase link radius to cover all radii
+JRP141,Monocytes,COL6A1,Increase link radius to cover all radii
+JRP141,Monocytes,FN,Increase link radius to cover all radii
+JRP141,Monocytes,MFAP5,Increase link radius to cover all radii
+JRP141,Dendritic cells,CHP,Increase link radius to cover all radii
+JRP141,Dendritic cells,COL1A1bis,Increase link radius to cover all radii
+JRP141,Dendritic cells,COL4A1,Increase link radius to cover all radii
+JRP141,Dendritic cells,COL6A1,Increase link radius to cover all radii
+JRP141,Dendritic cells,FN,Increase link radius to cover all radii
+JRP141,Dendritic cells,MFAP5,Increase link radius to cover all radii
+JRP141,Neutrophils,CHP,Increase link radius to cover all radii
+JRP141,Neutrophils,COL1A1bis,Increase link radius to cover all radii
+JRP141,Neutrophils,COL4A1,Increase link radius to cover all radii
+JRP141,Neutrophils,COL6A1,Increase link radius to cover all radii
+JRP141,Neutrophils,FN,Increase link radius to cover all radii
+JRP141,Neutrophils,MFAP5,Increase link radius to cover all radii
+JRP141,Vascular cells,CHP,Increase link radius to cover all radii
+JRP141,Vascular cells,COL1A1bis,Increase link radius to cover all radii
+JRP141,Vascular cells,COL4A1,Increase link radius to cover all radii
+JRP141,Vascular cells,COL6A1,Increase link radius to cover all radii
+JRP141,Vascular cells,FN,Increase link radius to cover all radii
+JRP141,Vascular cells,MFAP5,Increase link radius to cover all radii
+JRP144,CD4 T cells,CHP,Increase link radius to cover all radii
+JRP144,CD4 T cells,COL1A1bis,Increase link radius to cover all radii
+JRP144,CD4 T cells,COL4A1,Increase link radius to cover all radii
+JRP144,CD4 T cells,COL6A1,Increase link radius to cover all radii
+JRP144,CD4 T cells,FN,Increase link radius to cover all radii
+JRP144,CD4 T cells,MFAP5,Increase link radius to cover all radii
+JRP144,CD8 T cells,CHP,Increase link radius to cover all radii
+JRP144,CD8 T cells,COL1A1bis,Increase link radius to cover all radii
+JRP144,CD8 T cells,COL4A1,Increase link radius to cover all radii
+JRP144,CD8 T cells,COL6A1,Increase link radius to cover all radii
+JRP144,CD8 T cells,FN,Increase link radius to cover all radii
+JRP144,CD8 T cells,MFAP5,Increase link radius to cover all radii
+JRP144,T cells,CHP,Increase link radius to cover all radii
+JRP144,T cells,COL1A1bis,Increase link radius to cover all radii
+JRP144,T cells,COL4A1,Increase link radius to cover all radii
+JRP144,T cells,COL6A1,Increase link radius to cover all radii
+JRP144,T cells,FN,Increase link radius to cover all radii
+JRP144,T cells,MFAP5,Increase link radius to cover all radii
+JRP144,B cells,CHP,Increase link radius to cover all radii
+JRP144,B cells,COL1A1bis,Increase link radius to cover all radii
+JRP144,B cells,COL4A1,Increase link radius to cover all radii
+JRP144,B cells,COL6A1,Increase link radius to cover all radii
+JRP144,B cells,FN,Increase link radius to cover all radii
+JRP144,B cells,MFAP5,Increase link radius to cover all radii
+JRP144,Plasma cells,CHP,Increase link radius to cover all radii
+JRP144,Plasma cells,COL1A1bis,Increase link radius to cover all radii
+JRP144,Plasma cells,COL4A1,Increase link radius to cover all radii
+JRP144,Plasma cells,COL6A1,Increase link radius to cover all radii
+JRP144,Plasma cells,FN,Increase link radius to cover all radii
+JRP144,Plasma cells,MFAP5,Increase link radius to cover all radii
+JRP144,Macrophages,CHP,Increase link radius to cover all radii
+JRP144,Macrophages,COL1A1bis,Increase link radius to cover all radii
+JRP144,Macrophages,COL4A1,Increase link radius to cover all radii
+JRP144,Macrophages,COL6A1,Increase link radius to cover all radii
+JRP144,Macrophages,FN,Increase link radius to cover all radii
+JRP144,Macrophages,MFAP5,Increase link radius to cover all radii
+JRP144,MERTK+ Macrophages,CHP,Increase link radius to cover all radii
+JRP144,MERTK+ Macrophages,COL1A1bis,Increase link radius to cover all radii
+JRP144,MERTK+ Macrophages,COL4A1,Increase link radius to cover all radii
+JRP144,MERTK+ Macrophages,COL6A1,Increase link radius to cover all radii
+JRP144,MERTK+ Macrophages,FN,Increase link radius to cover all radii
+JRP144,MERTK+ Macrophages,MFAP5,Increase link radius to cover all radii
+JRP144,Monocytes,CHP,Increase link radius to cover all radii
+JRP144,Monocytes,COL1A1bis,Increase link radius to cover all radii
+JRP144,Monocytes,COL4A1,Increase link radius to cover all radii
+JRP144,Monocytes,COL6A1,Increase link radius to cover all radii
+JRP144,Monocytes,FN,Increase link radius to cover all radii
+JRP144,Monocytes,MFAP5,Increase link radius to cover all radii
+JRP144,Dendritic cells,CHP,Increase link radius to cover all radii
+JRP144,Dendritic cells,COL1A1bis,Increase link radius to cover all radii
+JRP144,Dendritic cells,COL4A1,Increase link radius to cover all radii
+JRP144,Dendritic cells,COL6A1,Increase link radius to cover all radii
+JRP144,Dendritic cells,FN,Increase link radius to cover all radii
+JRP144,Dendritic cells,MFAP5,Increase link radius to cover all radii
+JRP144,Neutrophils,CHP,Increase link radius to cover all radii
+JRP144,Neutrophils,COL1A1bis,Increase link radius to cover all radii
+JRP144,Neutrophils,COL4A1,Increase link radius to cover all radii
+JRP144,Neutrophils,COL6A1,Increase link radius to cover all radii
+JRP144,Neutrophils,FN,Increase link radius to cover all radii
+JRP144,Neutrophils,MFAP5,Increase link radius to cover all radii
+JRP144,Vascular cells,CHP,Increase link radius to cover all radii
+JRP144,Vascular cells,COL1A1bis,Increase link radius to cover all radii
+JRP144,Vascular cells,COL4A1,Increase link radius to cover all radii
+JRP144,Vascular cells,COL6A1,Increase link radius to cover all radii
+JRP144,Vascular cells,FN,Increase link radius to cover all radii
+JRP144,Vascular cells,MFAP5,Increase link radius to cover all radii
+S00292623,CD4 T cells,CHP,Increase link radius to cover all radii
+S00292623,CD4 T cells,COL1A1bis,Increase link radius to cover all radii
+S00292623,CD4 T cells,COL4A1,Increase link radius to cover all radii
+S00292623,CD4 T cells,COL6A1,Increase link radius to cover all radii
+S00292623,CD4 T cells,FN,Increase link radius to cover all radii
+S00292623,CD4 T cells,MFAP5,Increase link radius to cover all radii
+S00292623,CD8 T cells,CHP,Increase link radius to cover all radii
+S00292623,CD8 T cells,COL1A1bis,Increase link radius to cover all radii
+S00292623,CD8 T cells,COL4A1,Increase link radius to cover all radii
+S00292623,CD8 T cells,COL6A1,Increase link radius to cover all radii
+S00292623,CD8 T cells,FN,Increase link radius to cover all radii
+S00292623,CD8 T cells,MFAP5,Increase link radius to cover all radii
+S00292623,T cells,CHP,Increase link radius to cover all radii
+S00292623,T cells,COL1A1bis,Increase link radius to cover all radii
+S00292623,T cells,COL4A1,Increase link radius to cover all radii
+S00292623,T cells,COL6A1,Increase link radius to cover all radii
+S00292623,T cells,FN,Increase link radius to cover all radii
+S00292623,T cells,MFAP5,Increase link radius to cover all radii
+S00292623,B cells,CHP,Increase link radius to cover all radii
+S00292623,B cells,COL1A1bis,Increase link radius to cover all radii
+S00292623,B cells,COL4A1,Increase link radius to cover all radii
+S00292623,B cells,COL6A1,Increase link radius to cover all radii
+S00292623,B cells,FN,Increase link radius to cover all radii
+S00292623,B cells,MFAP5,Increase link radius to cover all radii
+S00292623,Plasma cells,CHP,Increase link radius to cover all radii
+S00292623,Plasma cells,COL1A1bis,Increase link radius to cover all radii
+S00292623,Plasma cells,COL4A1,Increase link radius to cover all radii
+S00292623,Plasma cells,COL6A1,Increase link radius to cover all radii
+S00292623,Plasma cells,FN,Increase link radius to cover all radii
+S00292623,Plasma cells,MFAP5,Increase link radius to cover all radii
+S00292623,Macrophages,CHP,Increase link radius to cover all radii
+S00292623,Macrophages,COL1A1bis,Increase link radius to cover all radii
+S00292623,Macrophages,COL4A1,Increase link radius to cover all radii
+S00292623,Macrophages,COL6A1,Increase link radius to cover all radii
+S00292623,Macrophages,FN,Increase link radius to cover all radii
+S00292623,Macrophages,MFAP5,Increase link radius to cover all radii
+S00292623,MERTK+ Macrophages,CHP,Increase link radius to cover all radii
+S00292623,MERTK+ Macrophages,COL1A1bis,Increase link radius to cover all radii
+S00292623,MERTK+ Macrophages,COL4A1,Increase link radius to cover all radii
+S00292623,MERTK+ Macrophages,COL6A1,Increase link radius to cover all radii
+S00292623,MERTK+ Macrophages,FN,Increase link radius to cover all radii
+S00292623,MERTK+ Macrophages,MFAP5,Increase link radius to cover all radii
+S00292623,Monocytes,CHP,Increase link radius to cover all radii
+S00292623,Monocytes,COL1A1bis,Increase link radius to cover all radii
+S00292623,Monocytes,COL4A1,Increase link radius to cover all radii
+S00292623,Monocytes,COL6A1,Increase link radius to cover all radii
+S00292623,Monocytes,FN,Increase link radius to cover all radii
+S00292623,Monocytes,MFAP5,Increase link radius to cover all radii
+S00292623,Dendritic cells,CHP,Increase link radius to cover all radii
+S00292623,Dendritic cells,COL1A1bis,Increase link radius to cover all radii
+S00292623,Dendritic cells,COL4A1,Increase link radius to cover all radii
+S00292623,Dendritic cells,COL6A1,Increase link radius to cover all radii
+S00292623,Dendritic cells,FN,Increase link radius to cover all radii
+S00292623,Dendritic cells,MFAP5,Increase link radius to cover all radii
+S00292623,Neutrophils,CHP,Increase link radius to cover all radii
+S00292623,Neutrophils,COL1A1bis,Increase link radius to cover all radii
+S00292623,Neutrophils,COL4A1,Increase link radius to cover all radii
+S00292623,Neutrophils,COL6A1,Increase link radius to cover all radii
+S00292623,Neutrophils,FN,Increase link radius to cover all radii
+S00292623,Neutrophils,MFAP5,Increase link radius to cover all radii
+S00292623,Vascular cells,CHP,Increase link radius to cover all radii
+S00292623,Vascular cells,COL1A1bis,Increase link radius to cover all radii
+S00292623,Vascular cells,COL4A1,Increase link radius to cover all radii
+S00292623,Vascular cells,COL6A1,Increase link radius to cover all radii
+S00292623,Vascular cells,FN,Increase link radius to cover all radii
+S00292623,Vascular cells,MFAP5,Increase link radius to cover all radii
+S00293087,CD4 T cells,CHP,Increase link radius to cover all radii
+S00293087,CD4 T cells,COL1A1bis,Increase link radius to cover all radii
+S00293087,CD4 T cells,COL4A1,Increase link radius to cover all radii
+S00293087,CD4 T cells,COL6A1,Increase link radius to cover all radii
+S00293087,CD4 T cells,FN,Increase link radius to cover all radii
+S00293087,CD4 T cells,MFAP5,Increase link radius to cover all radii
+S00293087,CD8 T cells,CHP,Increase link radius to cover all radii
+S00293087,CD8 T cells,COL1A1bis,Increase link radius to cover all radii
+S00293087,CD8 T cells,COL4A1,Increase link radius to cover all radii
+S00293087,CD8 T cells,COL6A1,Increase link radius to cover all radii
+S00293087,CD8 T cells,FN,Increase link radius to cover all radii
+S00293087,CD8 T cells,MFAP5,Increase link radius to cover all radii
+S00293087,T cells,CHP,Increase link radius to cover all radii
+S00293087,T cells,COL1A1bis,Increase link radius to cover all radii
+S00293087,T cells,COL4A1,Increase link radius to cover all radii
+S00293087,T cells,COL6A1,Increase link radius to cover all radii
+S00293087,T cells,FN,Increase link radius to cover all radii
+S00293087,T cells,MFAP5,Increase link radius to cover all radii
+S00293087,B cells,CHP,Increase link radius to cover all radii
+S00293087,B cells,COL1A1bis,Increase link radius to cover all radii
+S00293087,B cells,COL4A1,Increase link radius to cover all radii
+S00293087,B cells,COL6A1,Increase link radius to cover all radii
+S00293087,B cells,FN,Increase link radius to cover all radii
+S00293087,B cells,MFAP5,Increase link radius to cover all radii
+S00293087,Plasma cells,CHP,Increase link radius to cover all radii
+S00293087,Plasma cells,COL1A1bis,Increase link radius to cover all radii
+S00293087,Plasma cells,COL4A1,Increase link radius to cover all radii
+S00293087,Plasma cells,COL6A1,Increase link radius to cover all radii
+S00293087,Plasma cells,FN,Increase link radius to cover all radii
+S00293087,Plasma cells,MFAP5,Increase link radius to cover all radii
+S00293087,Macrophages,CHP,Increase link radius to cover all radii
+S00293087,Macrophages,COL1A1bis,Increase link radius to cover all radii
+S00293087,Macrophages,COL4A1,Increase link radius to cover all radii
+S00293087,Macrophages,COL6A1,Increase link radius to cover all radii
+S00293087,Macrophages,FN,Increase link radius to cover all radii
+S00293087,Macrophages,MFAP5,Increase link radius to cover all radii
+S00293087,MERTK+ Macrophages,CHP,Increase link radius to cover all radii
+S00293087,MERTK+ Macrophages,COL1A1bis,Increase link radius to cover all radii
+S00293087,MERTK+ Macrophages,COL4A1,Increase link radius to cover all radii
+S00293087,MERTK+ Macrophages,COL6A1,Increase link radius to cover all radii
+S00293087,MERTK+ Macrophages,FN,Increase link radius to cover all radii
+S00293087,MERTK+ Macrophages,MFAP5,Increase link radius to cover all radii
+S00293087,Monocytes,CHP,Increase link radius to cover all radii
+S00293087,Monocytes,COL1A1bis,Increase link radius to cover all radii
+S00293087,Monocytes,COL4A1,Increase link radius to cover all radii
+S00293087,Monocytes,COL6A1,Increase link radius to cover all radii
+S00293087,Monocytes,FN,Increase link radius to cover all radii
+S00293087,Monocytes,MFAP5,Increase link radius to cover all radii
+S00293087,Dendritic cells,CHP,Increase link radius to cover all radii
+S00293087,Dendritic cells,COL1A1bis,Increase link radius to cover all radii
+S00293087,Dendritic cells,COL4A1,Increase link radius to cover all radii
+S00293087,Dendritic cells,COL6A1,Increase link radius to cover all radii
+S00293087,Dendritic cells,FN,Increase link radius to cover all radii
+S00293087,Dendritic cells,MFAP5,Increase link radius to cover all radii
+S00293087,Neutrophils,CHP,Increase link radius to cover all radii
+S00293087,Neutrophils,COL1A1bis,Increase link radius to cover all radii
+S00293087,Neutrophils,COL4A1,Increase link radius to cover all radii
+S00293087,Neutrophils,COL6A1,Increase link radius to cover all radii
+S00293087,Neutrophils,FN,Increase link radius to cover all radii
+S00293087,Neutrophils,MFAP5,Increase link radius to cover all radii
+S00293087,Vascular cells,CHP,Increase link radius to cover all radii
+S00293087,Vascular cells,COL1A1bis,Increase link radius to cover all radii
+S00293087,Vascular cells,COL4A1,Increase link radius to cover all radii
+S00293087,Vascular cells,COL6A1,Increase link radius to cover all radii
+S00293087,Vascular cells,FN,Increase link radius to cover all radii
+S00293087,Vascular cells,MFAP5,Increase link radius to cover all radii

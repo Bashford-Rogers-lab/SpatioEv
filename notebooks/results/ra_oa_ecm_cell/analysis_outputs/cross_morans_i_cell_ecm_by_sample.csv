@@ -1,0 +1,1981 @@
+imageid,pathology,phenotype,fiber_type,feature_fiber,cell_feature,cross_morans_i
+JRP112,RA,CD4 T cells,CHP,major_axis_length,is_CD4_T_cells,-0.028692327912162686
+JRP112,RA,CD4 T cells,CHP,minor_axis_length,is_CD4_T_cells,-0.015512045856653903
+JRP112,RA,CD4 T cells,CHP,area,is_CD4_T_cells,-0.00873918821635567
+JRP112,RA,CD4 T cells,CHP,eccentricity,is_CD4_T_cells,-0.022396258812297284
+JRP112,RA,CD4 T cells,CHP,alignment_score,is_CD4_T_cells,0.10536266622253697
+JRP112,RA,CD4 T cells,COL1A1bis,major_axis_length,is_CD4_T_cells,0.030828622627253475
+JRP112,RA,CD4 T cells,COL1A1bis,minor_axis_length,is_CD4_T_cells,0.045300848887680024
+JRP112,RA,CD4 T cells,COL1A1bis,area,is_CD4_T_cells,0.06147734079948515
+JRP112,RA,CD4 T cells,COL1A1bis,eccentricity,is_CD4_T_cells,-0.014857417473633413
+JRP112,RA,CD4 T cells,COL1A1bis,alignment_score,is_CD4_T_cells,0.07091115862851145
+JRP112,RA,CD4 T cells,COL4A1,major_axis_length,is_CD4_T_cells,-0.03228166111476051
+JRP112,RA,CD4 T cells,COL4A1,minor_axis_length,is_CD4_T_cells,-0.01055995171581095
+JRP112,RA,CD4 T cells,COL4A1,area,is_CD4_T_cells,-0.03189622239674741
+JRP112,RA,CD4 T cells,COL4A1,eccentricity,is_CD4_T_cells,0.012957650174366338
+JRP112,RA,CD4 T cells,COL4A1,alignment_score,is_CD4_T_cells,0.05117379462645929
+JRP112,RA,CD4 T cells,COL6A1,major_axis_length,is_CD4_T_cells,-0.01744112218538154
+JRP112,RA,CD4 T cells,COL6A1,minor_axis_length,is_CD4_T_cells,-0.01968278636481896
+JRP112,RA,CD4 T cells,COL6A1,area,is_CD4_T_cells,-0.012166093309505455
+JRP112,RA,CD4 T cells,COL6A1,eccentricity,is_CD4_T_cells,0.017159878670370103
+JRP112,RA,CD4 T cells,COL6A1,alignment_score,is_CD4_T_cells,0.024422103317862126
+JRP112,RA,CD4 T cells,FN,major_axis_length,is_CD4_T_cells,-0.02414654730555242
+JRP112,RA,CD4 T cells,FN,minor_axis_length,is_CD4_T_cells,-0.012303338205347257
+JRP112,RA,CD4 T cells,FN,area,is_CD4_T_cells,-0.01713105956340443
+JRP112,RA,CD4 T cells,FN,eccentricity,is_CD4_T_cells,-0.029123040696062506
+JRP112,RA,CD4 T cells,FN,alignment_score,is_CD4_T_cells,0.03622554013108263
+JRP112,RA,CD4 T cells,MFAP5,major_axis_length,is_CD4_T_cells,0.005134530378385952
+JRP112,RA,CD4 T cells,MFAP5,minor_axis_length,is_CD4_T_cells,0.011999117452372329
+JRP112,RA,CD4 T cells,MFAP5,area,is_CD4_T_cells,0.0002826631931766809
+JRP112,RA,CD4 T cells,MFAP5,eccentricity,is_CD4_T_cells,0.033987120101477
+JRP112,RA,CD4 T cells,MFAP5,alignment_score,is_CD4_T_cells,-0.033586209467678436
+JRP112,RA,CD8 T cells,CHP,major_axis_length,is_CD8_T_cells,-0.019468786538048188
+JRP112,RA,CD8 T cells,CHP,minor_axis_length,is_CD8_T_cells,-0.02532216781958814
+JRP112,RA,CD8 T cells,CHP,area,is_CD8_T_cells,-0.01621810428817548
+JRP112,RA,CD8 T cells,CHP,eccentricity,is_CD8_T_cells,0.02407233484029629
+JRP112,RA,CD8 T cells,CHP,alignment_score,is_CD8_T_cells,0.03999479341379954
+JRP112,RA,CD8 T cells,COL1A1bis,major_axis_length,is_CD8_T_cells,0.014314245959715957
+JRP112,RA,CD8 T cells,COL1A1bis,minor_axis_length,is_CD8_T_cells,0.047519093343543414
+JRP112,RA,CD8 T cells,COL1A1bis,area,is_CD8_T_cells,0.038228442361446124
+JRP112,RA,CD8 T cells,COL1A1bis,eccentricity,is_CD8_T_cells,-0.030041720984637234
+JRP112,RA,CD8 T cells,COL1A1bis,alignment_score,is_CD8_T_cells,0.08366383006904816
+JRP112,RA,CD8 T cells,COL4A1,major_axis_length,is_CD8_T_cells,-0.056085441611669444
+JRP112,RA,CD8 T cells,COL4A1,minor_axis_length,is_CD8_T_cells,-0.012619080854247452
+JRP112,RA,CD8 T cells,COL4A1,area,is_CD8_T_cells,-0.04706187164056947
+JRP112,RA,CD8 T cells,COL4A1,eccentricity,is_CD8_T_cells,-0.009242805224847982
+JRP112,RA,CD8 T cells,COL4A1,alignment_score,is_CD8_T_cells,0.11219728817687831
+JRP112,RA,CD8 T cells,COL6A1,major_axis_length,is_CD8_T_cells,-0.0027008009459448938
+JRP112,RA,CD8 T cells,COL6A1,minor_axis_length,is_CD8_T_cells,0.017068923678970737
+JRP112,RA,CD8 T cells,COL6A1,area,is_CD8_T_cells,0.01678677645987246
+JRP112,RA,CD8 T cells,COL6A1,eccentricity,is_CD8_T_cells,-0.027767422075946915
+JRP112,RA,CD8 T cells,COL6A1,alignment_score,is_CD8_T_cells,0.05991042675581001
+JRP112,RA,CD8 T cells,FN,major_axis_length,is_CD8_T_cells,-0.05390501681496686
+JRP112,RA,CD8 T cells,FN,minor_axis_length,is_CD8_T_cells,-0.049111899537723665
+JRP112,RA,CD8 T cells,FN,area,is_CD8_T_cells,-0.04596779830866132
+JRP112,RA,CD8 T cells,FN,eccentricity,is_CD8_T_cells,-0.02015052495963924
+JRP112,RA,CD8 T cells,FN,alignment_score,is_CD8_T_cells,0.07026932211214226
+JRP112,RA,CD8 T cells,MFAP5,major_axis_length,is_CD8_T_cells,-0.034549142500232964
+JRP112,RA,CD8 T cells,MFAP5,minor_axis_length,is_CD8_T_cells,-0.0501302948875716
+JRP112,RA,CD8 T cells,MFAP5,area,is_CD8_T_cells,-0.0306993216865157
+JRP112,RA,CD8 T cells,MFAP5,eccentricity,is_CD8_T_cells,0.06017284588987285
+JRP112,RA,CD8 T cells,MFAP5,alignment_score,is_CD8_T_cells,0.023708591699583146
+JRP112,RA,T cells,CHP,major_axis_length,is_T_cells,0.035342052578715734
+JRP112,RA,T cells,CHP,minor_axis_length,is_T_cells,0.018871681952991926
+JRP112,RA,T cells,CHP,area,is_T_cells,0.030377474211452152
+JRP112,RA,T cells,CHP,eccentricity,is_T_cells,-0.03229654562082255
+JRP112,RA,T cells,CHP,alignment_score,is_T_cells,0.16998194263477526
+JRP112,RA,T cells,COL1A1bis,major_axis_length,is_T_cells,-0.006806973447484348
+JRP112,RA,T cells,COL1A1bis,minor_axis_length,is_T_cells,0.008540886948118494
+JRP112,RA,T cells,COL1A1bis,area,is_T_cells,0.014204304827628994
+JRP112,RA,T cells,COL1A1bis,eccentricity,is_T_cells,-0.0275399199272654
+JRP112,RA,T cells,COL1A1bis,alignment_score,is_T_cells,0.14155458694668538
+JRP112,RA,T cells,COL4A1,major_axis_length,is_T_cells,0.022871505961524787
+JRP112,RA,T cells,COL4A1,minor_axis_length,is_T_cells,0.12063712605939886
+JRP112,RA,T cells,COL4A1,area,is_T_cells,0.08641211564523404
+JRP112,RA,T cells,COL4A1,eccentricity,is_T_cells,-0.11340231237795967
+JRP112,RA,T cells,COL4A1,alignment_score,is_T_cells,0.09774300021659704
+JRP112,RA,T cells,COL6A1,major_axis_length,is_T_cells,0.0011846861325269123
+JRP112,RA,T cells,COL6A1,minor_axis_length,is_T_cells,0.014885801707356561
+JRP112,RA,T cells,COL6A1,area,is_T_cells,0.02993746264806834
+JRP112,RA,T cells,COL6A1,eccentricity,is_T_cells,-0.02029880546234054
+JRP112,RA,T cells,COL6A1,alignment_score,is_T_cells,0.19611664030679526
+JRP112,RA,T cells,FN,major_axis_length,is_T_cells,0.036900474933554084
+JRP112,RA,T cells,FN,minor_axis_length,is_T_cells,0.03746589899974592
+JRP112,RA,T cells,FN,area,is_T_cells,0.03331313964153674
+JRP112,RA,T cells,FN,eccentricity,is_T_cells,-0.015421461895385421
+JRP112,RA,T cells,FN,alignment_score,is_T_cells,0.14255891737099463
+JRP112,RA,T cells,MFAP5,major_axis_length,is_T_cells,0.05515574457306268
+JRP112,RA,T cells,MFAP5,minor_axis_length,is_T_cells,0.052377703210452084
+JRP112,RA,T cells,MFAP5,area,is_T_cells,0.08010420210295889
+JRP112,RA,T cells,MFAP5,eccentricity,is_T_cells,-0.03772056542197633
+JRP112,RA,T cells,MFAP5,alignment_score,is_T_cells,0.16665672812571902
+JRP112,RA,B cells,CHP,major_axis_length,is_B_cells,-0.03338221836639145
+JRP112,RA,B cells,CHP,minor_axis_length,is_B_cells,-0.03141204633177483
+JRP112,RA,B cells,CHP,area,is_B_cells,-0.016635234398213024
+JRP112,RA,B cells,CHP,eccentricity,is_B_cells,0.003597653771259615
+JRP112,RA,B cells,CHP,alignment_score,is_B_cells,0.03290777553596134
+JRP112,RA,B cells,COL1A1bis,major_axis_length,is_B_cells,-0.00605438854605055
+JRP112,RA,B cells,COL1A1bis,minor_axis_length,is_B_cells,0.008763661946682846
+JRP112,RA,B cells,COL1A1bis,area,is_B_cells,0.003048491233682412
+JRP112,RA,B cells,COL1A1bis,eccentricity,is_B_cells,-0.010620940346161479
+JRP112,RA,B cells,COL1A1bis,alignment_score,is_B_cells,0.06860061987940734
+JRP112,RA,B cells,COL4A1,major_axis_length,is_B_cells,-0.060497191819053636
+JRP112,RA,B cells,COL4A1,minor_axis_length,is_B_cells,-0.028202735467689685
+JRP112,RA,B cells,COL4A1,area,is_B_cells,-0.0468829599544619
+JRP112,RA,B cells,COL4A1,eccentricity,is_B_cells,-0.0027724881325526534
+JRP112,RA,B cells,COL4A1,alignment_score,is_B_cells,0.02440854819299727
+JRP112,RA,B cells,COL6A1,major_axis_length,is_B_cells,-0.016824871735840137
+JRP112,RA,B cells,COL6A1,minor_axis_length,is_B_cells,-0.009864117794437452
+JRP112,RA,B cells,COL6A1,area,is_B_cells,-0.012909365440406046
+JRP112,RA,B cells,COL6A1,eccentricity,is_B_cells,0.011258352095469359
+JRP112,RA,B cells,COL6A1,alignment_score,is_B_cells,0.011441208195018138
+JRP112,RA,B cells,FN,major_axis_length,is_B_cells,-0.018591336031098794
+JRP112,RA,B cells,FN,minor_axis_length,is_B_cells,-0.000371779987110617
+JRP112,RA,B cells,FN,area,is_B_cells,-0.016898171328053806
+JRP112,RA,B cells,FN,eccentricity,is_B_cells,-0.02656939664882574
+JRP112,RA,B cells,FN,alignment_score,is_B_cells,0.04990263814912196
+JRP112,RA,B cells,MFAP5,major_axis_length,is_B_cells,-0.03375963838161967
+JRP112,RA,B cells,MFAP5,minor_axis_length,is_B_cells,-0.039660363870009874
+JRP112,RA,B cells,MFAP5,area,is_B_cells,-0.022844734251348392
+JRP112,RA,B cells,MFAP5,eccentricity,is_B_cells,0.03495940699339137
+JRP112,RA,B cells,MFAP5,alignment_score,is_B_cells,0.025606395739054957
+JRP112,RA,Plasma cells,CHP,major_axis_length,is_Plasma_cells,0.021861026363993747
+JRP112,RA,Plasma cells,CHP,minor_axis_length,is_Plasma_cells,0.010168320177149094
+JRP112,RA,Plasma cells,CHP,area,is_Plasma_cells,0.012141532349211216
+JRP112,RA,Plasma cells,CHP,eccentricity,is_Plasma_cells,-0.017561885059117842
+JRP112,RA,Plasma cells,CHP,alignment_score,is_Plasma_cells,-0.13803000132113377
+JRP112,RA,Plasma cells,COL1A1bis,major_axis_length,is_Plasma_cells,0.010789426005073792
+JRP112,RA,Plasma cells,COL1A1bis,minor_axis_length,is_Plasma_cells,-0.02735239496051915
+JRP112,RA,Plasma cells,COL1A1bis,area,is_Plasma_cells,-0.01607643244694627
+JRP112,RA,Plasma cells,COL1A1bis,eccentricity,is_Plasma_cells,0.06119016091776211
+JRP112,RA,Plasma cells,COL1A1bis,alignment_score,is_Plasma_cells,-0.05218376385616166
+JRP112,RA,Plasma cells,COL4A1,major_axis_length,is_Plasma_cells,-0.03528956218968635
+JRP112,RA,Plasma cells,COL4A1,minor_axis_length,is_Plasma_cells,-0.09056566207834711
+JRP112,RA,Plasma cells,COL4A1,area,is_Plasma_cells,-0.0548796007367354
+JRP112,RA,Plasma cells,COL4A1,eccentricity,is_Plasma_cells,0.05609274622893618
+JRP112,RA,Plasma cells,COL4A1,alignment_score,is_Plasma_cells,-0.05769523306030614
+JRP112,RA,Plasma cells,COL6A1,major_axis_length,is_Plasma_cells,0.03591372650108285
+JRP112,RA,Plasma cells,COL6A1,minor_axis_length,is_Plasma_cells,-0.008259647765741758
+JRP112,RA,Plasma cells,COL6A1,area,is_Plasma_cells,0.0037882054262625285
+JRP112,RA,Plasma cells,COL6A1,eccentricity,is_Plasma_cells,0.03629659490197223
+JRP112,RA,Plasma cells,COL6A1,alignment_score,is_Plasma_cells,-0.1197332690943151
+JRP112,RA,Plasma cells,FN,major_axis_length,is_Plasma_cells,0.007872484779501485
+JRP112,RA,Plasma cells,FN,minor_axis_length,is_Plasma_cells,-0.016306916591159227
+JRP112,RA,Plasma cells,FN,area,is_Plasma_cells,-0.007482916153237725
+JRP112,RA,Plasma cells,FN,eccentricity,is_Plasma_cells,0.04008147427013171
+JRP112,RA,Plasma cells,FN,alignment_score,is_Plasma_cells,-0.06368977627251118
+JRP112,RA,Plasma cells,MFAP5,major_axis_length,is_Plasma_cells,0.0320585591324709
+JRP112,RA,Plasma cells,MFAP5,minor_axis_length,is_Plasma_cells,0.03237274241541087
+JRP112,RA,Plasma cells,MFAP5,area,is_Plasma_cells,0.04287197806790493
+JRP112,RA,Plasma cells,MFAP5,eccentricity,is_Plasma_cells,0.004491284141375197
+JRP112,RA,Plasma cells,MFAP5,alignment_score,is_Plasma_cells,-0.05455311075900523
+JRP112,RA,Macrophages,CHP,major_axis_length,is_Macrophages,-0.03936163885332202
+JRP112,RA,Macrophages,CHP,minor_axis_length,is_Macrophages,-0.03574325877848938
+JRP112,RA,Macrophages,CHP,area,is_Macrophages,-0.0163086506773162
+JRP112,RA,Macrophages,CHP,eccentricity,is_Macrophages,-0.008754498382375187
+JRP112,RA,Macrophages,CHP,alignment_score,is_Macrophages,0.08503384524394927
+JRP112,RA,Macrophages,COL1A1bis,major_axis_length,is_Macrophages,-0.00900984786973118
+JRP112,RA,Macrophages,COL1A1bis,minor_axis_length,is_Macrophages,-0.005780956567753674
+JRP112,RA,Macrophages,COL1A1bis,area,is_Macrophages,-0.006073182495357239
+JRP112,RA,Macrophages,COL1A1bis,eccentricity,is_Macrophages,0.011601822872558032
+JRP112,RA,Macrophages,COL1A1bis,alignment_score,is_Macrophages,-0.022517077116682407
+JRP112,RA,Macrophages,COL4A1,major_axis_length,is_Macrophages,-0.026269840005907843
+JRP112,RA,Macrophages,COL4A1,minor_axis_length,is_Macrophages,-0.07215063550849646
+JRP112,RA,Macrophages,COL4A1,area,is_Macrophages,-0.04779074528554674
+JRP112,RA,Macrophages,COL4A1,eccentricity,is_Macrophages,0.03626144099082218
+JRP112,RA,Macrophages,COL4A1,alignment_score,is_Macrophages,-0.014256502393833187
+JRP112,RA,Macrophages,COL6A1,major_axis_length,is_Macrophages,-0.012752653323411252
+JRP112,RA,Macrophages,COL6A1,minor_axis_length,is_Macrophages,0.009200358426836506
+JRP112,RA,Macrophages,COL6A1,area,is_Macrophages,-0.004470948477506853
+JRP112,RA,Macrophages,COL6A1,eccentricity,is_Macrophages,-0.006616385567831907
+JRP112,RA,Macrophages,COL6A1,alignment_score,is_Macrophages,0.014683394115195099
+JRP112,RA,Macrophages,FN,major_axis_length,is_Macrophages,-0.008629773642917782
+JRP112,RA,Macrophages,FN,minor_axis_length,is_Macrophages,0.015979946613297782
+JRP112,RA,Macrophages,FN,area,is_Macrophages,0.00397483728177238
+JRP112,RA,Macrophages,FN,eccentricity,is_Macrophages,-0.03965309275597226
+JRP112,RA,Macrophages,FN,alignment_score,is_Macrophages,0.012212914842701091
+JRP112,RA,Macrophages,MFAP5,major_axis_length,is_Macrophages,0.004023269606800928
+JRP112,RA,Macrophages,MFAP5,minor_axis_length,is_Macrophages,-0.006064152969843126
+JRP112,RA,Macrophages,MFAP5,area,is_Macrophages,-0.006704223123815368
+JRP112,RA,Macrophages,MFAP5,eccentricity,is_Macrophages,0.05251417078627672
+JRP112,RA,Macrophages,MFAP5,alignment_score,is_Macrophages,0.0027048273995680457
+JRP112,RA,MERTK+ Macrophages,CHP,major_axis_length,is_MERTKpos_Macrophages,-0.028924981376985345
+JRP112,RA,MERTK+ Macrophages,CHP,minor_axis_length,is_MERTKpos_Macrophages,-0.030602801948617805
+JRP112,RA,MERTK+ Macrophages,CHP,area,is_MERTKpos_Macrophages,-0.03165905230901748
+JRP112,RA,MERTK+ Macrophages,CHP,eccentricity,is_MERTKpos_Macrophages,0.03494459583020694
+JRP112,RA,MERTK+ Macrophages,CHP,alignment_score,is_MERTKpos_Macrophages,-0.08601569321268758
+JRP112,RA,MERTK+ Macrophages,COL1A1bis,major_axis_length,is_MERTKpos_Macrophages,0.023561818661611052
+JRP112,RA,MERTK+ Macrophages,COL1A1bis,minor_axis_length,is_MERTKpos_Macrophages,0.04984381507972706
+JRP112,RA,MERTK+ Macrophages,COL1A1bis,area,is_MERTKpos_Macrophages,0.030883564237485527
+JRP112,RA,MERTK+ Macrophages,COL1A1bis,eccentricity,is_MERTKpos_Macrophages,-0.020368537037249824
+JRP112,RA,MERTK+ Macrophages,COL1A1bis,alignment_score,is_MERTKpos_Macrophages,-0.07089294905620835
+JRP112,RA,MERTK+ Macrophages,COL4A1,major_axis_length,is_MERTKpos_Macrophages,-0.040379896812528765
+JRP112,RA,MERTK+ Macrophages,COL4A1,minor_axis_length,is_MERTKpos_Macrophages,-0.04181461599137135
+JRP112,RA,MERTK+ Macrophages,COL4A1,area,is_MERTKpos_Macrophages,-0.05297452540664315
+JRP112,RA,MERTK+ Macrophages,COL4A1,eccentricity,is_MERTKpos_Macrophages,0.043072280080360376
+JRP112,RA,MERTK+ Macrophages,COL4A1,alignment_score,is_MERTKpos_Macrophages,-0.03271044100023656
+JRP112,RA,MERTK+ Macrophages,COL6A1,major_axis_length,is_MERTKpos_Macrophages,-0.004966014399224977
+JRP112,RA,MERTK+ Macrophages,COL6A1,minor_axis_length,is_MERTKpos_Macrophages,0.020368870843228647
+JRP112,RA,MERTK+ Macrophages,COL6A1,area,is_MERTKpos_Macrophages,0.005852014175519037
+JRP112,RA,MERTK+ Macrophages,COL6A1,eccentricity,is_MERTKpos_Macrophages,-0.015757665017840265
+JRP112,RA,MERTK+ Macrophages,COL6A1,alignment_score,is_MERTKpos_Macrophages,-0.05848604867163052
+JRP112,RA,MERTK+ Macrophages,FN,major_axis_length,is_MERTKpos_Macrophages,-0.03261269895685915
+JRP112,RA,MERTK+ Macrophages,FN,minor_axis_length,is_MERTKpos_Macrophages,-0.008026244709862016
+JRP112,RA,MERTK+ Macrophages,FN,area,is_MERTKpos_Macrophages,-0.017893808595440187
+JRP112,RA,MERTK+ Macrophages,FN,eccentricity,is_MERTKpos_Macrophages,-0.03682393156259507
+JRP112,RA,MERTK+ Macrophages,FN,alignment_score,is_MERTKpos_Macrophages,-0.022745546655680047
+JRP112,RA,MERTK+ Macrophages,MFAP5,major_axis_length,is_MERTKpos_Macrophages,-0.026146971782200337
+JRP112,RA,MERTK+ Macrophages,MFAP5,minor_axis_length,is_MERTKpos_Macrophages,-0.0551074325498504
+JRP112,RA,MERTK+ Macrophages,MFAP5,area,is_MERTKpos_Macrophages,-0.027711991288495826
+JRP112,RA,MERTK+ Macrophages,MFAP5,eccentricity,is_MERTKpos_Macrophages,0.06316951430042404
+JRP112,RA,MERTK+ Macrophages,MFAP5,alignment_score,is_MERTKpos_Macrophages,-0.030887303630759328
+JRP112,RA,Monocytes,CHP,major_axis_length,is_Monocytes,0.024604488138705936
+JRP112,RA,Monocytes,CHP,minor_axis_length,is_Monocytes,0.0003123641680235169
+JRP112,RA,Monocytes,CHP,area,is_Monocytes,0.0016115332114299025
+JRP112,RA,Monocytes,CHP,eccentricity,is_Monocytes,0.058395970415078005
+JRP112,RA,Monocytes,CHP,alignment_score,is_Monocytes,-0.003955448021057235
+JRP112,RA,Monocytes,COL1A1bis,major_axis_length,is_Monocytes,0.01648495057546821
+JRP112,RA,Monocytes,COL1A1bis,minor_axis_length,is_Monocytes,0.002222344113618924
+JRP112,RA,Monocytes,COL1A1bis,area,is_Monocytes,-0.01271760155462408
+JRP112,RA,Monocytes,COL1A1bis,eccentricity,is_Monocytes,-0.00047707308813573813
+JRP112,RA,Monocytes,COL1A1bis,alignment_score,is_Monocytes,0.05291419757072412
+JRP112,RA,Monocytes,COL4A1,major_axis_length,is_Monocytes,-0.014491288383702389
+JRP112,RA,Monocytes,COL4A1,minor_axis_length,is_Monocytes,0.023011746479066852
+JRP112,RA,Monocytes,COL4A1,area,is_Monocytes,-0.013023129376232599
+JRP112,RA,Monocytes,COL4A1,eccentricity,is_Monocytes,-0.03893322216630776
+JRP112,RA,Monocytes,COL4A1,alignment_score,is_Monocytes,0.09479928404060468
+JRP112,RA,Monocytes,COL6A1,major_axis_length,is_Monocytes,0.03561889336033879
+JRP112,RA,Monocytes,COL6A1,minor_axis_length,is_Monocytes,0.03764927594763864
+JRP112,RA,Monocytes,COL6A1,area,is_Monocytes,0.02810420998893087
+JRP112,RA,Monocytes,COL6A1,eccentricity,is_Monocytes,-0.012684733634919582
+JRP112,RA,Monocytes,COL6A1,alignment_score,is_Monocytes,0.03012382243206658
+JRP112,RA,Monocytes,FN,major_axis_length,is_Monocytes,0.005143968002469111
+JRP112,RA,Monocytes,FN,minor_axis_length,is_Monocytes,-0.005145760403284352
+JRP112,RA,Monocytes,FN,area,is_Monocytes,-0.0011897444444297026
+JRP112,RA,Monocytes,FN,eccentricity,is_Monocytes,0.017677829422201963
+JRP112,RA,Monocytes,FN,alignment_score,is_Monocytes,0.07830924040813537
+JRP112,RA,Monocytes,MFAP5,major_axis_length,is_Monocytes,-0.005121339065109056
+JRP112,RA,Monocytes,MFAP5,minor_axis_length,is_Monocytes,-0.01119687880637891
+JRP112,RA,Monocytes,MFAP5,area,is_Monocytes,-0.012710710604120455
+JRP112,RA,Monocytes,MFAP5,eccentricity,is_Monocytes,-0.01059250108393684
+JRP112,RA,Monocytes,MFAP5,alignment_score,is_Monocytes,0.11323204658832833
+JRP112,RA,Dendritic cells,CHP,major_axis_length,is_Dendritic_cells,-0.02883535036332264
+JRP112,RA,Dendritic cells,CHP,minor_axis_length,is_Dendritic_cells,-0.022078641675344766
+JRP112,RA,Dendritic cells,CHP,area,is_Dendritic_cells,-0.018611920526558703
+JRP112,RA,Dendritic cells,CHP,eccentricity,is_Dendritic_cells,-0.011309056772017066
+JRP112,RA,Dendritic cells,CHP,alignment_score,is_Dendritic_cells,0.01233252270418136
+JRP112,RA,Dendritic cells,COL1A1bis,major_axis_length,is_Dendritic_cells,0.01910321350296734
+JRP112,RA,Dendritic cells,COL1A1bis,minor_axis_length,is_Dendritic_cells,0.043545708974031996
+JRP112,RA,Dendritic cells,COL1A1bis,area,is_Dendritic_cells,0.032840070532162806
+JRP112,RA,Dendritic cells,COL1A1bis,eccentricity,is_Dendritic_cells,-0.030534637169354194
+JRP112,RA,Dendritic cells,COL1A1bis,alignment_score,is_Dendritic_cells,-0.0022278063777088483
+JRP112,RA,Dendritic cells,COL4A1,major_axis_length,is_Dendritic_cells,-0.006110794175051099
+JRP112,RA,Dendritic cells,COL4A1,minor_axis_length,is_Dendritic_cells,0.007054420001786118
+JRP112,RA,Dendritic cells,COL4A1,area,is_Dendritic_cells,-0.0151524039121989
+JRP112,RA,Dendritic cells,COL4A1,eccentricity,is_Dendritic_cells,-0.00476788573792666
+JRP112,RA,Dendritic cells,COL4A1,alignment_score,is_Dendritic_cells,0.05756013787916757
+JRP112,RA,Dendritic cells,COL6A1,major_axis_length,is_Dendritic_cells,-0.012330971022143467
+JRP112,RA,Dendritic cells,COL6A1,minor_axis_length,is_Dendritic_cells,0.012943387035848472
+JRP112,RA,Dendritic cells,COL6A1,area,is_Dendritic_cells,0.00028693254534060947
+JRP112,RA,Dendritic cells,COL6A1,eccentricity,is_Dendritic_cells,-0.04152822142823672
+JRP112,RA,Dendritic cells,COL6A1,alignment_score,is_Dendritic_cells,0.034057220565356754
+JRP112,RA,Dendritic cells,FN,major_axis_length,is_Dendritic_cells,-0.016049448144936827
+JRP112,RA,Dendritic cells,FN,minor_axis_length,is_Dendritic_cells,-0.015450940124130254
+JRP112,RA,Dendritic cells,FN,area,is_Dendritic_cells,-0.01253850862915646
+JRP112,RA,Dendritic cells,FN,eccentricity,is_Dendritic_cells,-0.02662542827550317
+JRP112,RA,Dendritic cells,FN,alignment_score,is_Dendritic_cells,0.02350350356416955
+JRP112,RA,Dendritic cells,MFAP5,major_axis_length,is_Dendritic_cells,0.004211019397240896
+JRP112,RA,Dendritic cells,MFAP5,minor_axis_length,is_Dendritic_cells,0.004091584370021776
+JRP112,RA,Dendritic cells,MFAP5,area,is_Dendritic_cells,0.0006327986373235238
+JRP112,RA,Dendritic cells,MFAP5,eccentricity,is_Dendritic_cells,0.012696298506679034
+JRP112,RA,Dendritic cells,MFAP5,alignment_score,is_Dendritic_cells,-0.017433432034315566
+JRP112,RA,Neutrophils,CHP,major_axis_length,is_Neutrophils,-0.011159191458332163
+JRP112,RA,Neutrophils,CHP,minor_axis_length,is_Neutrophils,-0.005636214481271789
+JRP112,RA,Neutrophils,CHP,area,is_Neutrophils,-0.02498726702595218
+JRP112,RA,Neutrophils,CHP,eccentricity,is_Neutrophils,0.02357311017446235
+JRP112,RA,Neutrophils,CHP,alignment_score,is_Neutrophils,0.0002920378906222126
+JRP112,RA,Neutrophils,COL1A1bis,major_axis_length,is_Neutrophils,-0.0005453585577984276
+JRP112,RA,Neutrophils,COL1A1bis,minor_axis_length,is_Neutrophils,0.02816496263274403
+JRP112,RA,Neutrophils,COL1A1bis,area,is_Neutrophils,0.02142705159520153
+JRP112,RA,Neutrophils,COL1A1bis,eccentricity,is_Neutrophils,-0.005669015551794638
+JRP112,RA,Neutrophils,COL1A1bis,alignment_score,is_Neutrophils,-0.02413194929189231
+JRP112,RA,Neutrophils,COL4A1,major_axis_length,is_Neutrophils,-0.05939140976218664
+JRP112,RA,Neutrophils,COL4A1,minor_axis_length,is_Neutrophils,-0.03195527302078584
+JRP112,RA,Neutrophils,COL4A1,area,is_Neutrophils,-0.06720136229763633
+JRP112,RA,Neutrophils,COL4A1,eccentricity,is_Neutrophils,0.003745533765099622
+JRP112,RA,Neutrophils,COL4A1,alignment_score,is_Neutrophils,0.04693788784038539
+JRP112,RA,Neutrophils,COL6A1,major_axis_length,is_Neutrophils,-0.015106413205652194
+JRP112,RA,Neutrophils,COL6A1,minor_axis_length,is_Neutrophils,0.024988826812600885
+JRP112,RA,Neutrophils,COL6A1,area,is_Neutrophils,-0.0012171413430871981
+JRP112,RA,Neutrophils,COL6A1,eccentricity,is_Neutrophils,-0.03552644522396429
+JRP112,RA,Neutrophils,COL6A1,alignment_score,is_Neutrophils,0.014129326953370032
+JRP112,RA,Neutrophils,FN,major_axis_length,is_Neutrophils,-0.03243448085946306
+JRP112,RA,Neutrophils,FN,minor_axis_length,is_Neutrophils,0.0021940978671888814
+JRP112,RA,Neutrophils,FN,area,is_Neutrophils,-0.025389878014142258
+JRP112,RA,Neutrophils,FN,eccentricity,is_Neutrophils,-0.05016344094972715
+JRP112,RA,Neutrophils,FN,alignment_score,is_Neutrophils,0.04273924294868035
+JRP112,RA,Neutrophils,MFAP5,major_axis_length,is_Neutrophils,-0.05383678658899732
+JRP112,RA,Neutrophils,MFAP5,minor_axis_length,is_Neutrophils,-0.06601273577115035
+JRP112,RA,Neutrophils,MFAP5,area,is_Neutrophils,-0.03604945064620853
+JRP112,RA,Neutrophils,MFAP5,eccentricity,is_Neutrophils,0.047056172291888125
+JRP112,RA,Neutrophils,MFAP5,alignment_score,is_Neutrophils,0.01279244644833102
+JRP112,RA,Vascular cells,CHP,major_axis_length,is_Vascular_cells,0.03255885828336766
+JRP112,RA,Vascular cells,CHP,minor_axis_length,is_Vascular_cells,0.009479295938838618
+JRP112,RA,Vascular cells,CHP,area,is_Vascular_cells,-0.0036064196228059887
+JRP112,RA,Vascular cells,CHP,eccentricity,is_Vascular_cells,0.0360223188597521
+JRP112,RA,Vascular cells,CHP,alignment_score,is_Vascular_cells,-0.13288394512610038
+JRP112,RA,Vascular cells,COL1A1bis,major_axis_length,is_Vascular_cells,0.03621674597352751
+JRP112,RA,Vascular cells,COL1A1bis,minor_axis_length,is_Vascular_cells,-0.03876516308854169
+JRP112,RA,Vascular cells,COL1A1bis,area,is_Vascular_cells,-0.02471252705654238
+JRP112,RA,Vascular cells,COL1A1bis,eccentricity,is_Vascular_cells,0.05463323835465086
+JRP112,RA,Vascular cells,COL1A1bis,alignment_score,is_Vascular_cells,-0.13698021569240187
+JRP112,RA,Vascular cells,COL4A1,major_axis_length,is_Vascular_cells,0.07434724592551016
+JRP112,RA,Vascular cells,COL4A1,minor_axis_length,is_Vascular_cells,0.04146691962567285
+JRP112,RA,Vascular cells,COL4A1,area,is_Vascular_cells,0.07707726701747443
+JRP112,RA,Vascular cells,COL4A1,eccentricity,is_Vascular_cells,-0.02607785257163635
+JRP112,RA,Vascular cells,COL4A1,alignment_score,is_Vascular_cells,-0.29190127441663916
+JRP112,RA,Vascular cells,COL6A1,major_axis_length,is_Vascular_cells,0.05339474954434154
+JRP112,RA,Vascular cells,COL6A1,minor_axis_length,is_Vascular_cells,-0.013606289895794958
+JRP112,RA,Vascular cells,COL6A1,area,is_Vascular_cells,0.005750627499904087
+JRP112,RA,Vascular cells,COL6A1,eccentricity,is_Vascular_cells,0.05160592865534055
+JRP112,RA,Vascular cells,COL6A1,alignment_score,is_Vascular_cells,-0.15484612886661622
+JRP112,RA,Vascular cells,FN,major_axis_length,is_Vascular_cells,0.027700905799282412
+JRP112,RA,Vascular cells,FN,minor_axis_length,is_Vascular_cells,-0.028158380705547163
+JRP112,RA,Vascular cells,FN,area,is_Vascular_cells,-0.00022669553381543975
+JRP112,RA,Vascular cells,FN,eccentricity,is_Vascular_cells,0.07601485806789207
+JRP112,RA,Vascular cells,FN,alignment_score,is_Vascular_cells,-0.17235320089393577
+JRP112,RA,Vascular cells,MFAP5,major_axis_length,is_Vascular_cells,0.060409897171474436
+JRP112,RA,Vascular cells,MFAP5,minor_axis_length,is_Vascular_cells,0.011335426522303894
+JRP112,RA,Vascular cells,MFAP5,area,is_Vascular_cells,0.011385320658635902
+JRP112,RA,Vascular cells,MFAP5,eccentricity,is_Vascular_cells,0.03233965799662877
+JRP112,RA,Vascular cells,MFAP5,alignment_score,is_Vascular_cells,-0.1302649199221968
+JRP122,RA,CD4 T cells,CHP,major_axis_length,is_CD4_T_cells,-0.02503216406911938
+JRP122,RA,CD4 T cells,CHP,minor_axis_length,is_CD4_T_cells,-0.03387454012780569
+JRP122,RA,CD4 T cells,CHP,area,is_CD4_T_cells,-0.027045905507810067
+JRP122,RA,CD4 T cells,CHP,eccentricity,is_CD4_T_cells,0.02555354574518442
+JRP122,RA,CD4 T cells,CHP,alignment_score,is_CD4_T_cells,-0.039547667732177966
+JRP122,RA,CD4 T cells,COL1A1bis,major_axis_length,is_CD4_T_cells,0.008058178771599943
+JRP122,RA,CD4 T cells,COL1A1bis,minor_axis_length,is_CD4_T_cells,-0.022774513174295713
+JRP122,RA,CD4 T cells,COL1A1bis,area,is_CD4_T_cells,-0.011233678747797808
+JRP122,RA,CD4 T cells,COL1A1bis,eccentricity,is_CD4_T_cells,0.050173554348056676
+JRP122,RA,CD4 T cells,COL1A1bis,alignment_score,is_CD4_T_cells,-0.07045170365289907
+JRP122,RA,CD4 T cells,COL4A1,major_axis_length,is_CD4_T_cells,0.044644088254856044
+JRP122,RA,CD4 T cells,COL4A1,minor_axis_length,is_CD4_T_cells,0.018640639635004553
+JRP122,RA,CD4 T cells,COL4A1,area,is_CD4_T_cells,0.023316485993092415
+JRP122,RA,CD4 T cells,COL4A1,eccentricity,is_CD4_T_cells,0.03589916660870043
+JRP122,RA,CD4 T cells,COL4A1,alignment_score,is_CD4_T_cells,-0.03234412185804068
+JRP122,RA,CD4 T cells,COL6A1,major_axis_length,is_CD4_T_cells,0.00047876040107301904
+JRP122,RA,CD4 T cells,COL6A1,minor_axis_length,is_CD4_T_cells,-0.0066166981382173515
+JRP122,RA,CD4 T cells,COL6A1,area,is_CD4_T_cells,-0.004625728412150636
+JRP122,RA,CD4 T cells,COL6A1,eccentricity,is_CD4_T_cells,0.019895078388120487
+JRP122,RA,CD4 T cells,COL6A1,alignment_score,is_CD4_T_cells,-0.03543681613658741
+JRP122,RA,CD4 T cells,FN,major_axis_length,is_CD4_T_cells,-0.022554656705299977
+JRP122,RA,CD4 T cells,FN,minor_axis_length,is_CD4_T_cells,-0.028009076570237424
+JRP122,RA,CD4 T cells,FN,area,is_CD4_T_cells,-0.020038335388832547
+JRP122,RA,CD4 T cells,FN,eccentricity,is_CD4_T_cells,0.00742119103447075
+JRP122,RA,CD4 T cells,FN,alignment_score,is_CD4_T_cells,-0.02269494481605835
+JRP122,RA,CD4 T cells,MFAP5,major_axis_length,is_CD4_T_cells,0.00566729124175451
+JRP122,RA,CD4 T cells,MFAP5,minor_axis_length,is_CD4_T_cells,-0.005752427509633146
+JRP122,RA,CD4 T cells,MFAP5,area,is_CD4_T_cells,-0.001716321411657688
+JRP122,RA,CD4 T cells,MFAP5,eccentricity,is_CD4_T_cells,0.008131820119756689
+JRP122,RA,CD4 T cells,MFAP5,alignment_score,is_CD4_T_cells,-0.04186348764246136
+JRP122,RA,CD8 T cells,CHP,major_axis_length,is_CD8_T_cells,-0.008848849500854853
+JRP122,RA,CD8 T cells,CHP,minor_axis_length,is_CD8_T_cells,-0.004837931179353403
+JRP122,RA,CD8 T cells,CHP,area,is_CD8_T_cells,-0.008117894718697187
+JRP122,RA,CD8 T cells,CHP,eccentricity,is_CD8_T_cells,-0.0034103856565827853
+JRP122,RA,CD8 T cells,CHP,alignment_score,is_CD8_T_cells,-0.013902681443365343
+JRP122,RA,CD8 T cells,COL1A1bis,major_axis_length,is_CD8_T_cells,0.05129188849850603
+JRP122,RA,CD8 T cells,COL1A1bis,minor_axis_length,is_CD8_T_cells,0.04245342103707375
+JRP122,RA,CD8 T cells,COL1A1bis,area,is_CD8_T_cells,0.04973904218360725
+JRP122,RA,CD8 T cells,COL1A1bis,eccentricity,is_CD8_T_cells,-0.0057022118119216675
+JRP122,RA,CD8 T cells,COL1A1bis,alignment_score,is_CD8_T_cells,-0.04271583014105322
+JRP122,RA,CD8 T cells,COL4A1,major_axis_length,is_CD8_T_cells,0.02193008724891543
+JRP122,RA,CD8 T cells,COL4A1,minor_axis_length,is_CD8_T_cells,0.016898110222250406
+JRP122,RA,CD8 T cells,COL4A1,area,is_CD8_T_cells,-0.00022298791345461036
+JRP122,RA,CD8 T cells,COL4A1,eccentricity,is_CD8_T_cells,0.014877575510045225
+JRP122,RA,CD8 T cells,COL4A1,alignment_score,is_CD8_T_cells,0.008215630046653
+JRP122,RA,CD8 T cells,COL6A1,major_axis_length,is_CD8_T_cells,-0.005406839339406732
+JRP122,RA,CD8 T cells,COL6A1,minor_axis_length,is_CD8_T_cells,-0.0013105358402781867
+JRP122,RA,CD8 T cells,COL6A1,area,is_CD8_T_cells,-0.009559501957000317
+JRP122,RA,CD8 T cells,COL6A1,eccentricity,is_CD8_T_cells,0.00029327546603555803
+JRP122,RA,CD8 T cells,COL6A1,alignment_score,is_CD8_T_cells,-0.01942898841254913
+JRP122,RA,CD8 T cells,FN,major_axis_length,is_CD8_T_cells,-0.020194800057841068
+JRP122,RA,CD8 T cells,FN,minor_axis_length,is_CD8_T_cells,-0.02379936645431315
+JRP122,RA,CD8 T cells,FN,area,is_CD8_T_cells,-0.017429745371213747
+JRP122,RA,CD8 T cells,FN,eccentricity,is_CD8_T_cells,0.006189540371298621
+JRP122,RA,CD8 T cells,FN,alignment_score,is_CD8_T_cells,0.0040017763466490466
+JRP122,RA,CD8 T cells,MFAP5,major_axis_length,is_CD8_T_cells,-0.0014631716904078195
+JRP122,RA,CD8 T cells,MFAP5,minor_axis_length,is_CD8_T_cells,-0.0037499463751885635
+JRP122,RA,CD8 T cells,MFAP5,area,is_CD8_T_cells,-0.007941124170392241
+JRP122,RA,CD8 T cells,MFAP5,eccentricity,is_CD8_T_cells,0.0017054987301313089
+JRP122,RA,CD8 T cells,MFAP5,alignment_score,is_CD8_T_cells,-0.008202753061628735
+JRP122,RA,T cells,CHP,major_axis_length,is_T_cells,-0.008385927619692663
+JRP122,RA,T cells,CHP,minor_axis_length,is_T_cells,-0.0050006689026855684
+JRP122,RA,T cells,CHP,area,is_T_cells,-0.008821596252423148
+JRP122,RA,T cells,CHP,eccentricity,is_T_cells,0.0009669715733028496
+JRP122,RA,T cells,CHP,alignment_score,is_T_cells,-0.03227053057399909
+JRP122,RA,T cells,COL1A1bis,major_axis_length,is_T_cells,0.028029480986281097
+JRP122,RA,T cells,COL1A1bis,minor_axis_length,is_T_cells,0.023120845819725146
+JRP122,RA,T cells,COL1A1bis,area,is_T_cells,0.021439965469351237
+JRP122,RA,T cells,COL1A1bis,eccentricity,is_T_cells,-0.015007660208049233
+JRP122,RA,T cells,COL1A1bis,alignment_score,is_T_cells,-0.03048832525801294
+JRP122,RA,T cells,COL4A1,major_axis_length,is_T_cells,0.02848750540391709
+JRP122,RA,T cells,COL4A1,minor_axis_length,is_T_cells,0.01702036821257228
+JRP122,RA,T cells,COL4A1,area,is_T_cells,0.0146134818699793
+JRP122,RA,T cells,COL4A1,eccentricity,is_T_cells,0.02442662273342722
+JRP122,RA,T cells,COL4A1,alignment_score,is_T_cells,-0.03667228707650267
+JRP122,RA,T cells,COL6A1,major_axis_length,is_T_cells,-0.001882304559104289
+JRP122,RA,T cells,COL6A1,minor_axis_length,is_T_cells,0.000544724296876646
+JRP122,RA,T cells,COL6A1,area,is_T_cells,-0.004953164832180576
+JRP122,RA,T cells,COL6A1,eccentricity,is_T_cells,0.011356230668607432
+JRP122,RA,T cells,COL6A1,alignment_score,is_T_cells,0.005739729249336188
+JRP122,RA,T cells,FN,major_axis_length,is_T_cells,-0.01396172006715409
+JRP122,RA,T cells,FN,minor_axis_length,is_T_cells,-0.014919841845545368
+JRP122,RA,T cells,FN,area,is_T_cells,-0.012422722121426566
+JRP122,RA,T cells,FN,eccentricity,is_T_cells,0.007523731982910638
+JRP122,RA,T cells,FN,alignment_score,is_T_cells,-0.012571658970176803
+JRP122,RA,T cells,MFAP5,major_axis_length,is_T_cells,-0.005317220547943839
+JRP122,RA,T cells,MFAP5,minor_axis_length,is_T_cells,-0.001598037566697916
+JRP122,RA,T cells,MFAP5,area,is_T_cells,-0.0059835561410576735
+JRP122,RA,T cells,MFAP5,eccentricity,is_T_cells,0.00813400000475568
+JRP122,RA,T cells,MFAP5,alignment_score,is_T_cells,0.008365414238977718
+JRP122,RA,B cells,CHP,major_axis_length,is_B_cells,-0.033156634785245546
+JRP122,RA,B cells,CHP,minor_axis_length,is_B_cells,-0.04178058716774292
+JRP122,RA,B cells,CHP,area,is_B_cells,-0.028029745869942484
+JRP122,RA,B cells,CHP,eccentricity,is_B_cells,0.015505880994232762
+JRP122,RA,B cells,CHP,alignment_score,is_B_cells,-0.03638369127457399
+JRP122,RA,B cells,COL1A1bis,major_axis_length,is_B_cells,0.0021005034748706112
+JRP122,RA,B cells,COL1A1bis,minor_axis_length,is_B_cells,-0.03956979848666067
+JRP122,RA,B cells,COL1A1bis,area,is_B_cells,-0.02483075045444726
+JRP122,RA,B cells,COL1A1bis,eccentricity,is_B_cells,0.07480976217477502
+JRP122,RA,B cells,COL1A1bis,alignment_score,is_B_cells,-0.08419535000981601
+JRP122,RA,B cells,COL4A1,major_axis_length,is_B_cells,0.05125314412173827
+JRP122,RA,B cells,COL4A1,minor_axis_length,is_B_cells,0.022501791460933736
+JRP122,RA,B cells,COL4A1,area,is_B_cells,0.030910955925636717
+JRP122,RA,B cells,COL4A1,eccentricity,is_B_cells,0.034729629770888885
+JRP122,RA,B cells,COL4A1,alignment_score,is_B_cells,0.016192921374998913
+JRP122,RA,B cells,COL6A1,major_axis_length,is_B_cells,-0.019939799019374888
+JRP122,RA,B cells,COL6A1,minor_axis_length,is_B_cells,-0.02850420079395709
+JRP122,RA,B cells,COL6A1,area,is_B_cells,-0.019022239879872747
+JRP122,RA,B cells,COL6A1,eccentricity,is_B_cells,0.029151386320201818
+JRP122,RA,B cells,COL6A1,alignment_score,is_B_cells,-0.022686830903762566
+JRP122,RA,B cells,FN,major_axis_length,is_B_cells,-0.032672501574503486
+JRP122,RA,B cells,FN,minor_axis_length,is_B_cells,-0.037118043131780215
+JRP122,RA,B cells,FN,area,is_B_cells,-0.029381844640515156
+JRP122,RA,B cells,FN,eccentricity,is_B_cells,0.01127529220658731
+JRP122,RA,B cells,FN,alignment_score,is_B_cells,-0.015929909875576867
+JRP122,RA,B cells,MFAP5,major_axis_length,is_B_cells,0.004652313427995264
+JRP122,RA,B cells,MFAP5,minor_axis_length,is_B_cells,-0.008265808035869937
+JRP122,RA,B cells,MFAP5,area,is_B_cells,-0.004302849713928282
+JRP122,RA,B cells,MFAP5,eccentricity,is_B_cells,0.011352693167014543
+JRP122,RA,B cells,MFAP5,alignment_score,is_B_cells,-0.0331272961031865
+JRP122,RA,Plasma cells,CHP,major_axis_length,is_Plasma_cells,-0.02715570011059317
+JRP122,RA,Plasma cells,CHP,minor_axis_length,is_Plasma_cells,-0.023972332453819172
+JRP122,RA,Plasma cells,CHP,area,is_Plasma_cells,-0.015824325669651453
+JRP122,RA,Plasma cells,CHP,eccentricity,is_Plasma_cells,-0.011817249212557236
+JRP122,RA,Plasma cells,CHP,alignment_score,is_Plasma_cells,0.055693249186882336
+JRP122,RA,Plasma cells,COL1A1bis,major_axis_length,is_Plasma_cells,0.05426366746950889
+JRP122,RA,Plasma cells,COL1A1bis,minor_axis_length,is_Plasma_cells,0.066412461188273
+JRP122,RA,Plasma cells,COL1A1bis,area,is_Plasma_cells,0.04900010835317161
+JRP122,RA,Plasma cells,COL1A1bis,eccentricity,is_Plasma_cells,-0.0430258992960294
+JRP122,RA,Plasma cells,COL1A1bis,alignment_score,is_Plasma_cells,-0.028697885443318454
+JRP122,RA,Plasma cells,COL4A1,major_axis_length,is_Plasma_cells,0.012457786677291029
+JRP122,RA,Plasma cells,COL4A1,minor_axis_length,is_Plasma_cells,0.06609243379642907
+JRP122,RA,Plasma cells,COL4A1,area,is_Plasma_cells,0.028218516208986428
+JRP122,RA,Plasma cells,COL4A1,eccentricity,is_Plasma_cells,-0.04588630265035302
+JRP122,RA,Plasma cells,COL4A1,alignment_score,is_Plasma_cells,0.06129168077082096
+JRP122,RA,Plasma cells,COL6A1,major_axis_length,is_Plasma_cells,-0.024535038112750852
+JRP122,RA,Plasma cells,COL6A1,minor_axis_length,is_Plasma_cells,-0.025888623675577094
+JRP122,RA,Plasma cells,COL6A1,area,is_Plasma_cells,-0.027830764281713855
+JRP122,RA,Plasma cells,COL6A1,eccentricity,is_Plasma_cells,0.011268850405354606
+JRP122,RA,Plasma cells,COL6A1,alignment_score,is_Plasma_cells,0.018898576261008774
+JRP122,RA,Plasma cells,FN,major_axis_length,is_Plasma_cells,-0.01981760611872254
+JRP122,RA,Plasma cells,FN,minor_axis_length,is_Plasma_cells,-0.021364657266113488
+JRP122,RA,Plasma cells,FN,area,is_Plasma_cells,-0.02278364369617738
+JRP122,RA,Plasma cells,FN,eccentricity,is_Plasma_cells,0.008685267429261167
+JRP122,RA,Plasma cells,FN,alignment_score,is_Plasma_cells,0.005371792684630773
+JRP122,RA,Plasma cells,MFAP5,major_axis_length,is_Plasma_cells,-0.006180648325977382
+JRP122,RA,Plasma cells,MFAP5,minor_axis_length,is_Plasma_cells,-0.01589601626422336
+JRP122,RA,Plasma cells,MFAP5,area,is_Plasma_cells,-0.015774688003911002
+JRP122,RA,Plasma cells,MFAP5,eccentricity,is_Plasma_cells,0.013148134980465239
+JRP122,RA,Plasma cells,MFAP5,alignment_score,is_Plasma_cells,0.0410337438559633
+JRP122,RA,Macrophages,CHP,major_axis_length,is_Macrophages,0.0035533987873097293
+JRP122,RA,Macrophages,CHP,minor_axis_length,is_Macrophages,-0.00966409218573511
+JRP122,RA,Macrophages,CHP,area,is_Macrophages,-0.01559662026770606
+JRP122,RA,Macrophages,CHP,eccentricity,is_Macrophages,0.0221569227167749
+JRP122,RA,Macrophages,CHP,alignment_score,is_Macrophages,-0.039639632321404696
+JRP122,RA,Macrophages,COL1A1bis,major_axis_length,is_Macrophages,-0.03629975190345031
+JRP122,RA,Macrophages,COL1A1bis,minor_axis_length,is_Macrophages,-0.02976666181292071
+JRP122,RA,Macrophages,COL1A1bis,area,is_Macrophages,-0.03391825255162597
+JRP122,RA,Macrophages,COL1A1bis,eccentricity,is_Macrophages,0.0004126110263458735
+JRP122,RA,Macrophages,COL1A1bis,alignment_score,is_Macrophages,0.01623439506316631
+JRP122,RA,Macrophages,COL4A1,major_axis_length,is_Macrophages,-0.0679551612563195
+JRP122,RA,Macrophages,COL4A1,minor_axis_length,is_Macrophages,-0.04287444341710821
+JRP122,RA,Macrophages,COL4A1,area,is_Macrophages,-0.05317901744901204
+JRP122,RA,Macrophages,COL4A1,eccentricity,is_Macrophages,-0.0386388619354605
+JRP122,RA,Macrophages,COL4A1,alignment_score,is_Macrophages,-0.008199073367432492
+JRP122,RA,Macrophages,COL6A1,major_axis_length,is_Macrophages,0.011048474859033283
+JRP122,RA,Macrophages,COL6A1,minor_axis_length,is_Macrophages,0.0020375302195440124
+JRP122,RA,Macrophages,COL6A1,area,is_Macrophages,0.0036548528375733563
+JRP122,RA,Macrophages,COL6A1,eccentricity,is_Macrophages,0.006087318849343638
+JRP122,RA,Macrophages,COL6A1,alignment_score,is_Macrophages,-0.018091427091908457
+JRP122,RA,Macrophages,FN,major_axis_length,is_Macrophages,-0.01932994734358209
+JRP122,RA,Macrophages,FN,minor_axis_length,is_Macrophages,-0.03195000795469599
+JRP122,RA,Macrophages,FN,area,is_Macrophages,-0.02687635233477793
+JRP122,RA,Macrophages,FN,eccentricity,is_Macrophages,0.01838443987432665
+JRP122,RA,Macrophages,FN,alignment_score,is_Macrophages,0.006524893560330314
+JRP122,RA,Macrophages,MFAP5,major_axis_length,is_Macrophages,0.030384940298780815
+JRP122,RA,Macrophages,MFAP5,minor_axis_length,is_Macrophages,0.04096318945890356
+JRP122,RA,Macrophages,MFAP5,area,is_Macrophages,0.02142571590184528
+JRP122,RA,Macrophages,MFAP5,eccentricity,is_Macrophages,-0.02577348685292045
+JRP122,RA,Macrophages,MFAP5,alignment_score,is_Macrophages,0.0025220000951192683
+JRP122,RA,MERTK+ Macrophages,CHP,major_axis_length,is_MERTKpos_Macrophages,-0.005681118900214666
+JRP122,RA,MERTK+ Macrophages,CHP,minor_axis_length,is_MERTKpos_Macrophages,-0.01058569251713552
+JRP122,RA,MERTK+ Macrophages,CHP,area,is_MERTKpos_Macrophages,-0.011894340312236318
+JRP122,RA,MERTK+ Macrophages,CHP,eccentricity,is_MERTKpos_Macrophages,0.009311804093688161
+JRP122,RA,MERTK+ Macrophages,CHP,alignment_score,is_MERTKpos_Macrophages,-0.023797056814005367
+JRP122,RA,MERTK+ Macrophages,COL1A1bis,major_axis_length,is_MERTKpos_Macrophages,-0.004141821258079499
+JRP122,RA,MERTK+ Macrophages,COL1A1bis,minor_axis_length,is_MERTKpos_Macrophages,0.0007256092427568605
+JRP122,RA,MERTK+ Macrophages,COL1A1bis,area,is_MERTKpos_Macrophages,-0.002949710002146211
+JRP122,RA,MERTK+ Macrophages,COL1A1bis,eccentricity,is_MERTKpos_Macrophages,-0.006847870772956662
+JRP122,RA,MERTK+ Macrophages,COL1A1bis,alignment_score,is_MERTKpos_Macrophages,0.0048891292169083445
+JRP122,RA,MERTK+ Macrophages,COL4A1,major_axis_length,is_MERTKpos_Macrophages,-0.011230199865429358
+JRP122,RA,MERTK+ Macrophages,COL4A1,minor_axis_length,is_MERTKpos_Macrophages,-0.005590230079078894
+JRP122,RA,MERTK+ Macrophages,COL4A1,area,is_MERTKpos_Macrophages,-0.009068503901627499
+JRP122,RA,MERTK+ Macrophages,COL4A1,eccentricity,is_MERTKpos_Macrophages,0.0023974896542584144
+JRP122,RA,MERTK+ Macrophages,COL4A1,alignment_score,is_MERTKpos_Macrophages,0.010083602921191596
+JRP122,RA,MERTK+ Macrophages,COL6A1,major_axis_length,is_MERTKpos_Macrophages,-0.018678246687364897
+JRP122,RA,MERTK+ Macrophages,COL6A1,minor_axis_length,is_MERTKpos_Macrophages,-0.01450258421217666
+JRP122,RA,MERTK+ Macrophages,COL6A1,area,is_MERTKpos_Macrophages,-0.014975368172895643
+JRP122,RA,MERTK+ Macrophages,COL6A1,eccentricity,is_MERTKpos_Macrophages,-0.00951463588240385
+JRP122,RA,MERTK+ Macrophages,COL6A1,alignment_score,is_MERTKpos_Macrophages,0.007880760353856252
+JRP122,RA,MERTK+ Macrophages,FN,major_axis_length,is_MERTKpos_Macrophages,-0.015570387556419707
+JRP122,RA,MERTK+ Macrophages,FN,minor_axis_length,is_MERTKpos_Macrophages,-0.024481972418387735
+JRP122,RA,MERTK+ Macrophages,FN,area,is_MERTKpos_Macrophages,-0.019179015088447705
+JRP122,RA,MERTK+ Macrophages,FN,eccentricity,is_MERTKpos_Macrophages,0.019134458624150873
+JRP122,RA,MERTK+ Macrophages,FN,alignment_score,is_MERTKpos_Macrophages,0.00014172464483373773
+JRP122,RA,MERTK+ Macrophages,MFAP5,major_axis_length,is_MERTKpos_Macrophages,0.004778589525593207
+JRP122,RA,MERTK+ Macrophages,MFAP5,minor_axis_length,is_MERTKpos_Macrophages,0.004284815804870528
+JRP122,RA,MERTK+ Macrophages,MFAP5,area,is_MERTKpos_Macrophages,0.0010629532907956763
+JRP122,RA,MERTK+ Macrophages,MFAP5,eccentricity,is_MERTKpos_Macrophages,0.0028248609978745623
+JRP122,RA,MERTK+ Macrophages,MFAP5,alignment_score,is_MERTKpos_Macrophages,-0.011178319287159661
+JRP122,RA,Monocytes,CHP,major_axis_length,is_Monocytes,0.031264142490417014
+JRP122,RA,Monocytes,CHP,minor_axis_length,is_Monocytes,0.026643954628978634
+JRP122,RA,Monocytes,CHP,area,is_Monocytes,0.01900904397942799
+JRP122,RA,Monocytes,CHP,eccentricity,is_Monocytes,0.0062650485358093375
+JRP122,RA,Monocytes,CHP,alignment_score,is_Monocytes,0.04692781660010012
+JRP122,RA,Monocytes,COL1A1bis,major_axis_length,is_Monocytes,0.013394050146620179
+JRP122,RA,Monocytes,COL1A1bis,minor_axis_length,is_Monocytes,0.024777511629329143
+JRP122,RA,Monocytes,COL1A1bis,area,is_Monocytes,0.013421928833600617
+JRP122,RA,Monocytes,COL1A1bis,eccentricity,is_Monocytes,-0.023857841643798224
+JRP122,RA,Monocytes,COL1A1bis,alignment_score,is_Monocytes,-0.019051099231415784
+JRP122,RA,Monocytes,COL4A1,major_axis_length,is_Monocytes,0.009731981983977627
+JRP122,RA,Monocytes,COL4A1,minor_axis_length,is_Monocytes,0.036797946367825504
+JRP122,RA,Monocytes,COL4A1,area,is_Monocytes,0.03029853470506314
+JRP122,RA,Monocytes,COL4A1,eccentricity,is_Monocytes,-0.02711124746473361
+JRP122,RA,Monocytes,COL4A1,alignment_score,is_Monocytes,0.010627790636889423
+JRP122,RA,Monocytes,COL6A1,major_axis_length,is_Monocytes,0.01645283100443789
+JRP122,RA,Monocytes,COL6A1,minor_axis_length,is_Monocytes,0.020142303885861162
+JRP122,RA,Monocytes,COL6A1,area,is_Monocytes,0.011674357592660285
+JRP122,RA,Monocytes,COL6A1,eccentricity,is_Monocytes,-0.016256307137363434
+JRP122,RA,Monocytes,COL6A1,alignment_score,is_Monocytes,0.022313878842958917
+JRP122,RA,Monocytes,FN,major_axis_length,is_Monocytes,-0.008226459292321374
+JRP122,RA,Monocytes,FN,minor_axis_length,is_Monocytes,-0.020872843613903427
+JRP122,RA,Monocytes,FN,area,is_Monocytes,-0.019424051135071542
+JRP122,RA,Monocytes,FN,eccentricity,is_Monocytes,0.00523004203083839
+JRP122,RA,Monocytes,FN,alignment_score,is_Monocytes,0.056544451275920914
+JRP122,RA,Monocytes,MFAP5,major_axis_length,is_Monocytes,0.02254350930897587
+JRP122,RA,Monocytes,MFAP5,minor_axis_length,is_Monocytes,0.009799447447110032
+JRP122,RA,Monocytes,MFAP5,area,is_Monocytes,-0.0016070687656304862
+JRP122,RA,Monocytes,MFAP5,eccentricity,is_Monocytes,0.009862145298109361
+JRP122,RA,Monocytes,MFAP5,alignment_score,is_Monocytes,0.024626779958008476
+JRP122,RA,Dendritic cells,CHP,major_axis_length,is_Dendritic_cells,0.011043672324391454
+JRP122,RA,Dendritic cells,CHP,minor_axis_length,is_Dendritic_cells,0.005425532011499137
+JRP122,RA,Dendritic cells,CHP,area,is_Dendritic_cells,0.002208154533021527
+JRP122,RA,Dendritic cells,CHP,eccentricity,is_Dendritic_cells,0.012749653544204652
+JRP122,RA,Dendritic cells,CHP,alignment_score,is_Dendritic_cells,0.009504782342253252
+JRP122,RA,Dendritic cells,COL1A1bis,major_axis_length,is_Dendritic_cells,-0.0007375984685278179
+JRP122,RA,Dendritic cells,COL1A1bis,minor_axis_length,is_Dendritic_cells,-0.014574497760903653
+JRP122,RA,Dendritic cells,COL1A1bis,area,is_Dendritic_cells,-0.013561723678851882
+JRP122,RA,Dendritic cells,COL1A1bis,eccentricity,is_Dendritic_cells,0.01275026710157025
+JRP122,RA,Dendritic cells,COL1A1bis,alignment_score,is_Dendritic_cells,-0.030585722532319008
+JRP122,RA,Dendritic cells,COL4A1,major_axis_length,is_Dendritic_cells,0.007664875373058147
+JRP122,RA,Dendritic cells,COL4A1,minor_axis_length,is_Dendritic_cells,-0.019573226214135788
+JRP122,RA,Dendritic cells,COL4A1,area,is_Dendritic_cells,-0.019168470419611106
+JRP122,RA,Dendritic cells,COL4A1,eccentricity,is_Dendritic_cells,0.036348733560515885
+JRP122,RA,Dendritic cells,COL4A1,alignment_score,is_Dendritic_cells,-0.03498981859657591
+JRP122,RA,Dendritic cells,COL6A1,major_axis_length,is_Dendritic_cells,-0.006847050774332845
+JRP122,RA,Dendritic cells,COL6A1,minor_axis_length,is_Dendritic_cells,-0.00777852433600068
+JRP122,RA,Dendritic cells,COL6A1,area,is_Dendritic_cells,-0.010293760908491005
+JRP122,RA,Dendritic cells,COL6A1,eccentricity,is_Dendritic_cells,0.016451625074493735
+JRP122,RA,Dendritic cells,COL6A1,alignment_score,is_Dendritic_cells,-0.009115510415257193
+JRP122,RA,Dendritic cells,FN,major_axis_length,is_Dendritic_cells,-0.004365140155319939
+JRP122,RA,Dendritic cells,FN,minor_axis_length,is_Dendritic_cells,-0.01876107439690096
+JRP122,RA,Dendritic cells,FN,area,is_Dendritic_cells,-0.013572074169240268
+JRP122,RA,Dendritic cells,FN,eccentricity,is_Dendritic_cells,0.017549613599068037
+JRP122,RA,Dendritic cells,FN,alignment_score,is_Dendritic_cells,0.003362182570459795
+JRP122,RA,Dendritic cells,MFAP5,major_axis_length,is_Dendritic_cells,0.004642242455750848
+JRP122,RA,Dendritic cells,MFAP5,minor_axis_length,is_Dendritic_cells,0.0013180601389585218
+JRP122,RA,Dendritic cells,MFAP5,area,is_Dendritic_cells,0.0017151595006878867
+JRP122,RA,Dendritic cells,MFAP5,eccentricity,is_Dendritic_cells,0.008360238088395372
+JRP122,RA,Dendritic cells,MFAP5,alignment_score,is_Dendritic_cells,-0.017443845876694054
+JRP122,RA,Neutrophils,CHP,major_axis_length,is_Neutrophils,-0.014967144164991016
+JRP122,RA,Neutrophils,CHP,minor_axis_length,is_Neutrophils,-0.01926087718173326
+JRP122,RA,Neutrophils,CHP,area,is_Neutrophils,-0.01130794963279371
+JRP122,RA,Neutrophils,CHP,eccentricity,is_Neutrophils,0.01410974952010908
+JRP122,RA,Neutrophils,CHP,alignment_score,is_Neutrophils,-0.00999828321757122
+JRP122,RA,Neutrophils,COL1A1bis,major_axis_length,is_Neutrophils,-0.013114594308340293
+JRP122,RA,Neutrophils,COL1A1bis,minor_axis_length,is_Neutrophils,-0.02101778722844778
+JRP122,RA,Neutrophils,COL1A1bis,area,is_Neutrophils,-0.01891034897532145
+JRP122,RA,Neutrophils,COL1A1bis,eccentricity,is_Neutrophils,0.02702343076874884
+JRP122,RA,Neutrophils,COL1A1bis,alignment_score,is_Neutrophils,0.030778625884403447
+JRP122,RA,Neutrophils,COL4A1,major_axis_length,is_Neutrophils,-0.04971185271976349
+JRP122,RA,Neutrophils,COL4A1,minor_axis_length,is_Neutrophils,-0.017884066313298145
+JRP122,RA,Neutrophils,COL4A1,area,is_Neutrophils,-0.021522245818216632
+JRP122,RA,Neutrophils,COL4A1,eccentricity,is_Neutrophils,-0.05352623025788873
+JRP122,RA,Neutrophils,COL4A1,alignment_score,is_Neutrophils,0.09372688976404733
+JRP122,RA,Neutrophils,COL6A1,major_axis_length,is_Neutrophils,0.004489303757242584
+JRP122,RA,Neutrophils,COL6A1,minor_axis_length,is_Neutrophils,0.01211068941410162
+JRP122,RA,Neutrophils,COL6A1,area,is_Neutrophils,0.007367573453537632
+JRP122,RA,Neutrophils,COL6A1,eccentricity,is_Neutrophils,-0.006603573304030713
+JRP122,RA,Neutrophils,COL6A1,alignment_score,is_Neutrophils,0.007014760974480046
+JRP122,RA,Neutrophils,FN,major_axis_length,is_Neutrophils,0.00421745718361032
+JRP122,RA,Neutrophils,FN,minor_axis_length,is_Neutrophils,0.005598296509426346
+JRP122,RA,Neutrophils,FN,area,is_Neutrophils,0.00956327188999688
+JRP122,RA,Neutrophils,FN,eccentricity,is_Neutrophils,0.003468642765587675
+JRP122,RA,Neutrophils,FN,alignment_score,is_Neutrophils,0.010623067740774416
+JRP122,RA,Neutrophils,MFAP5,major_axis_length,is_Neutrophils,-0.006495057398374906
+JRP122,RA,Neutrophils,MFAP5,minor_axis_length,is_Neutrophils,0.0027074214567933174
+JRP122,RA,Neutrophils,MFAP5,area,is_Neutrophils,-0.0024625803202071835
+JRP122,RA,Neutrophils,MFAP5,eccentricity,is_Neutrophils,-0.00777401698131971
+JRP122,RA,Neutrophils,MFAP5,alignment_score,is_Neutrophils,0.012434844747483536
+JRP122,RA,Vascular cells,CHP,major_axis_length,is_Vascular_cells,0.023097647789213104
+JRP122,RA,Vascular cells,CHP,minor_axis_length,is_Vascular_cells,0.024414208543939147
+JRP122,RA,Vascular cells,CHP,area,is_Vascular_cells,0.028431652463801894
+JRP122,RA,Vascular cells,CHP,eccentricity,is_Vascular_cells,0.005515371496675425
+JRP122,RA,Vascular cells,CHP,alignment_score,is_Vascular_cells,0.019863076509281884
+JRP122,RA,Vascular cells,COL1A1bis,major_axis_length,is_Vascular_cells,0.025070338157930534
+JRP122,RA,Vascular cells,COL1A1bis,minor_axis_length,is_Vascular_cells,-0.0026101382350979816
+JRP122,RA,Vascular cells,COL1A1bis,area,is_Vascular_cells,0.013354176924150642
+JRP122,RA,Vascular cells,COL1A1bis,eccentricity,is_Vascular_cells,0.034021083154974485
+JRP122,RA,Vascular cells,COL1A1bis,alignment_score,is_Vascular_cells,0.059291061664382944
+JRP122,RA,Vascular cells,COL4A1,major_axis_length,is_Vascular_cells,-0.008887711922555436
+JRP122,RA,Vascular cells,COL4A1,minor_axis_length,is_Vascular_cells,-0.00912659747915057
+JRP122,RA,Vascular cells,COL4A1,area,is_Vascular_cells,0.013584372233287376
+JRP122,RA,Vascular cells,COL4A1,eccentricity,is_Vascular_cells,-0.04025101594371362
+JRP122,RA,Vascular cells,COL4A1,alignment_score,is_Vascular_cells,0.0177634815367058
+JRP122,RA,Vascular cells,COL6A1,major_axis_length,is_Vascular_cells,0.03190211694074557
+JRP122,RA,Vascular cells,COL6A1,minor_axis_length,is_Vascular_cells,0.04762699345466529
+JRP122,RA,Vascular cells,COL6A1,area,is_Vascular_cells,0.04227709887604166
+JRP122,RA,Vascular cells,COL6A1,eccentricity,is_Vascular_cells,-0.0231409680544442
+JRP122,RA,Vascular cells,COL6A1,alignment_score,is_Vascular_cells,0.025110994304282108
+JRP122,RA,Vascular cells,FN,major_axis_length,is_Vascular_cells,0.04677642114838661
+JRP122,RA,Vascular cells,FN,minor_axis_length,is_Vascular_cells,0.050673405763799015
+JRP122,RA,Vascular cells,FN,area,is_Vascular_cells,0.050420632612733475
+JRP122,RA,Vascular cells,FN,eccentricity,is_Vascular_cells,-0.015380142460999448
+JRP122,RA,Vascular cells,FN,alignment_score,is_Vascular_cells,-0.008955454735840552
+JRP122,RA,Vascular cells,MFAP5,major_axis_length,is_Vascular_cells,-0.01904200339884304
+JRP122,RA,Vascular cells,MFAP5,minor_axis_length,is_Vascular_cells,-0.016454007646944095
+JRP122,RA,Vascular cells,MFAP5,area,is_Vascular_cells,-0.005959203591697121
+JRP122,RA,Vascular cells,MFAP5,eccentricity,is_Vascular_cells,-0.007724765059910813
+JRP122,RA,Vascular cells,MFAP5,alignment_score,is_Vascular_cells,0.004863439693688489
+JRP141,RA,CD4 T cells,CHP,major_axis_length,is_CD4_T_cells,0.0032911710428154073
+JRP141,RA,CD4 T cells,CHP,minor_axis_length,is_CD4_T_cells,-0.012594746679734793
+JRP141,RA,CD4 T cells,CHP,area,is_CD4_T_cells,0.0017075117865776787
+JRP141,RA,CD4 T cells,CHP,eccentricity,is_CD4_T_cells,0.03827360052300369
+JRP141,RA,CD4 T cells,CHP,alignment_score,is_CD4_T_cells,-0.06229988346350715
+JRP141,RA,CD4 T cells,COL1A1bis,major_axis_length,is_CD4_T_cells,0.08710286498961287
+JRP141,RA,CD4 T cells,COL1A1bis,minor_axis_length,is_CD4_T_cells,0.0680747541810169
+JRP141,RA,CD4 T cells,COL1A1bis,area,is_CD4_T_cells,0.06747862925208427
+JRP141,RA,CD4 T cells,COL1A1bis,eccentricity,is_CD4_T_cells,0.031043943979709627
+JRP141,RA,CD4 T cells,COL1A1bis,alignment_score,is_CD4_T_cells,-0.06754213541835723
+JRP141,RA,CD4 T cells,COL4A1,major_axis_length,is_CD4_T_cells,0.0592659337371121
+JRP141,RA,CD4 T cells,COL4A1,minor_axis_length,is_CD4_T_cells,0.09192496022543409
+JRP141,RA,CD4 T cells,COL4A1,area,is_CD4_T_cells,0.06147090648289498
+JRP141,RA,CD4 T cells,COL4A1,eccentricity,is_CD4_T_cells,-0.031204532004502326
+JRP141,RA,CD4 T cells,COL4A1,alignment_score,is_CD4_T_cells,-0.11570714582982196
+JRP141,RA,CD4 T cells,COL6A1,major_axis_length,is_CD4_T_cells,0.00043425115724609703
+JRP141,RA,CD4 T cells,COL6A1,minor_axis_length,is_CD4_T_cells,-0.02081889728280763
+JRP141,RA,CD4 T cells,COL6A1,area,is_CD4_T_cells,-0.013867385108853566
+JRP141,RA,CD4 T cells,COL6A1,eccentricity,is_CD4_T_cells,0.03773989846914325
+JRP141,RA,CD4 T cells,COL6A1,alignment_score,is_CD4_T_cells,-0.05359525569503792
+JRP141,RA,CD4 T cells,FN,major_axis_length,is_CD4_T_cells,-0.028060041301061198
+JRP141,RA,CD4 T cells,FN,minor_axis_length,is_CD4_T_cells,-0.04974663956507906
+JRP141,RA,CD4 T cells,FN,area,is_CD4_T_cells,-0.029255516497205553
+JRP141,RA,CD4 T cells,FN,eccentricity,is_CD4_T_cells,0.043327303282125126
+JRP141,RA,CD4 T cells,FN,alignment_score,is_CD4_T_cells,-0.049187871908574585
+JRP141,RA,CD4 T cells,MFAP5,major_axis_length,is_CD4_T_cells,0.009534802751252276
+JRP141,RA,CD4 T cells,MFAP5,minor_axis_length,is_CD4_T_cells,-0.013046047092667244
+JRP141,RA,CD4 T cells,MFAP5,area,is_CD4_T_cells,-0.001951915190943297
+JRP141,RA,CD4 T cells,MFAP5,eccentricity,is_CD4_T_cells,0.030663354194311886
+JRP141,RA,CD4 T cells,MFAP5,alignment_score,is_CD4_T_cells,-0.053875959423575155
+JRP141,RA,CD8 T cells,CHP,major_axis_length,is_CD8_T_cells,-0.004767537919529744
+JRP141,RA,CD8 T cells,CHP,minor_axis_length,is_CD8_T_cells,-0.018679478175291364
+JRP141,RA,CD8 T cells,CHP,area,is_CD8_T_cells,-0.005733409892340043
+JRP141,RA,CD8 T cells,CHP,eccentricity,is_CD8_T_cells,0.03470755588269185
+JRP141,RA,CD8 T cells,CHP,alignment_score,is_CD8_T_cells,-0.033928271253690585
+JRP141,RA,CD8 T cells,COL1A1bis,major_axis_length,is_CD8_T_cells,0.058432777736632996
+JRP141,RA,CD8 T cells,COL1A1bis,minor_axis_length,is_CD8_T_cells,0.040642695810821486
+JRP141,RA,CD8 T cells,COL1A1bis,area,is_CD8_T_cells,0.041971734881477187
+JRP141,RA,CD8 T cells,COL1A1bis,eccentricity,is_CD8_T_cells,0.027954166372036883
+JRP141,RA,CD8 T cells,COL1A1bis,alignment_score,is_CD8_T_cells,-0.03916817262017075
+JRP141,RA,CD8 T cells,COL4A1,major_axis_length,is_CD8_T_cells,0.023169723427295716
+JRP141,RA,CD8 T cells,COL4A1,minor_axis_length,is_CD8_T_cells,0.03482309028587611
+JRP141,RA,CD8 T cells,COL4A1,area,is_CD8_T_cells,0.016429853782384724
+JRP141,RA,CD8 T cells,COL4A1,eccentricity,is_CD8_T_cells,-0.03269911476630037
+JRP141,RA,CD8 T cells,COL4A1,alignment_score,is_CD8_T_cells,-0.09108162778315414
+JRP141,RA,CD8 T cells,COL6A1,major_axis_length,is_CD8_T_cells,0.01741260848392843
+JRP141,RA,CD8 T cells,COL6A1,minor_axis_length,is_CD8_T_cells,0.00819915697510196
+JRP141,RA,CD8 T cells,COL6A1,area,is_CD8_T_cells,0.013656884726013875
+JRP141,RA,CD8 T cells,COL6A1,eccentricity,is_CD8_T_cells,0.018534215380662453
+JRP141,RA,CD8 T cells,COL6A1,alignment_score,is_CD8_T_cells,-0.031055513588945545
+JRP141,RA,CD8 T cells,FN,major_axis_length,is_CD8_T_cells,-0.01888939974437469
+JRP141,RA,CD8 T cells,FN,minor_axis_length,is_CD8_T_cells,-0.03220349450877794
+JRP141,RA,CD8 T cells,FN,area,is_CD8_T_cells,-0.018159989498776133
+JRP141,RA,CD8 T cells,FN,eccentricity,is_CD8_T_cells,0.026403855823016003
+JRP141,RA,CD8 T cells,FN,alignment_score,is_CD8_T_cells,-0.03375911610436298
+JRP141,RA,CD8 T cells,MFAP5,major_axis_length,is_CD8_T_cells,0.0056046873097129
+JRP141,RA,CD8 T cells,MFAP5,minor_axis_length,is_CD8_T_cells,-0.005389523214784251
+JRP141,RA,CD8 T cells,MFAP5,area,is_CD8_T_cells,-0.0027550474597116906
+JRP141,RA,CD8 T cells,MFAP5,eccentricity,is_CD8_T_cells,0.015459166652676356
+JRP141,RA,CD8 T cells,MFAP5,alignment_score,is_CD8_T_cells,-0.02491738894209655
+JRP141,RA,T cells,CHP,major_axis_length,is_T_cells,0.001899589586339774
+JRP141,RA,T cells,CHP,minor_axis_length,is_T_cells,-0.004575250049298099
+JRP141,RA,T cells,CHP,area,is_T_cells,-0.0016007493479433042
+JRP141,RA,T cells,CHP,eccentricity,is_T_cells,0.010710722614171126
+JRP141,RA,T cells,CHP,alignment_score,is_T_cells,-0.022844918946696446
+JRP141,RA,T cells,COL1A1bis,major_axis_length,is_T_cells,0.024905546833916825
+JRP141,RA,T cells,COL1A1bis,minor_axis_length,is_T_cells,0.01631611614124181
+JRP141,RA,T cells,COL1A1bis,area,is_T_cells,0.020150810568970567
+JRP141,RA,T cells,COL1A1bis,eccentricity,is_T_cells,0.01082349689332425
+JRP141,RA,T cells,COL1A1bis,alignment_score,is_T_cells,-0.02314620561288518
+JRP141,RA,T cells,COL4A1,major_axis_length,is_T_cells,0.002152700175441949
+JRP141,RA,T cells,COL4A1,minor_axis_length,is_T_cells,-0.006812929190873781
+JRP141,RA,T cells,COL4A1,area,is_T_cells,-0.006444842146505501
+JRP141,RA,T cells,COL4A1,eccentricity,is_T_cells,0.04110233477221771
+JRP141,RA,T cells,COL4A1,alignment_score,is_T_cells,-0.017222338628567157
+JRP141,RA,T cells,COL6A1,major_axis_length,is_T_cells,0.02222272190331621
+JRP141,RA,T cells,COL6A1,minor_axis_length,is_T_cells,0.01240923580489412
+JRP141,RA,T cells,COL6A1,area,is_T_cells,0.012807141021805912
+JRP141,RA,T cells,COL6A1,eccentricity,is_T_cells,0.01119474565963354
+JRP141,RA,T cells,COL6A1,alignment_score,is_T_cells,-0.023803382814657846
+JRP141,RA,T cells,FN,major_axis_length,is_T_cells,0.022247086910214337
+JRP141,RA,T cells,FN,minor_axis_length,is_T_cells,0.01197565943214912
+JRP141,RA,T cells,FN,area,is_T_cells,0.01968047651978307
+JRP141,RA,T cells,FN,eccentricity,is_T_cells,0.0009336696134137297
+JRP141,RA,T cells,FN,alignment_score,is_T_cells,-0.027073700350798164
+JRP141,RA,T cells,MFAP5,major_axis_length,is_T_cells,0.009244460008580532
+JRP141,RA,T cells,MFAP5,minor_axis_length,is_T_cells,-0.004078695909009647
+JRP141,RA,T cells,MFAP5,area,is_T_cells,0.0005862791327925141
+JRP141,RA,T cells,MFAP5,eccentricity,is_T_cells,0.014887600711618099
+JRP141,RA,T cells,MFAP5,alignment_score,is_T_cells,-0.015371352773679077
+JRP141,RA,B cells,CHP,major_axis_length,is_B_cells,-0.029767609416012593
+JRP141,RA,B cells,CHP,minor_axis_length,is_B_cells,-0.03730370352391894
+JRP141,RA,B cells,CHP,area,is_B_cells,-0.01961122058646732
+JRP141,RA,B cells,CHP,eccentricity,is_B_cells,-0.005326076698469695
+JRP141,RA,B cells,CHP,alignment_score,is_B_cells,-0.019911699415649662
+JRP141,RA,B cells,COL1A1bis,major_axis_length,is_B_cells,0.0038394938643752648
+JRP141,RA,B cells,COL1A1bis,minor_axis_length,is_B_cells,-0.013483788100577846
+JRP141,RA,B cells,COL1A1bis,area,is_B_cells,-0.007768300091751996
+JRP141,RA,B cells,COL1A1bis,eccentricity,is_B_cells,0.026141742837496765
+JRP141,RA,B cells,COL1A1bis,alignment_score,is_B_cells,0.009285049564207781
+JRP141,RA,B cells,COL4A1,major_axis_length,is_B_cells,-0.01082130270852412
+JRP141,RA,B cells,COL4A1,minor_axis_length,is_B_cells,-0.018111361085574363
+JRP141,RA,B cells,COL4A1,area,is_B_cells,-0.008071607700090463
+JRP141,RA,B cells,COL4A1,eccentricity,is_B_cells,0.010476328350030805
+JRP141,RA,B cells,COL4A1,alignment_score,is_B_cells,0.011824228220862465
+JRP141,RA,B cells,COL6A1,major_axis_length,is_B_cells,-0.008591247755080854
+JRP141,RA,B cells,COL6A1,minor_axis_length,is_B_cells,-0.019849609674893066
+JRP141,RA,B cells,COL6A1,area,is_B_cells,-0.014352315129428975
+JRP141,RA,B cells,COL6A1,eccentricity,is_B_cells,0.021279467140890712
+JRP141,RA,B cells,COL6A1,alignment_score,is_B_cells,-0.005264793529731294
+JRP141,RA,B cells,FN,major_axis_length,is_B_cells,-0.017285776767121796
+JRP141,RA,B cells,FN,minor_axis_length,is_B_cells,-0.0273303485986529
+JRP141,RA,B cells,FN,area,is_B_cells,-0.018438978300990404
+JRP141,RA,B cells,FN,eccentricity,is_B_cells,0.020072927962341395
+JRP141,RA,B cells,FN,alignment_score,is_B_cells,-0.0022315423910877863
+JRP141,RA,B cells,MFAP5,major_axis_length,is_B_cells,0.01676360645848472
+JRP141,RA,B cells,MFAP5,minor_axis_length,is_B_cells,0.012057739814148769
+JRP141,RA,B cells,MFAP5,area,is_B_cells,0.012511157810461583
+JRP141,RA,B cells,MFAP5,eccentricity,is_B_cells,0.0026186862274778368
+JRP141,RA,B cells,MFAP5,alignment_score,is_B_cells,-0.00896807581272434
+JRP141,RA,Plasma cells,CHP,major_axis_length,is_Plasma_cells,-0.005075959300827746
+JRP141,RA,Plasma cells,CHP,minor_axis_length,is_Plasma_cells,-0.01175764918167313
+JRP141,RA,Plasma cells,CHP,area,is_Plasma_cells,-0.007374946238023523
+JRP141,RA,Plasma cells,CHP,eccentricity,is_Plasma_cells,0.001857625265513766
+JRP141,RA,Plasma cells,CHP,alignment_score,is_Plasma_cells,0.004988615382391953
+JRP141,RA,Plasma cells,COL1A1bis,major_axis_length,is_Plasma_cells,-0.02087054187284748
+JRP141,RA,Plasma cells,COL1A1bis,minor_axis_length,is_Plasma_cells,-0.024792787431409297
+JRP141,RA,Plasma cells,COL1A1bis,area,is_Plasma_cells,-0.021701310258303824
+JRP141,RA,Plasma cells,COL1A1bis,eccentricity,is_Plasma_cells,0.00451706268297502
+JRP141,RA,Plasma cells,COL1A1bis,alignment_score,is_Plasma_cells,0.015115208630240146
+JRP141,RA,Plasma cells,COL4A1,major_axis_length,is_Plasma_cells,-0.003120777369800914
+JRP141,RA,Plasma cells,COL4A1,minor_axis_length,is_Plasma_cells,0.004616703677806407
+JRP141,RA,Plasma cells,COL4A1,area,is_Plasma_cells,-0.006661372257555037
+JRP141,RA,Plasma cells,COL4A1,eccentricity,is_Plasma_cells,-0.020995483083462094
+JRP141,RA,Plasma cells,COL4A1,alignment_score,is_Plasma_cells,0.036481103109641685
+JRP141,RA,Plasma cells,COL6A1,major_axis_length,is_Plasma_cells,-0.00176560155660238
+JRP141,RA,Plasma cells,COL6A1,minor_axis_length,is_Plasma_cells,0.007059251860454304
+JRP141,RA,Plasma cells,COL6A1,area,is_Plasma_cells,-0.0012005794835276136
+JRP141,RA,Plasma cells,COL6A1,eccentricity,is_Plasma_cells,-0.002648954123260805
+JRP141,RA,Plasma cells,COL6A1,alignment_score,is_Plasma_cells,0.007387576028809474
+JRP141,RA,Plasma cells,FN,major_axis_length,is_Plasma_cells,-0.017845776556641168
+JRP141,RA,Plasma cells,FN,minor_axis_length,is_Plasma_cells,-0.012694010622739588
+JRP141,RA,Plasma cells,FN,area,is_Plasma_cells,-0.01866490355766875
+JRP141,RA,Plasma cells,FN,eccentricity,is_Plasma_cells,-0.006833178980677039
+JRP141,RA,Plasma cells,FN,alignment_score,is_Plasma_cells,0.01777464899994843
+JRP141,RA,Plasma cells,MFAP5,major_axis_length,is_Plasma_cells,0.01953814839878241
+JRP141,RA,Plasma cells,MFAP5,minor_axis_length,is_Plasma_cells,0.04038392247371997
+JRP141,RA,Plasma cells,MFAP5,area,is_Plasma_cells,0.02290165446953127
+JRP141,RA,Plasma cells,MFAP5,eccentricity,is_Plasma_cells,-0.0007013563012319456
+JRP141,RA,Plasma cells,MFAP5,alignment_score,is_Plasma_cells,-0.0024657442163389474
+JRP141,RA,Macrophages,CHP,major_axis_length,is_Macrophages,-0.014677511346143278
+JRP141,RA,Macrophages,CHP,minor_axis_length,is_Macrophages,-0.014314710486977612
+JRP141,RA,Macrophages,CHP,area,is_Macrophages,-0.012437662177498813
+JRP141,RA,Macrophages,CHP,eccentricity,is_Macrophages,-0.0027510491925989925
+JRP141,RA,Macrophages,CHP,alignment_score,is_Macrophages,-0.01473483219348821
+JRP141,RA,Macrophages,COL1A1bis,major_axis_length,is_Macrophages,-0.0022275572721923965
+JRP141,RA,Macrophages,COL1A1bis,minor_axis_length,is_Macrophages,-0.0011599166441007953
+JRP141,RA,Macrophages,COL1A1bis,area,is_Macrophages,-0.002634294318322821
+JRP141,RA,Macrophages,COL1A1bis,eccentricity,is_Macrophages,-0.001935024888951361
+JRP141,RA,Macrophages,COL1A1bis,alignment_score,is_Macrophages,-0.041466539988106
+JRP141,RA,Macrophages,COL4A1,major_axis_length,is_Macrophages,-0.022408176883078938
+JRP141,RA,Macrophages,COL4A1,minor_axis_length,is_Macrophages,0.0165463890585144
+JRP141,RA,Macrophages,COL4A1,area,is_Macrophages,-0.007844125300978002
+JRP141,RA,Macrophages,COL4A1,eccentricity,is_Macrophages,-0.040429002309270066
+JRP141,RA,Macrophages,COL4A1,alignment_score,is_Macrophages,-0.005971394584804658
+JRP141,RA,Macrophages,COL6A1,major_axis_length,is_Macrophages,-0.0018434298051548295
+JRP141,RA,Macrophages,COL6A1,minor_axis_length,is_Macrophages,-0.014520595525534573
+JRP141,RA,Macrophages,COL6A1,area,is_Macrophages,-0.006536218366179055
+JRP141,RA,Macrophages,COL6A1,eccentricity,is_Macrophages,0.015801820192588977
+JRP141,RA,Macrophages,COL6A1,alignment_score,is_Macrophages,-0.027102564053442076
+JRP141,RA,Macrophages,FN,major_axis_length,is_Macrophages,0.0008168202449770874
+JRP141,RA,Macrophages,FN,minor_axis_length,is_Macrophages,-0.017215426747872145
+JRP141,RA,Macrophages,FN,area,is_Macrophages,-0.001790634127037428
+JRP141,RA,Macrophages,FN,eccentricity,is_Macrophages,0.018088627024246916
+JRP141,RA,Macrophages,FN,alignment_score,is_Macrophages,-0.013715064901549542
+JRP141,RA,Macrophages,MFAP5,major_axis_length,is_Macrophages,-0.026564521161505723
+JRP141,RA,Macrophages,MFAP5,minor_axis_length,is_Macrophages,-0.043453446482978296
+JRP141,RA,Macrophages,MFAP5,area,is_Macrophages,-0.03307421357332706
+JRP141,RA,Macrophages,MFAP5,eccentricity,is_Macrophages,0.00441932461878261
+JRP141,RA,Macrophages,MFAP5,alignment_score,is_Macrophages,-0.025564740466647258
+JRP141,RA,MERTK+ Macrophages,CHP,major_axis_length,is_MERTKpos_Macrophages,-0.01729919225446793
+JRP141,RA,MERTK+ Macrophages,CHP,minor_axis_length,is_MERTKpos_Macrophages,-0.02838598031070615
+JRP141,RA,MERTK+ Macrophages,CHP,area,is_MERTKpos_Macrophages,-0.01701480020239639
+JRP141,RA,MERTK+ Macrophages,CHP,eccentricity,is_MERTKpos_Macrophages,0.014874676558977402
+JRP141,RA,MERTK+ Macrophages,CHP,alignment_score,is_MERTKpos_Macrophages,-0.027876890550045722
+JRP141,RA,MERTK+ Macrophages,COL1A1bis,major_axis_length,is_MERTKpos_Macrophages,0.013136642432804083
+JRP141,RA,MERTK+ Macrophages,COL1A1bis,minor_axis_length,is_MERTKpos_Macrophages,0.004272158576569461
+JRP141,RA,MERTK+ Macrophages,COL1A1bis,area,is_MERTKpos_Macrophages,0.0030514400366054135
+JRP141,RA,MERTK+ Macrophages,COL1A1bis,eccentricity,is_MERTKpos_Macrophages,0.017827462349085183
+JRP141,RA,MERTK+ Macrophages,COL1A1bis,alignment_score,is_MERTKpos_Macrophages,-0.030418696632236945
+JRP141,RA,MERTK+ Macrophages,COL4A1,major_axis_length,is_MERTKpos_Macrophages,0.03943013835611563
+JRP141,RA,MERTK+ Macrophages,COL4A1,minor_axis_length,is_MERTKpos_Macrophages,0.01740245203638528
+JRP141,RA,MERTK+ Macrophages,COL4A1,area,is_MERTKpos_Macrophages,0.0008522296032096447
+JRP141,RA,MERTK+ Macrophages,COL4A1,eccentricity,is_MERTKpos_Macrophages,0.014257933029227501
+JRP141,RA,MERTK+ Macrophages,COL4A1,alignment_score,is_MERTKpos_Macrophages,-0.065405315396213
+JRP141,RA,MERTK+ Macrophages,COL6A1,major_axis_length,is_MERTKpos_Macrophages,0.01754176742118306
+JRP141,RA,MERTK+ Macrophages,COL6A1,minor_axis_length,is_MERTKpos_Macrophages,0.008295749424031124
+JRP141,RA,MERTK+ Macrophages,COL6A1,area,is_MERTKpos_Macrophages,0.011997488766952655
+JRP141,RA,MERTK+ Macrophages,COL6A1,eccentricity,is_MERTKpos_Macrophages,0.007443482500657235
+JRP141,RA,MERTK+ Macrophages,COL6A1,alignment_score,is_MERTKpos_Macrophages,-0.026638802999508087
+JRP141,RA,MERTK+ Macrophages,FN,major_axis_length,is_MERTKpos_Macrophages,0.011570823795637836
+JRP141,RA,MERTK+ Macrophages,FN,minor_axis_length,is_MERTKpos_Macrophages,0.002083483252125322
+JRP141,RA,MERTK+ Macrophages,FN,area,is_MERTKpos_Macrophages,0.010728489038565483
+JRP141,RA,MERTK+ Macrophages,FN,eccentricity,is_MERTKpos_Macrophages,-0.0015240759791963052
+JRP141,RA,MERTK+ Macrophages,FN,alignment_score,is_MERTKpos_Macrophages,-0.014974502291957539
+JRP141,RA,MERTK+ Macrophages,MFAP5,major_axis_length,is_MERTKpos_Macrophages,0.022891773551358578
+JRP141,RA,MERTK+ Macrophages,MFAP5,minor_axis_length,is_MERTKpos_Macrophages,-0.009997600417648085
+JRP141,RA,MERTK+ Macrophages,MFAP5,area,is_MERTKpos_Macrophages,0.006626824907386852
+JRP141,RA,MERTK+ Macrophages,MFAP5,eccentricity,is_MERTKpos_Macrophages,0.016745285968821147
+JRP141,RA,MERTK+ Macrophages,MFAP5,alignment_score,is_MERTKpos_Macrophages,-0.039883872476979755
+JRP141,RA,Monocytes,CHP,major_axis_length,is_Monocytes,-0.003328317526277409
+JRP141,RA,Monocytes,CHP,minor_axis_length,is_Monocytes,-0.0033188958670495304
+JRP141,RA,Monocytes,CHP,area,is_Monocytes,-0.01554780320174159
+JRP141,RA,Monocytes,CHP,eccentricity,is_Monocytes,-0.00631863939520446
+JRP141,RA,Monocytes,CHP,alignment_score,is_Monocytes,0.05092833162021476
+JRP141,RA,Monocytes,COL1A1bis,major_axis_length,is_Monocytes,-0.04292441821373023
+JRP141,RA,Monocytes,COL1A1bis,minor_axis_length,is_Monocytes,-0.023571292767361578
+JRP141,RA,Monocytes,COL1A1bis,area,is_Monocytes,-0.024702307173987526
+JRP141,RA,Monocytes,COL1A1bis,eccentricity,is_Monocytes,-0.04348803426317654
+JRP141,RA,Monocytes,COL1A1bis,alignment_score,is_Monocytes,0.013612919388535257
+JRP141,RA,Monocytes,COL4A1,major_axis_length,is_Monocytes,0.03136242089409844
+JRP141,RA,Monocytes,COL4A1,minor_axis_length,is_Monocytes,0.03484140307562595
+JRP141,RA,Monocytes,COL4A1,area,is_Monocytes,0.01097085589505991
+JRP141,RA,Monocytes,COL4A1,eccentricity,is_Monocytes,-0.022368577581682317
+JRP141,RA,Monocytes,COL4A1,alignment_score,is_Monocytes,-0.02051405990430071
+JRP141,RA,Monocytes,COL6A1,major_axis_length,is_Monocytes,0.029919356838044284
+JRP141,RA,Monocytes,COL6A1,minor_axis_length,is_Monocytes,0.06880221479743552
+JRP141,RA,Monocytes,COL6A1,area,is_Monocytes,0.04558004226798881
+JRP141,RA,Monocytes,COL6A1,eccentricity,is_Monocytes,-0.054557675947450784
+JRP141,RA,Monocytes,COL6A1,alignment_score,is_Monocytes,0.028481052583008492
+JRP141,RA,Monocytes,FN,major_axis_length,is_Monocytes,0.0035349938179451293
+JRP141,RA,Monocytes,FN,minor_axis_length,is_Monocytes,0.038246791951473826
+JRP141,RA,Monocytes,FN,area,is_Monocytes,0.014822314323409047
+JRP141,RA,Monocytes,FN,eccentricity,is_Monocytes,-0.06279541693519512
+JRP141,RA,Monocytes,FN,alignment_score,is_Monocytes,0.027091825116647907
+JRP141,RA,Monocytes,MFAP5,major_axis_length,is_Monocytes,-0.0007084084456699022
+JRP141,RA,Monocytes,MFAP5,minor_axis_length,is_Monocytes,0.03567187778503038
+JRP141,RA,Monocytes,MFAP5,area,is_Monocytes,0.010211699019095419
+JRP141,RA,Monocytes,MFAP5,eccentricity,is_Monocytes,-0.04494732006528739
+JRP141,RA,Monocytes,MFAP5,alignment_score,is_Monocytes,-0.004090975796020097
+JRP141,RA,Dendritic cells,CHP,major_axis_length,is_Dendritic_cells,0.008882763092101776
+JRP141,RA,Dendritic cells,CHP,minor_axis_length,is_Dendritic_cells,-0.0005302976295160572
+JRP141,RA,Dendritic cells,CHP,area,is_Dendritic_cells,0.00966622932335505
+JRP141,RA,Dendritic cells,CHP,eccentricity,is_Dendritic_cells,0.031191732658177745
+JRP141,RA,Dendritic cells,CHP,alignment_score,is_Dendritic_cells,-0.06448416106476904
+JRP141,RA,Dendritic cells,COL1A1bis,major_axis_length,is_Dendritic_cells,0.04050277490518766
+JRP141,RA,Dendritic cells,COL1A1bis,minor_axis_length,is_Dendritic_cells,0.027503724694785382
+JRP141,RA,Dendritic cells,COL1A1bis,area,is_Dendritic_cells,0.03454468735065512
+JRP141,RA,Dendritic cells,COL1A1bis,eccentricity,is_Dendritic_cells,0.0395204205956758
+JRP141,RA,Dendritic cells,COL1A1bis,alignment_score,is_Dendritic_cells,-0.038394793849178994
+JRP141,RA,Dendritic cells,COL4A1,major_axis_length,is_Dendritic_cells,-0.008573131095984643
+JRP141,RA,Dendritic cells,COL4A1,minor_axis_length,is_Dendritic_cells,0.021191020282199942
+JRP141,RA,Dendritic cells,COL4A1,area,is_Dendritic_cells,0.0038338056192137337
+JRP141,RA,Dendritic cells,COL4A1,eccentricity,is_Dendritic_cells,-0.0011770645483194443
+JRP141,RA,Dendritic cells,COL4A1,alignment_score,is_Dendritic_cells,0.02093266955972836
+JRP141,RA,Dendritic cells,COL6A1,major_axis_length,is_Dendritic_cells,-0.006606673911922473
+JRP141,RA,Dendritic cells,COL6A1,minor_axis_length,is_Dendritic_cells,-0.03004349568197048
+JRP141,RA,Dendritic cells,COL6A1,area,is_Dendritic_cells,-0.016450686014097243
+JRP141,RA,Dendritic cells,COL6A1,eccentricity,is_Dendritic_cells,0.039064156894727614
+JRP141,RA,Dendritic cells,COL6A1,alignment_score,is_Dendritic_cells,-0.031166231904801035
+JRP141,RA,Dendritic cells,FN,major_axis_length,is_Dendritic_cells,-0.005476662805576504
+JRP141,RA,Dendritic cells,FN,minor_axis_length,is_Dendritic_cells,-0.018512775276903586
+JRP141,RA,Dendritic cells,FN,area,is_Dendritic_cells,-0.006722174036615556
+JRP141,RA,Dendritic cells,FN,eccentricity,is_Dendritic_cells,0.022494146066481074
+JRP141,RA,Dendritic cells,FN,alignment_score,is_Dendritic_cells,-0.04228672663612971
+JRP141,RA,Dendritic cells,MFAP5,major_axis_length,is_Dendritic_cells,0.0017890723760543687
+JRP141,RA,Dendritic cells,MFAP5,minor_axis_length,is_Dendritic_cells,-0.013653134442777591
+JRP141,RA,Dendritic cells,MFAP5,area,is_Dendritic_cells,-0.002763037961441541
+JRP141,RA,Dendritic cells,MFAP5,eccentricity,is_Dendritic_cells,0.015170623856571152
+JRP141,RA,Dendritic cells,MFAP5,alignment_score,is_Dendritic_cells,-0.05590571825254374
+JRP141,RA,Neutrophils,CHP,major_axis_length,is_Neutrophils,0.0005208254085370806
+JRP141,RA,Neutrophils,CHP,minor_axis_length,is_Neutrophils,-0.006941965727412482
+JRP141,RA,Neutrophils,CHP,area,is_Neutrophils,0.0016884496465726028
+JRP141,RA,Neutrophils,CHP,eccentricity,is_Neutrophils,0.014397777955984984
+JRP141,RA,Neutrophils,CHP,alignment_score,is_Neutrophils,-0.013695428317829529
+JRP141,RA,Neutrophils,COL1A1bis,major_axis_length,is_Neutrophils,0.03893244735406364
+JRP141,RA,Neutrophils,COL1A1bis,minor_axis_length,is_Neutrophils,0.039668207207735104
+JRP141,RA,Neutrophils,COL1A1bis,area,is_Neutrophils,0.037032070133977524
+JRP141,RA,Neutrophils,COL1A1bis,eccentricity,is_Neutrophils,-0.006449575214910192
+JRP141,RA,Neutrophils,COL1A1bis,alignment_score,is_Neutrophils,-0.01966445394106214
+JRP141,RA,Neutrophils,COL4A1,major_axis_length,is_Neutrophils,0.0579358765471392
+JRP141,RA,Neutrophils,COL4A1,minor_axis_length,is_Neutrophils,0.0832600826812052
+JRP141,RA,Neutrophils,COL4A1,area,is_Neutrophils,0.06668055426621813
+JRP141,RA,Neutrophils,COL4A1,eccentricity,is_Neutrophils,-0.01730243046044336
+JRP141,RA,Neutrophils,COL4A1,alignment_score,is_Neutrophils,-0.027667958975551
+JRP141,RA,Neutrophils,COL6A1,major_axis_length,is_Neutrophils,0.02041002255344768
+JRP141,RA,Neutrophils,COL6A1,minor_axis_length,is_Neutrophils,0.01288324132935177
+JRP141,RA,Neutrophils,COL6A1,area,is_Neutrophils,0.016784310752184808
+JRP141,RA,Neutrophils,COL6A1,eccentricity,is_Neutrophils,0.013885963092793219
+JRP141,RA,Neutrophils,COL6A1,alignment_score,is_Neutrophils,-0.009434252612625108
+JRP141,RA,Neutrophils,FN,major_axis_length,is_Neutrophils,0.013444289760280224
+JRP141,RA,Neutrophils,FN,minor_axis_length,is_Neutrophils,-0.00046146679911250664
+JRP141,RA,Neutrophils,FN,area,is_Neutrophils,0.014849150607519209
+JRP141,RA,Neutrophils,FN,eccentricity,is_Neutrophils,0.019880368445714617
+JRP141,RA,Neutrophils,FN,alignment_score,is_Neutrophils,-0.021837873515606242
+JRP141,RA,Neutrophils,MFAP5,major_axis_length,is_Neutrophils,-0.003324977820273077
+JRP141,RA,Neutrophils,MFAP5,minor_axis_length,is_Neutrophils,-0.025118208540092862
+JRP141,RA,Neutrophils,MFAP5,area,is_Neutrophils,-0.011331018427501076
+JRP141,RA,Neutrophils,MFAP5,eccentricity,is_Neutrophils,0.021521779943833922
+JRP141,RA,Neutrophils,MFAP5,alignment_score,is_Neutrophils,-0.0058170532656956495
+JRP141,RA,Vascular cells,CHP,major_axis_length,is_Vascular_cells,0.010741390123310742
+JRP141,RA,Vascular cells,CHP,minor_axis_length,is_Vascular_cells,-0.003746393922774302
+JRP141,RA,Vascular cells,CHP,area,is_Vascular_cells,0.0011442660769181686
+JRP141,RA,Vascular cells,CHP,eccentricity,is_Vascular_cells,0.03062873355759985
+JRP141,RA,Vascular cells,CHP,alignment_score,is_Vascular_cells,0.011474370154593495
+JRP141,RA,Vascular cells,COL1A1bis,major_axis_length,is_Vascular_cells,0.054741721564857196
+JRP141,RA,Vascular cells,COL1A1bis,minor_axis_length,is_Vascular_cells,0.02781721844471924
+JRP141,RA,Vascular cells,COL1A1bis,area,is_Vascular_cells,0.03308887263056968
+JRP141,RA,Vascular cells,COL1A1bis,eccentricity,is_Vascular_cells,0.018544864088281907
+JRP141,RA,Vascular cells,COL1A1bis,alignment_score,is_Vascular_cells,-0.0006692833486263005
+JRP141,RA,Vascular cells,COL4A1,major_axis_length,is_Vascular_cells,0.020437836883900756
+JRP141,RA,Vascular cells,COL4A1,minor_axis_length,is_Vascular_cells,-0.004229329583095324
+JRP141,RA,Vascular cells,COL4A1,area,is_Vascular_cells,0.046863327876688565
+JRP141,RA,Vascular cells,COL4A1,eccentricity,is_Vascular_cells,0.02153983817246169
+JRP141,RA,Vascular cells,COL4A1,alignment_score,is_Vascular_cells,-0.003942425254579808
+JRP141,RA,Vascular cells,COL6A1,major_axis_length,is_Vascular_cells,0.028045099346352544
+JRP141,RA,Vascular cells,COL6A1,minor_axis_length,is_Vascular_cells,0.017072786907177135
+JRP141,RA,Vascular cells,COL6A1,area,is_Vascular_cells,0.021747420000981284
+JRP141,RA,Vascular cells,COL6A1,eccentricity,is_Vascular_cells,0.008936247597625867
+JRP141,RA,Vascular cells,COL6A1,alignment_score,is_Vascular_cells,-0.012023141141451848
+JRP141,RA,Vascular cells,FN,major_axis_length,is_Vascular_cells,0.01304888426570533
+JRP141,RA,Vascular cells,FN,minor_axis_length,is_Vascular_cells,0.001523106231012778
+JRP141,RA,Vascular cells,FN,area,is_Vascular_cells,0.005636505017990027
+JRP141,RA,Vascular cells,FN,eccentricity,is_Vascular_cells,0.018076999087176013
+JRP141,RA,Vascular cells,FN,alignment_score,is_Vascular_cells,-0.00739555149080671
+JRP141,RA,Vascular cells,MFAP5,major_axis_length,is_Vascular_cells,0.049457560458295635
+JRP141,RA,Vascular cells,MFAP5,minor_axis_length,is_Vascular_cells,0.03777058320072961
+JRP141,RA,Vascular cells,MFAP5,area,is_Vascular_cells,0.04537914480471688
+JRP141,RA,Vascular cells,MFAP5,eccentricity,is_Vascular_cells,0.00933893707876155
+JRP141,RA,Vascular cells,MFAP5,alignment_score,is_Vascular_cells,0.02417008728251368
+JRP144,OA,CD4 T cells,CHP,major_axis_length,is_CD4_T_cells,0.012488563321889216
+JRP144,OA,CD4 T cells,CHP,minor_axis_length,is_CD4_T_cells,0.006822044393902943
+JRP144,OA,CD4 T cells,CHP,area,is_CD4_T_cells,0.006038385137374259
+JRP144,OA,CD4 T cells,CHP,eccentricity,is_CD4_T_cells,0.016404277009789543
+JRP144,OA,CD4 T cells,CHP,alignment_score,is_CD4_T_cells,0.01731374042766647
+JRP144,OA,CD4 T cells,COL1A1bis,major_axis_length,is_CD4_T_cells,0.044457285934751636
+JRP144,OA,CD4 T cells,COL1A1bis,minor_axis_length,is_CD4_T_cells,0.04970948989454884
+JRP144,OA,CD4 T cells,COL1A1bis,area,is_CD4_T_cells,0.03752055716083341
+JRP144,OA,CD4 T cells,COL1A1bis,eccentricity,is_CD4_T_cells,-0.013020755063697962
+JRP144,OA,CD4 T cells,COL1A1bis,alignment_score,is_CD4_T_cells,-0.02166582666299647
+JRP144,OA,CD4 T cells,COL4A1,major_axis_length,is_CD4_T_cells,-0.031199645003925768
+JRP144,OA,CD4 T cells,COL4A1,minor_axis_length,is_CD4_T_cells,-0.029388479841129196
+JRP144,OA,CD4 T cells,COL4A1,area,is_CD4_T_cells,-0.03824369288907621
+JRP144,OA,CD4 T cells,COL4A1,eccentricity,is_CD4_T_cells,0.02716671809538271
+JRP144,OA,CD4 T cells,COL4A1,alignment_score,is_CD4_T_cells,0.06896749078673478
+JRP144,OA,CD4 T cells,COL6A1,major_axis_length,is_CD4_T_cells,0.011419281371107412
+JRP144,OA,CD4 T cells,COL6A1,minor_axis_length,is_CD4_T_cells,0.008878482715448074
+JRP144,OA,CD4 T cells,COL6A1,area,is_CD4_T_cells,0.006670570663011026
+JRP144,OA,CD4 T cells,COL6A1,eccentricity,is_CD4_T_cells,0.013468924697716413
+JRP144,OA,CD4 T cells,COL6A1,alignment_score,is_CD4_T_cells,-0.0017458461837391674
+JRP144,OA,CD4 T cells,FN,major_axis_length,is_CD4_T_cells,-0.011258569686037981
+JRP144,OA,CD4 T cells,FN,minor_axis_length,is_CD4_T_cells,-0.02440812178109215
+JRP144,OA,CD4 T cells,FN,area,is_CD4_T_cells,-0.02112398214303359
+JRP144,OA,CD4 T cells,FN,eccentricity,is_CD4_T_cells,0.022825020023529867
+JRP144,OA,CD4 T cells,FN,alignment_score,is_CD4_T_cells,0.005290945546627408
+JRP144,OA,CD4 T cells,MFAP5,major_axis_length,is_CD4_T_cells,-0.0009268398047739213
+JRP144,OA,CD4 T cells,MFAP5,minor_axis_length,is_CD4_T_cells,-0.006834119838223374
+JRP144,OA,CD4 T cells,MFAP5,area,is_CD4_T_cells,-0.009512923178017635
+JRP144,OA,CD4 T cells,MFAP5,eccentricity,is_CD4_T_cells,0.016175145524430716
+JRP144,OA,CD4 T cells,MFAP5,alignment_score,is_CD4_T_cells,0.0032571367304745926
+JRP144,OA,CD8 T cells,CHP,major_axis_length,is_CD8_T_cells,0.020181629632531124
+JRP144,OA,CD8 T cells,CHP,minor_axis_length,is_CD8_T_cells,0.008054202765622003
+JRP144,OA,CD8 T cells,CHP,area,is_CD8_T_cells,0.010930209868899598
+JRP144,OA,CD8 T cells,CHP,eccentricity,is_CD8_T_cells,0.021704454601150832
+JRP144,OA,CD8 T cells,CHP,alignment_score,is_CD8_T_cells,0.002488571321582704
+JRP144,OA,CD8 T cells,COL1A1bis,major_axis_length,is_CD8_T_cells,0.00848859946762831
+JRP144,OA,CD8 T cells,COL1A1bis,minor_axis_length,is_CD8_T_cells,0.001007599006328431
+JRP144,OA,CD8 T cells,COL1A1bis,area,is_CD8_T_cells,0.00145535814871249
+JRP144,OA,CD8 T cells,COL1A1bis,eccentricity,is_CD8_T_cells,0.0051543129015644605
+JRP144,OA,CD8 T cells,COL1A1bis,alignment_score,is_CD8_T_cells,0.013406081511126988
+JRP144,OA,CD8 T cells,COL4A1,major_axis_length,is_CD8_T_cells,0.02046743648250467
+JRP144,OA,CD8 T cells,COL4A1,minor_axis_length,is_CD8_T_cells,0.024916371107452845
+JRP144,OA,CD8 T cells,COL4A1,area,is_CD8_T_cells,0.03139565282859001
+JRP144,OA,CD8 T cells,COL4A1,eccentricity,is_CD8_T_cells,-0.01590051239740808
+JRP144,OA,CD8 T cells,COL4A1,alignment_score,is_CD8_T_cells,0.035791174749394424
+JRP144,OA,CD8 T cells,COL6A1,major_axis_length,is_CD8_T_cells,-0.0022209599068788357
+JRP144,OA,CD8 T cells,COL6A1,minor_axis_length,is_CD8_T_cells,-0.001992527830010179
+JRP144,OA,CD8 T cells,COL6A1,area,is_CD8_T_cells,-0.002285708362672611
+JRP144,OA,CD8 T cells,COL6A1,eccentricity,is_CD8_T_cells,0.00043183514856388834
+JRP144,OA,CD8 T cells,COL6A1,alignment_score,is_CD8_T_cells,-0.0049361752707397216
+JRP144,OA,CD8 T cells,FN,major_axis_length,is_CD8_T_cells,-0.0004915825240489038
+JRP144,OA,CD8 T cells,FN,minor_axis_length,is_CD8_T_cells,-0.008006967343838092
+JRP144,OA,CD8 T cells,FN,area,is_CD8_T_cells,-0.009412717640749814
+JRP144,OA,CD8 T cells,FN,eccentricity,is_CD8_T_cells,0.018684894559435825
+JRP144,OA,CD8 T cells,FN,alignment_score,is_CD8_T_cells,0.01230750606676908
+JRP144,OA,CD8 T cells,MFAP5,major_axis_length,is_CD8_T_cells,-0.0022260426684830095
+JRP144,OA,CD8 T cells,MFAP5,minor_axis_length,is_CD8_T_cells,0.005864930060632241
+JRP144,OA,CD8 T cells,MFAP5,area,is_CD8_T_cells,-0.003299975850731275
+JRP144,OA,CD8 T cells,MFAP5,eccentricity,is_CD8_T_cells,0.005569516812397509
+JRP144,OA,CD8 T cells,MFAP5,alignment_score,is_CD8_T_cells,0.02036470626103341
+JRP144,OA,T cells,CHP,major_axis_length,is_T_cells,0.014906365970779243
+JRP144,OA,T cells,CHP,minor_axis_length,is_T_cells,0.025879930890095004
+JRP144,OA,T cells,CHP,area,is_T_cells,0.022661657806377713
+JRP144,OA,T cells,CHP,eccentricity,is_T_cells,-0.0045575814182203
+JRP144,OA,T cells,CHP,alignment_score,is_T_cells,0.0006309886182210343
+JRP144,OA,T cells,COL1A1bis,major_axis_length,is_T_cells,0.01072630280576422
+JRP144,OA,T cells,COL1A1bis,minor_axis_length,is_T_cells,0.007350905874009443
+JRP144,OA,T cells,COL1A1bis,area,is_T_cells,0.005131955831816184
+JRP144,OA,T cells,COL1A1bis,eccentricity,is_T_cells,0.01636236191031178
+JRP144,OA,T cells,COL1A1bis,alignment_score,is_T_cells,-0.01813717944573302
+JRP144,OA,T cells,COL4A1,major_axis_length,is_T_cells,-0.0197401086292611
+JRP144,OA,T cells,COL4A1,minor_axis_length,is_T_cells,-0.056864641995745424
+JRP144,OA,T cells,COL4A1,area,is_T_cells,-0.046284294527500484
+JRP144,OA,T cells,COL4A1,eccentricity,is_T_cells,0.06751727957834813
+JRP144,OA,T cells,COL4A1,alignment_score,is_T_cells,-0.001930458739292522
+JRP144,OA,T cells,COL6A1,major_axis_length,is_T_cells,-0.0041853092988082975
+JRP144,OA,T cells,COL6A1,minor_axis_length,is_T_cells,-0.005583576721171466
+JRP144,OA,T cells,COL6A1,area,is_T_cells,-0.007570233640890005
+JRP144,OA,T cells,COL6A1,eccentricity,is_T_cells,0.018170010307356602
+JRP144,OA,T cells,COL6A1,alignment_score,is_T_cells,-0.010621200669212473
+JRP144,OA,T cells,FN,major_axis_length,is_T_cells,-0.0008556757568497877
+JRP144,OA,T cells,FN,minor_axis_length,is_T_cells,-0.0009677344146486631
+JRP144,OA,T cells,FN,area,is_T_cells,0.0011688540873094199
+JRP144,OA,T cells,FN,eccentricity,is_T_cells,0.002168387652504316
+JRP144,OA,T cells,FN,alignment_score,is_T_cells,-0.007505182970768019
+JRP144,OA,T cells,MFAP5,major_axis_length,is_T_cells,-0.008063946210844044
+JRP144,OA,T cells,MFAP5,minor_axis_length,is_T_cells,-0.006750864136675048
+JRP144,OA,T cells,MFAP5,area,is_T_cells,-0.006919388976004552
+JRP144,OA,T cells,MFAP5,eccentricity,is_T_cells,0.002164437312044553
+JRP144,OA,T cells,MFAP5,alignment_score,is_T_cells,0.03727920236771388
+JRP144,OA,B cells,CHP,major_axis_length,is_B_cells,-0.004355955758674425
+JRP144,OA,B cells,CHP,minor_axis_length,is_B_cells,-0.013316140353104666
+JRP144,OA,B cells,CHP,area,is_B_cells,-0.0075204013317591864
+JRP144,OA,B cells,CHP,eccentricity,is_B_cells,0.0027547370261666953
+JRP144,OA,B cells,CHP,alignment_score,is_B_cells,0.020687552689042505
+JRP144,OA,B cells,COL1A1bis,major_axis_length,is_B_cells,0.011053619399603632
+JRP144,OA,B cells,COL1A1bis,minor_axis_length,is_B_cells,0.006178952584607054
+JRP144,OA,B cells,COL1A1bis,area,is_B_cells,0.0005763930777905781
+JRP144,OA,B cells,COL1A1bis,eccentricity,is_B_cells,0.008359562144759181
+JRP144,OA,B cells,COL1A1bis,alignment_score,is_B_cells,-0.03453853142426569
+JRP144,OA,B cells,COL4A1,major_axis_length,is_B_cells,0.005443575733102935
+JRP144,OA,B cells,COL4A1,minor_axis_length,is_B_cells,0.0006984746617261858
+JRP144,OA,B cells,COL4A1,area,is_B_cells,0.000596008932509488
+JRP144,OA,B cells,COL4A1,eccentricity,is_B_cells,0.007471967116203504
+JRP144,OA,B cells,COL4A1,alignment_score,is_B_cells,-0.009592824688030565
+JRP144,OA,B cells,COL6A1,major_axis_length,is_B_cells,0.003238548095769474
+JRP144,OA,B cells,COL6A1,minor_axis_length,is_B_cells,-0.0037071443210914324
+JRP144,OA,B cells,COL6A1,area,is_B_cells,-0.0016290526043381602
+JRP144,OA,B cells,COL6A1,eccentricity,is_B_cells,0.003937433071931021
+JRP144,OA,B cells,COL6A1,alignment_score,is_B_cells,-0.004249272744818471
+JRP144,OA,B cells,FN,major_axis_length,is_B_cells,-0.0038954311668900374
+JRP144,OA,B cells,FN,minor_axis_length,is_B_cells,-0.010167390986507083
+JRP144,OA,B cells,FN,area,is_B_cells,-0.004741263885682738
+JRP144,OA,B cells,FN,eccentricity,is_B_cells,0.010582051726451196
+JRP144,OA,B cells,FN,alignment_score,is_B_cells,-0.028151174205716514
+JRP144,OA,B cells,MFAP5,major_axis_length,is_B_cells,0.0005157480683287862
+JRP144,OA,B cells,MFAP5,minor_axis_length,is_B_cells,-0.006314219529621914
+JRP144,OA,B cells,MFAP5,area,is_B_cells,-0.002876986376056225
+JRP144,OA,B cells,MFAP5,eccentricity,is_B_cells,0.0005601105598388106
+JRP144,OA,B cells,MFAP5,alignment_score,is_B_cells,-0.012165123717705385
+JRP144,OA,Plasma cells,CHP,major_axis_length,is_Plasma_cells,0.005781961790146317
+JRP144,OA,Plasma cells,CHP,minor_axis_length,is_Plasma_cells,-0.0026794652809820313
+JRP144,OA,Plasma cells,CHP,area,is_Plasma_cells,-0.003243198682887471
+JRP144,OA,Plasma cells,CHP,eccentricity,is_Plasma_cells,0.019857171298321426
+JRP144,OA,Plasma cells,CHP,alignment_score,is_Plasma_cells,-0.0129189104627094
+JRP144,OA,Plasma cells,COL1A1bis,major_axis_length,is_Plasma_cells,-0.011647330665641704
+JRP144,OA,Plasma cells,COL1A1bis,minor_axis_length,is_Plasma_cells,-0.019929942425182444
+JRP144,OA,Plasma cells,COL1A1bis,area,is_Plasma_cells,-0.015333139195669112
+JRP144,OA,Plasma cells,COL1A1bis,eccentricity,is_Plasma_cells,0.007445106292650393
+JRP144,OA,Plasma cells,COL1A1bis,alignment_score,is_Plasma_cells,-0.015124113794375137
+JRP144,OA,Plasma cells,COL4A1,major_axis_length,is_Plasma_cells,-0.008181288142373844
+JRP144,OA,Plasma cells,COL4A1,minor_axis_length,is_Plasma_cells,-0.01123046714552806
+JRP144,OA,Plasma cells,COL4A1,area,is_Plasma_cells,-0.0055971532443244215
+JRP144,OA,Plasma cells,COL4A1,eccentricity,is_Plasma_cells,-0.002115429294153378
+JRP144,OA,Plasma cells,COL4A1,alignment_score,is_Plasma_cells,0.04897950922923091
+JRP144,OA,Plasma cells,COL6A1,major_axis_length,is_Plasma_cells,0.0032637423781386628
+JRP144,OA,Plasma cells,COL6A1,minor_axis_length,is_Plasma_cells,0.003874576076740142
+JRP144,OA,Plasma cells,COL6A1,area,is_Plasma_cells,0.001990232165542459
+JRP144,OA,Plasma cells,COL6A1,eccentricity,is_Plasma_cells,-0.0037053084800843755
+JRP144,OA,Plasma cells,COL6A1,alignment_score,is_Plasma_cells,-0.01212263155312495
+JRP144,OA,Plasma cells,FN,major_axis_length,is_Plasma_cells,0.023574798235756297
+JRP144,OA,Plasma cells,FN,minor_axis_length,is_Plasma_cells,0.017884258085466426
+JRP144,OA,Plasma cells,FN,area,is_Plasma_cells,0.014226907351104849
+JRP144,OA,Plasma cells,FN,eccentricity,is_Plasma_cells,0.0025459012653406936
+JRP144,OA,Plasma cells,FN,alignment_score,is_Plasma_cells,-0.017833312178324297
+JRP144,OA,Plasma cells,MFAP5,major_axis_length,is_Plasma_cells,0.016527773296665115
+JRP144,OA,Plasma cells,MFAP5,minor_axis_length,is_Plasma_cells,0.02472972123227197
+JRP144,OA,Plasma cells,MFAP5,area,is_Plasma_cells,0.05537332188339334
+JRP144,OA,Plasma cells,MFAP5,eccentricity,is_Plasma_cells,0.00341979258506741
+JRP144,OA,Plasma cells,MFAP5,alignment_score,is_Plasma_cells,-0.02797089337262167
+JRP144,OA,Macrophages,CHP,major_axis_length,is_Macrophages,-0.03601272492001346
+JRP144,OA,Macrophages,CHP,minor_axis_length,is_Macrophages,-0.045047725807349705
+JRP144,OA,Macrophages,CHP,area,is_Macrophages,-0.03751946561794528
+JRP144,OA,Macrophages,CHP,eccentricity,is_Macrophages,-0.014708143437055751
+JRP144,OA,Macrophages,CHP,alignment_score,is_Macrophages,-0.024057532087819248
+JRP144,OA,Macrophages,COL1A1bis,major_axis_length,is_Macrophages,-0.0068032676706950845
+JRP144,OA,Macrophages,COL1A1bis,minor_axis_length,is_Macrophages,-0.0026068154722827994
+JRP144,OA,Macrophages,COL1A1bis,area,is_Macrophages,-0.015261782071642768
+JRP144,OA,Macrophages,COL1A1bis,eccentricity,is_Macrophages,-0.01653563266676553
+JRP144,OA,Macrophages,COL1A1bis,alignment_score,is_Macrophages,0.006842274023542291
+JRP144,OA,Macrophages,COL4A1,major_axis_length,is_Macrophages,-0.03273134975881955
+JRP144,OA,Macrophages,COL4A1,minor_axis_length,is_Macrophages,-0.03346364615772641
+JRP144,OA,Macrophages,COL4A1,area,is_Macrophages,-0.03501953181812338
+JRP144,OA,Macrophages,COL4A1,eccentricity,is_Macrophages,0.0013387705183621915
+JRP144,OA,Macrophages,COL4A1,alignment_score,is_Macrophages,-0.017861198970180646
+JRP144,OA,Macrophages,COL6A1,major_axis_length,is_Macrophages,-0.026308489931195028
+JRP144,OA,Macrophages,COL6A1,minor_axis_length,is_Macrophages,-0.04442502341147179
+JRP144,OA,Macrophages,COL6A1,area,is_Macrophages,-0.03456085132932157
+JRP144,OA,Macrophages,COL6A1,eccentricity,is_Macrophages,0.022297113925022996
+JRP144,OA,Macrophages,COL6A1,alignment_score,is_Macrophages,-0.017881255904684087
+JRP144,OA,Macrophages,FN,major_axis_length,is_Macrophages,-0.025608402310795086
+JRP144,OA,Macrophages,FN,minor_axis_length,is_Macrophages,-0.04588933133766578
+JRP144,OA,Macrophages,FN,area,is_Macrophages,-0.02687891665982539
+JRP144,OA,Macrophages,FN,eccentricity,is_Macrophages,0.024587101632816608
+JRP144,OA,Macrophages,FN,alignment_score,is_Macrophages,-0.039569484007712596
+JRP144,OA,Macrophages,MFAP5,major_axis_length,is_Macrophages,0.02289142679986285
+JRP144,OA,Macrophages,MFAP5,minor_axis_length,is_Macrophages,0.021121324778342693
+JRP144,OA,Macrophages,MFAP5,area,is_Macrophages,0.009186332874543787
+JRP144,OA,Macrophages,MFAP5,eccentricity,is_Macrophages,-0.023503053311416253
+JRP144,OA,Macrophages,MFAP5,alignment_score,is_Macrophages,0.001840187157016446
+JRP144,OA,MERTK+ Macrophages,CHP,major_axis_length,is_MERTKpos_Macrophages,-0.020560113406621495
+JRP144,OA,MERTK+ Macrophages,CHP,minor_axis_length,is_MERTKpos_Macrophages,-0.025849876183639573
+JRP144,OA,MERTK+ Macrophages,CHP,area,is_MERTKpos_Macrophages,-0.016282046528176712
+JRP144,OA,MERTK+ Macrophages,CHP,eccentricity,is_MERTKpos_Macrophages,0.0009110034255805063
+JRP144,OA,MERTK+ Macrophages,CHP,alignment_score,is_MERTKpos_Macrophages,0.0033683029053830867
+JRP144,OA,MERTK+ Macrophages,COL1A1bis,major_axis_length,is_MERTKpos_Macrophages,0.010138656277045433
+JRP144,OA,MERTK+ Macrophages,COL1A1bis,minor_axis_length,is_MERTKpos_Macrophages,0.009904992101296698
+JRP144,OA,MERTK+ Macrophages,COL1A1bis,area,is_MERTKpos_Macrophages,0.004085919297091862
+JRP144,OA,MERTK+ Macrophages,COL1A1bis,eccentricity,is_MERTKpos_Macrophages,-0.000650678501444266
+JRP144,OA,MERTK+ Macrophages,COL1A1bis,alignment_score,is_MERTKpos_Macrophages,-0.00853242738298334
+JRP144,OA,MERTK+ Macrophages,COL4A1,major_axis_length,is_MERTKpos_Macrophages,-0.020781897914121467
+JRP144,OA,MERTK+ Macrophages,COL4A1,minor_axis_length,is_MERTKpos_Macrophages,-0.02938271714149906
+JRP144,OA,MERTK+ Macrophages,COL4A1,area,is_MERTKpos_Macrophages,-0.03030995303763351
+JRP144,OA,MERTK+ Macrophages,COL4A1,eccentricity,is_MERTKpos_Macrophages,0.017585439517424053
+JRP144,OA,MERTK+ Macrophages,COL4A1,alignment_score,is_MERTKpos_Macrophages,-0.03411068629621269
+JRP144,OA,MERTK+ Macrophages,COL6A1,major_axis_length,is_MERTKpos_Macrophages,-0.02596108750211014
+JRP144,OA,MERTK+ Macrophages,COL6A1,minor_axis_length,is_MERTKpos_Macrophages,-0.03843976305690269
+JRP144,OA,MERTK+ Macrophages,COL6A1,area,is_MERTKpos_Macrophages,-0.028521441621378388
+JRP144,OA,MERTK+ Macrophages,COL6A1,eccentricity,is_MERTKpos_Macrophages,0.02220491161134944
+JRP144,OA,MERTK+ Macrophages,COL6A1,alignment_score,is_MERTKpos_Macrophages,-0.009135010742501963
+JRP144,OA,MERTK+ Macrophages,FN,major_axis_length,is_MERTKpos_Macrophages,-0.009562068978043552
+JRP144,OA,MERTK+ Macrophages,FN,minor_axis_length,is_MERTKpos_Macrophages,-0.020455536527286586
+JRP144,OA,MERTK+ Macrophages,FN,area,is_MERTKpos_Macrophages,-0.019577533390089927
+JRP144,OA,MERTK+ Macrophages,FN,eccentricity,is_MERTKpos_Macrophages,0.01200218345948608
+JRP144,OA,MERTK+ Macrophages,FN,alignment_score,is_MERTKpos_Macrophages,-0.00882731294271539
+JRP144,OA,MERTK+ Macrophages,MFAP5,major_axis_length,is_MERTKpos_Macrophages,0.02266314365200547
+JRP144,OA,MERTK+ Macrophages,MFAP5,minor_axis_length,is_MERTKpos_Macrophages,0.018395266230353226
+JRP144,OA,MERTK+ Macrophages,MFAP5,area,is_MERTKpos_Macrophages,0.006737870403935532
+JRP144,OA,MERTK+ Macrophages,MFAP5,eccentricity,is_MERTKpos_Macrophages,-0.009886284107795493
+JRP144,OA,MERTK+ Macrophages,MFAP5,alignment_score,is_MERTKpos_Macrophages,0.008766007133459503
+JRP144,OA,Monocytes,CHP,major_axis_length,is_Monocytes,-0.01824547446359792
+JRP144,OA,Monocytes,CHP,minor_axis_length,is_Monocytes,-0.016182179017235513
+JRP144,OA,Monocytes,CHP,area,is_Monocytes,-0.01851134304998712
+JRP144,OA,Monocytes,CHP,eccentricity,is_Monocytes,-0.007697228804484352
+JRP144,OA,Monocytes,CHP,alignment_score,is_Monocytes,0.05217441158029851
+JRP144,OA,Monocytes,COL1A1bis,major_axis_length,is_Monocytes,-0.0039076078728902935
+JRP144,OA,Monocytes,COL1A1bis,minor_axis_length,is_Monocytes,0.024574367886856765
+JRP144,OA,Monocytes,COL1A1bis,area,is_Monocytes,0.016244593074537152
+JRP144,OA,Monocytes,COL1A1bis,eccentricity,is_Monocytes,-0.03064207612521291
+JRP144,OA,Monocytes,COL1A1bis,alignment_score,is_Monocytes,0.09547493131053567
+JRP144,OA,Monocytes,COL4A1,major_axis_length,is_Monocytes,0.0036430381082377724
+JRP144,OA,Monocytes,COL4A1,minor_axis_length,is_Monocytes,0.05697511923437585
+JRP144,OA,Monocytes,COL4A1,area,is_Monocytes,0.03372475262548602
+JRP144,OA,Monocytes,COL4A1,eccentricity,is_Monocytes,-0.06086388477218231
+JRP144,OA,Monocytes,COL4A1,alignment_score,is_Monocytes,0.060499360818135624
+JRP144,OA,Monocytes,COL6A1,major_axis_length,is_Monocytes,0.03511728366568417
+JRP144,OA,Monocytes,COL6A1,minor_axis_length,is_Monocytes,0.04460913569571467
+JRP144,OA,Monocytes,COL6A1,area,is_Monocytes,0.04161914984827092
+JRP144,OA,Monocytes,COL6A1,eccentricity,is_Monocytes,-0.01719738343313958
+JRP144,OA,Monocytes,COL6A1,alignment_score,is_Monocytes,0.023107562888864678
+JRP144,OA,Monocytes,FN,major_axis_length,is_Monocytes,0.005285248756739775
+JRP144,OA,Monocytes,FN,minor_axis_length,is_Monocytes,0.008938180885166246
+JRP144,OA,Monocytes,FN,area,is_Monocytes,-0.0022676687580012412
+JRP144,OA,Monocytes,FN,eccentricity,is_Monocytes,-0.011144137134518634
+JRP144,OA,Monocytes,FN,alignment_score,is_Monocytes,0.04679087531482985
+JRP144,OA,Monocytes,MFAP5,major_axis_length,is_Monocytes,-6.415522831660531e-05
+JRP144,OA,Monocytes,MFAP5,minor_axis_length,is_Monocytes,0.0027713445895346757
+JRP144,OA,Monocytes,MFAP5,area,is_Monocytes,-0.0008032734453494116
+JRP144,OA,Monocytes,MFAP5,eccentricity,is_Monocytes,-0.028626655834100376
+JRP144,OA,Monocytes,MFAP5,alignment_score,is_Monocytes,0.04261736136328506
+JRP144,OA,Dendritic cells,CHP,major_axis_length,is_Dendritic_cells,0.003749598409604745
+JRP144,OA,Dendritic cells,CHP,minor_axis_length,is_Dendritic_cells,0.004688629886193881
+JRP144,OA,Dendritic cells,CHP,area,is_Dendritic_cells,0.000267398524617938
+JRP144,OA,Dendritic cells,CHP,eccentricity,is_Dendritic_cells,0.0035574883827431854
+JRP144,OA,Dendritic cells,CHP,alignment_score,is_Dendritic_cells,-0.033156659712971916
+JRP144,OA,Dendritic cells,COL1A1bis,major_axis_length,is_Dendritic_cells,-0.004450221857955772
+JRP144,OA,Dendritic cells,COL1A1bis,minor_axis_length,is_Dendritic_cells,-0.015027510912531657
+JRP144,OA,Dendritic cells,COL1A1bis,area,is_Dendritic_cells,-0.017066614625607626
+JRP144,OA,Dendritic cells,COL1A1bis,eccentricity,is_Dendritic_cells,0.01451365377136554
+JRP144,OA,Dendritic cells,COL1A1bis,alignment_score,is_Dendritic_cells,-0.0006168870351285773
+JRP144,OA,Dendritic cells,COL4A1,major_axis_length,is_Dendritic_cells,-0.0023134847206011007
+JRP144,OA,Dendritic cells,COL4A1,minor_axis_length,is_Dendritic_cells,-0.018581785577758834
+JRP144,OA,Dendritic cells,COL4A1,area,is_Dendritic_cells,-0.009448835840872043
+JRP144,OA,Dendritic cells,COL4A1,eccentricity,is_Dendritic_cells,-0.001180889676927133
+JRP144,OA,Dendritic cells,COL4A1,alignment_score,is_Dendritic_cells,-0.03170700155138503
+JRP144,OA,Dendritic cells,COL6A1,major_axis_length,is_Dendritic_cells,-0.00818060438464606
+JRP144,OA,Dendritic cells,COL6A1,minor_axis_length,is_Dendritic_cells,-0.008825356965946144
+JRP144,OA,Dendritic cells,COL6A1,area,is_Dendritic_cells,-0.006952142565977716
+JRP144,OA,Dendritic cells,COL6A1,eccentricity,is_Dendritic_cells,0.004949786042522045
+JRP144,OA,Dendritic cells,COL6A1,alignment_score,is_Dendritic_cells,0.007594634366741877
+JRP144,OA,Dendritic cells,FN,major_axis_length,is_Dendritic_cells,0.012803283356336204
+JRP144,OA,Dendritic cells,FN,minor_axis_length,is_Dendritic_cells,0.01968912437795797
+JRP144,OA,Dendritic cells,FN,area,is_Dendritic_cells,0.0159211045353741
+JRP144,OA,Dendritic cells,FN,eccentricity,is_Dendritic_cells,-0.01506162353860864
+JRP144,OA,Dendritic cells,FN,alignment_score,is_Dendritic_cells,-0.016064847069208882
+JRP144,OA,Dendritic cells,MFAP5,major_axis_length,is_Dendritic_cells,0.0011610348363170415
+JRP144,OA,Dendritic cells,MFAP5,minor_axis_length,is_Dendritic_cells,0.008184788502146392
+JRP144,OA,Dendritic cells,MFAP5,area,is_Dendritic_cells,0.016100155411293053
+JRP144,OA,Dendritic cells,MFAP5,eccentricity,is_Dendritic_cells,0.012749211728912744
+JRP144,OA,Dendritic cells,MFAP5,alignment_score,is_Dendritic_cells,0.011555369444239317
+JRP144,OA,Neutrophils,CHP,major_axis_length,is_Neutrophils,0.0258015047352908
+JRP144,OA,Neutrophils,CHP,minor_axis_length,is_Neutrophils,0.032430389881990346
+JRP144,OA,Neutrophils,CHP,area,is_Neutrophils,0.03908641915879605
+JRP144,OA,Neutrophils,CHP,eccentricity,is_Neutrophils,0.0075375672070237465
+JRP144,OA,Neutrophils,CHP,alignment_score,is_Neutrophils,-0.026597779298233634
+JRP144,OA,Neutrophils,COL1A1bis,major_axis_length,is_Neutrophils,0.009354160090955684
+JRP144,OA,Neutrophils,COL1A1bis,minor_axis_length,is_Neutrophils,-0.013859115044863797
+JRP144,OA,Neutrophils,COL1A1bis,area,is_Neutrophils,0.0017472976141457112
+JRP144,OA,Neutrophils,COL1A1bis,eccentricity,is_Neutrophils,0.0380897843441358
+JRP144,OA,Neutrophils,COL1A1bis,alignment_score,is_Neutrophils,0.014690672032028165
+JRP144,OA,Neutrophils,COL4A1,major_axis_length,is_Neutrophils,0.020039788116275933
+JRP144,OA,Neutrophils,COL4A1,minor_axis_length,is_Neutrophils,0.01887486738560523
+JRP144,OA,Neutrophils,COL4A1,area,is_Neutrophils,0.020744003008980997
+JRP144,OA,Neutrophils,COL4A1,eccentricity,is_Neutrophils,0.008719690159743883
+JRP144,OA,Neutrophils,COL4A1,alignment_score,is_Neutrophils,-0.024598321828719513
+JRP144,OA,Neutrophils,COL6A1,major_axis_length,is_Neutrophils,0.0393790936379246
+JRP144,OA,Neutrophils,COL6A1,minor_axis_length,is_Neutrophils,0.03924431539363236
+JRP144,OA,Neutrophils,COL6A1,area,is_Neutrophils,0.04121313164957623
+JRP144,OA,Neutrophils,COL6A1,eccentricity,is_Neutrophils,-0.0055648867871065716
+JRP144,OA,Neutrophils,COL6A1,alignment_score,is_Neutrophils,0.010882241887900265
+JRP144,OA,Neutrophils,FN,major_axis_length,is_Neutrophils,0.06003134660520371
+JRP144,OA,Neutrophils,FN,minor_axis_length,is_Neutrophils,0.06364988925860662
+JRP144,OA,Neutrophils,FN,area,is_Neutrophils,0.07499608510832523
+JRP144,OA,Neutrophils,FN,eccentricity,is_Neutrophils,-0.019123236608155295
+JRP144,OA,Neutrophils,FN,alignment_score,is_Neutrophils,-0.019755071812025456
+JRP144,OA,Neutrophils,MFAP5,major_axis_length,is_Neutrophils,-0.0011993259056244552
+JRP144,OA,Neutrophils,MFAP5,minor_axis_length,is_Neutrophils,-0.0030226407651746503
+JRP144,OA,Neutrophils,MFAP5,area,is_Neutrophils,0.004712905519002678
+JRP144,OA,Neutrophils,MFAP5,eccentricity,is_Neutrophils,0.008177782610021438
+JRP144,OA,Neutrophils,MFAP5,alignment_score,is_Neutrophils,-0.019299628167514953
+JRP144,OA,Vascular cells,CHP,major_axis_length,is_Vascular_cells,0.046242420015089
+JRP144,OA,Vascular cells,CHP,minor_axis_length,is_Vascular_cells,0.0317081482774615
+JRP144,OA,Vascular cells,CHP,area,is_Vascular_cells,0.028377458629643432
+JRP144,OA,Vascular cells,CHP,eccentricity,is_Vascular_cells,0.03560926883026134
+JRP144,OA,Vascular cells,CHP,alignment_score,is_Vascular_cells,-0.0035288253608426134
+JRP144,OA,Vascular cells,COL1A1bis,major_axis_length,is_Vascular_cells,0.09100053048719879
+JRP144,OA,Vascular cells,COL1A1bis,minor_axis_length,is_Vascular_cells,0.0698209650983197
+JRP144,OA,Vascular cells,COL1A1bis,area,is_Vascular_cells,0.08233212945294317
+JRP144,OA,Vascular cells,COL1A1bis,eccentricity,is_Vascular_cells,0.013423950618043114
+JRP144,OA,Vascular cells,COL1A1bis,alignment_score,is_Vascular_cells,-0.06357181474388955
+JRP144,OA,Vascular cells,COL4A1,major_axis_length,is_Vascular_cells,0.06524430852250099
+JRP144,OA,Vascular cells,COL4A1,minor_axis_length,is_Vascular_cells,0.08494186432701323
+JRP144,OA,Vascular cells,COL4A1,area,is_Vascular_cells,0.08503672630555653
+JRP144,OA,Vascular cells,COL4A1,eccentricity,is_Vascular_cells,-0.05109524167685038
+JRP144,OA,Vascular cells,COL4A1,alignment_score,is_Vascular_cells,-0.009629336362881175
+JRP144,OA,Vascular cells,COL6A1,major_axis_length,is_Vascular_cells,0.052383311615307994
+JRP144,OA,Vascular cells,COL6A1,minor_axis_length,is_Vascular_cells,0.04851284054871987
+JRP144,OA,Vascular cells,COL6A1,area,is_Vascular_cells,0.04990274733285225
+JRP144,OA,Vascular cells,COL6A1,eccentricity,is_Vascular_cells,0.004512562571162822
+JRP144,OA,Vascular cells,COL6A1,alignment_score,is_Vascular_cells,-0.03421600336716652
+JRP144,OA,Vascular cells,FN,major_axis_length,is_Vascular_cells,0.012244832532452395
+JRP144,OA,Vascular cells,FN,minor_axis_length,is_Vascular_cells,-0.013783173073112286
+JRP144,OA,Vascular cells,FN,area,is_Vascular_cells,-0.012163264062605568
+JRP144,OA,Vascular cells,FN,eccentricity,is_Vascular_cells,0.047711424098894506
+JRP144,OA,Vascular cells,FN,alignment_score,is_Vascular_cells,-0.005816085789879455
+JRP144,OA,Vascular cells,MFAP5,major_axis_length,is_Vascular_cells,0.021358832033115036
+JRP144,OA,Vascular cells,MFAP5,minor_axis_length,is_Vascular_cells,0.026086082469915603
+JRP144,OA,Vascular cells,MFAP5,area,is_Vascular_cells,0.004849440911171031
+JRP144,OA,Vascular cells,MFAP5,eccentricity,is_Vascular_cells,0.0211028418243486
+JRP144,OA,Vascular cells,MFAP5,alignment_score,is_Vascular_cells,0.0005476444303756856
+S00292623,OA,CD4 T cells,CHP,major_axis_length,is_CD4_T_cells,0.005089166507461111
+S00292623,OA,CD4 T cells,CHP,minor_axis_length,is_CD4_T_cells,-0.006609749782307603
+S00292623,OA,CD4 T cells,CHP,area,is_CD4_T_cells,0.0024994034855285647
+S00292623,OA,CD4 T cells,CHP,eccentricity,is_CD4_T_cells,0.016008527310278516
+S00292623,OA,CD4 T cells,CHP,alignment_score,is_CD4_T_cells,-0.024156574805246852
+S00292623,OA,CD4 T cells,COL1A1bis,major_axis_length,is_CD4_T_cells,0.002180241236457548
+S00292623,OA,CD4 T cells,COL1A1bis,minor_axis_length,is_CD4_T_cells,-0.001567277324150931
+S00292623,OA,CD4 T cells,COL1A1bis,area,is_CD4_T_cells,0.004071358553141519
+S00292623,OA,CD4 T cells,COL1A1bis,eccentricity,is_CD4_T_cells,0.00282403958701726
+S00292623,OA,CD4 T cells,COL1A1bis,alignment_score,is_CD4_T_cells,0.0033638871537121705
+S00292623,OA,CD4 T cells,COL4A1,major_axis_length,is_CD4_T_cells,0.005476058965137761
+S00292623,OA,CD4 T cells,COL4A1,minor_axis_length,is_CD4_T_cells,0.02116463405278148
+S00292623,OA,CD4 T cells,COL4A1,area,is_CD4_T_cells,0.02385851408109706
+S00292623,OA,CD4 T cells,COL4A1,eccentricity,is_CD4_T_cells,-0.013038033532642077
+S00292623,OA,CD4 T cells,COL4A1,alignment_score,is_CD4_T_cells,0.0002722397146776998
+S00292623,OA,CD4 T cells,COL6A1,major_axis_length,is_CD4_T_cells,-0.01019044418174789
+S00292623,OA,CD4 T cells,COL6A1,minor_axis_length,is_CD4_T_cells,-0.015135580169807759
+S00292623,OA,CD4 T cells,COL6A1,area,is_CD4_T_cells,-0.0034701070180493147
+S00292623,OA,CD4 T cells,COL6A1,eccentricity,is_CD4_T_cells,0.010029446031291252
+S00292623,OA,CD4 T cells,COL6A1,alignment_score,is_CD4_T_cells,0.00019470223130280852
+S00292623,OA,CD4 T cells,FN,major_axis_length,is_CD4_T_cells,-0.010950965674151119
+S00292623,OA,CD4 T cells,FN,minor_axis_length,is_CD4_T_cells,-0.015637362672209457
+S00292623,OA,CD4 T cells,FN,area,is_CD4_T_cells,-0.009658532708933416
+S00292623,OA,CD4 T cells,FN,eccentricity,is_CD4_T_cells,0.014090805367888154
+S00292623,OA,CD4 T cells,FN,alignment_score,is_CD4_T_cells,-0.008784450342122354
+S00292623,OA,CD4 T cells,MFAP5,major_axis_length,is_CD4_T_cells,-0.012965541662933481
+S00292623,OA,CD4 T cells,MFAP5,minor_axis_length,is_CD4_T_cells,-0.01499552785920109
+S00292623,OA,CD4 T cells,MFAP5,area,is_CD4_T_cells,-0.011099625269016538
+S00292623,OA,CD4 T cells,MFAP5,eccentricity,is_CD4_T_cells,0.0169424575217188
+S00292623,OA,CD4 T cells,MFAP5,alignment_score,is_CD4_T_cells,0.0008840796299176197
+S00292623,OA,CD8 T cells,CHP,major_axis_length,is_CD8_T_cells,0.006777007389416878
+S00292623,OA,CD8 T cells,CHP,minor_axis_length,is_CD8_T_cells,-0.006343402600009071
+S00292623,OA,CD8 T cells,CHP,area,is_CD8_T_cells,-0.0014692229845304227
+S00292623,OA,CD8 T cells,CHP,eccentricity,is_CD8_T_cells,0.01988128900066233
+S00292623,OA,CD8 T cells,CHP,alignment_score,is_CD8_T_cells,-0.03422692427687846
+S00292623,OA,CD8 T cells,COL1A1bis,major_axis_length,is_CD8_T_cells,0.009008588033772285
+S00292623,OA,CD8 T cells,COL1A1bis,minor_axis_length,is_CD8_T_cells,0.010821480378055179
+S00292623,OA,CD8 T cells,COL1A1bis,area,is_CD8_T_cells,0.017057653088551793
+S00292623,OA,CD8 T cells,COL1A1bis,eccentricity,is_CD8_T_cells,-0.014907308264232201
+S00292623,OA,CD8 T cells,COL1A1bis,alignment_score,is_CD8_T_cells,-0.04264469006955371
+S00292623,OA,CD8 T cells,COL4A1,major_axis_length,is_CD8_T_cells,0.02000197388118035
+S00292623,OA,CD8 T cells,COL4A1,minor_axis_length,is_CD8_T_cells,0.031455140224377495
+S00292623,OA,CD8 T cells,COL4A1,area,is_CD8_T_cells,0.03414906240793724
+S00292623,OA,CD8 T cells,COL4A1,eccentricity,is_CD8_T_cells,-0.012233356990110399
+S00292623,OA,CD8 T cells,COL4A1,alignment_score,is_CD8_T_cells,-0.03510011355188839
+S00292623,OA,CD8 T cells,COL6A1,major_axis_length,is_CD8_T_cells,-0.009859671465258617
+S00292623,OA,CD8 T cells,COL6A1,minor_axis_length,is_CD8_T_cells,-0.011970391223495483
+S00292623,OA,CD8 T cells,COL6A1,area,is_CD8_T_cells,-0.007573958087484303
+S00292623,OA,CD8 T cells,COL6A1,eccentricity,is_CD8_T_cells,0.013447970632159661
+S00292623,OA,CD8 T cells,COL6A1,alignment_score,is_CD8_T_cells,-0.021263514525565016
+S00292623,OA,CD8 T cells,FN,major_axis_length,is_CD8_T_cells,-0.019004994382331126
+S00292623,OA,CD8 T cells,FN,minor_axis_length,is_CD8_T_cells,-0.029872007838395304
+S00292623,OA,CD8 T cells,FN,area,is_CD8_T_cells,-0.02305758036831393
+S00292623,OA,CD8 T cells,FN,eccentricity,is_CD8_T_cells,0.026016864465246734
+S00292623,OA,CD8 T cells,FN,alignment_score,is_CD8_T_cells,-0.010049518638127478
+S00292623,OA,CD8 T cells,MFAP5,major_axis_length,is_CD8_T_cells,-0.004353970573389982
+S00292623,OA,CD8 T cells,MFAP5,minor_axis_length,is_CD8_T_cells,-0.005200674978392255
+S00292623,OA,CD8 T cells,MFAP5,area,is_CD8_T_cells,-0.006359769766482617
+S00292623,OA,CD8 T cells,MFAP5,eccentricity,is_CD8_T_cells,0.014740484834824628
+S00292623,OA,CD8 T cells,MFAP5,alignment_score,is_CD8_T_cells,-0.006077708334664671
+S00292623,OA,T cells,CHP,major_axis_length,is_T_cells,-0.009231313152654134
+S00292623,OA,T cells,CHP,minor_axis_length,is_T_cells,-0.005475947054011364
+S00292623,OA,T cells,CHP,area,is_T_cells,-0.00183474718416458
+S00292623,OA,T cells,CHP,eccentricity,is_T_cells,-0.023523733585903015
+S00292623,OA,T cells,CHP,alignment_score,is_T_cells,0.018346189103020112
+S00292623,OA,T cells,COL1A1bis,major_axis_length,is_T_cells,-0.027189040269423634
+S00292623,OA,T cells,COL1A1bis,minor_axis_length,is_T_cells,-0.026135668548594216
+S00292623,OA,T cells,COL1A1bis,area,is_T_cells,-0.01877955222740572
+S00292623,OA,T cells,COL1A1bis,eccentricity,is_T_cells,-0.004468129942484733
+S00292623,OA,T cells,COL1A1bis,alignment_score,is_T_cells,0.016622932992995686
+S00292623,OA,T cells,COL4A1,major_axis_length,is_T_cells,-0.0027265269983605543
+S00292623,OA,T cells,COL4A1,minor_axis_length,is_T_cells,-0.004174912110156281
+S00292623,OA,T cells,COL4A1,area,is_T_cells,-0.009138051534602676
+S00292623,OA,T cells,COL4A1,eccentricity,is_T_cells,-0.008442128498212293
+S00292623,OA,T cells,COL4A1,alignment_score,is_T_cells,0.02419851238517609
+S00292623,OA,T cells,COL6A1,major_axis_length,is_T_cells,-0.004743881679158171
+S00292623,OA,T cells,COL6A1,minor_axis_length,is_T_cells,-0.009386313446778899
+S00292623,OA,T cells,COL6A1,area,is_T_cells,-0.002052674688649904
+S00292623,OA,T cells,COL6A1,eccentricity,is_T_cells,-0.0014563048733181054
+S00292623,OA,T cells,COL6A1,alignment_score,is_T_cells,0.014932580607062708
+S00292623,OA,T cells,FN,major_axis_length,is_T_cells,0.022330998464393178
+S00292623,OA,T cells,FN,minor_axis_length,is_T_cells,0.02995043498792415
+S00292623,OA,T cells,FN,area,is_T_cells,0.0340954181812321
+S00292623,OA,T cells,FN,eccentricity,is_T_cells,-0.019498959619514044
+S00292623,OA,T cells,FN,alignment_score,is_T_cells,0.017780911812038943
+S00292623,OA,T cells,MFAP5,major_axis_length,is_T_cells,-0.014161893341596038
+S00292623,OA,T cells,MFAP5,minor_axis_length,is_T_cells,-0.014357295710263956
+S00292623,OA,T cells,MFAP5,area,is_T_cells,-0.007350885613782274
+S00292623,OA,T cells,MFAP5,eccentricity,is_T_cells,-0.026687536166050622
+S00292623,OA,T cells,MFAP5,alignment_score,is_T_cells,0.007905617359788526
+S00292623,OA,B cells,CHP,major_axis_length,is_B_cells,-0.004804917254908207
+S00292623,OA,B cells,CHP,minor_axis_length,is_B_cells,-0.010960591114380133
+S00292623,OA,B cells,CHP,area,is_B_cells,-0.0012405000500955207
+S00292623,OA,B cells,CHP,eccentricity,is_B_cells,0.014401710762563386
+S00292623,OA,B cells,CHP,alignment_score,is_B_cells,-0.000867471859735459
+S00292623,OA,B cells,COL1A1bis,major_axis_length,is_B_cells,0.0031133298211453437
+S00292623,OA,B cells,COL1A1bis,minor_axis_length,is_B_cells,0.0008791849382358009
+S00292623,OA,B cells,COL1A1bis,area,is_B_cells,0.0018127427753654858
+S00292623,OA,B cells,COL1A1bis,eccentricity,is_B_cells,0.011515273710488442
+S00292623,OA,B cells,COL1A1bis,alignment_score,is_B_cells,0.03183130255501201
+S00292623,OA,B cells,COL4A1,major_axis_length,is_B_cells,0.002818716560502258
+S00292623,OA,B cells,COL4A1,minor_axis_length,is_B_cells,0.02870415646027093
+S00292623,OA,B cells,COL4A1,area,is_B_cells,0.014977723813350961
+S00292623,OA,B cells,COL4A1,eccentricity,is_B_cells,-0.028261170099389842
+S00292623,OA,B cells,COL4A1,alignment_score,is_B_cells,0.019831436576551273
+S00292623,OA,B cells,COL6A1,major_axis_length,is_B_cells,-0.014666518012898498
+S00292623,OA,B cells,COL6A1,minor_axis_length,is_B_cells,-0.018357357479303324
+S00292623,OA,B cells,COL6A1,area,is_B_cells,-0.007715684924998938
+S00292623,OA,B cells,COL6A1,eccentricity,is_B_cells,0.01359266936774376
+S00292623,OA,B cells,COL6A1,alignment_score,is_B_cells,0.010480284028133044
+S00292623,OA,B cells,FN,major_axis_length,is_B_cells,-0.015142464821223478
+S00292623,OA,B cells,FN,minor_axis_length,is_B_cells,-0.023172243265418176
+S00292623,OA,B cells,FN,area,is_B_cells,-0.016708049703468102
+S00292623,OA,B cells,FN,eccentricity,is_B_cells,0.019762629749231146
+S00292623,OA,B cells,FN,alignment_score,is_B_cells,-0.007322453494893026
+S00292623,OA,B cells,MFAP5,major_axis_length,is_B_cells,-0.016189725796789605
+S00292623,OA,B cells,MFAP5,minor_axis_length,is_B_cells,-0.016853288036440366
+S00292623,OA,B cells,MFAP5,area,is_B_cells,-0.011324987862786195
+S00292623,OA,B cells,MFAP5,eccentricity,is_B_cells,0.015039876511710785
+S00292623,OA,B cells,MFAP5,alignment_score,is_B_cells,0.017471915797093014
+S00292623,OA,Plasma cells,CHP,major_axis_length,is_Plasma_cells,-0.01282656887468351
+S00292623,OA,Plasma cells,CHP,minor_axis_length,is_Plasma_cells,-0.02141843904824202
+S00292623,OA,Plasma cells,CHP,area,is_Plasma_cells,-0.016228594957166786
+S00292623,OA,Plasma cells,CHP,eccentricity,is_Plasma_cells,0.006553077033330196
+S00292623,OA,Plasma cells,CHP,alignment_score,is_Plasma_cells,0.0018025018909497623
+S00292623,OA,Plasma cells,COL1A1bis,major_axis_length,is_Plasma_cells,-0.00662054363582327
+S00292623,OA,Plasma cells,COL1A1bis,minor_axis_length,is_Plasma_cells,-0.0022898775999197056
+S00292623,OA,Plasma cells,COL1A1bis,area,is_Plasma_cells,-0.01485363823307522
+S00292623,OA,Plasma cells,COL1A1bis,eccentricity,is_Plasma_cells,-0.006458492285926876
+S00292623,OA,Plasma cells,COL1A1bis,alignment_score,is_Plasma_cells,0.03160310825994915
+S00292623,OA,Plasma cells,COL4A1,major_axis_length,is_Plasma_cells,0.01710492435124357
+S00292623,OA,Plasma cells,COL4A1,minor_axis_length,is_Plasma_cells,0.038063637655016774
+S00292623,OA,Plasma cells,COL4A1,area,is_Plasma_cells,0.028617123807804307
+S00292623,OA,Plasma cells,COL4A1,eccentricity,is_Plasma_cells,-0.025886110026842483
+S00292623,OA,Plasma cells,COL4A1,alignment_score,is_Plasma_cells,0.0002901726566453841
+S00292623,OA,Plasma cells,COL6A1,major_axis_length,is_Plasma_cells,-0.010295322436008555
+S00292623,OA,Plasma cells,COL6A1,minor_axis_length,is_Plasma_cells,-0.01076387353756417
+S00292623,OA,Plasma cells,COL6A1,area,is_Plasma_cells,-0.006954634910225492
+S00292623,OA,Plasma cells,COL6A1,eccentricity,is_Plasma_cells,0.001957081309147069
+S00292623,OA,Plasma cells,COL6A1,alignment_score,is_Plasma_cells,-0.011334290592220148
+S00292623,OA,Plasma cells,FN,major_axis_length,is_Plasma_cells,-0.02279297610255933
+S00292623,OA,Plasma cells,FN,minor_axis_length,is_Plasma_cells,-0.03452036692434887
+S00292623,OA,Plasma cells,FN,area,is_Plasma_cells,-0.02607903196665825
+S00292623,OA,Plasma cells,FN,eccentricity,is_Plasma_cells,0.030972001594869698
+S00292623,OA,Plasma cells,FN,alignment_score,is_Plasma_cells,-0.007948004407773723
+S00292623,OA,Plasma cells,MFAP5,major_axis_length,is_Plasma_cells,-0.006614152614311842
+S00292623,OA,Plasma cells,MFAP5,minor_axis_length,is_Plasma_cells,-0.0007582448666189248
+S00292623,OA,Plasma cells,MFAP5,area,is_Plasma_cells,-0.005383171279147083
+S00292623,OA,Plasma cells,MFAP5,eccentricity,is_Plasma_cells,0.014383124447388042
+S00292623,OA,Plasma cells,MFAP5,alignment_score,is_Plasma_cells,0.0019469866461577874
+S00292623,OA,Macrophages,CHP,major_axis_length,is_Macrophages,-0.018817792019464513
+S00292623,OA,Macrophages,CHP,minor_axis_length,is_Macrophages,-0.019383248227158444
+S00292623,OA,Macrophages,CHP,area,is_Macrophages,-0.014366362404431692
+S00292623,OA,Macrophages,CHP,eccentricity,is_Macrophages,-0.0074691736443361235
+S00292623,OA,Macrophages,CHP,alignment_score,is_Macrophages,-0.007416244648482715
+S00292623,OA,Macrophages,COL1A1bis,major_axis_length,is_Macrophages,-0.01855821511776279
+S00292623,OA,Macrophages,COL1A1bis,minor_axis_length,is_Macrophages,-0.01646047485488205
+S00292623,OA,Macrophages,COL1A1bis,area,is_Macrophages,-0.017464628682433092
+S00292623,OA,Macrophages,COL1A1bis,eccentricity,is_Macrophages,0.007312832299247371
+S00292623,OA,Macrophages,COL1A1bis,alignment_score,is_Macrophages,0.021141160661320872
+S00292623,OA,Macrophages,COL4A1,major_axis_length,is_Macrophages,-0.04373826657059803
+S00292623,OA,Macrophages,COL4A1,minor_axis_length,is_Macrophages,-0.059651341373919996
+S00292623,OA,Macrophages,COL4A1,area,is_Macrophages,-0.051000615429583555
+S00292623,OA,Macrophages,COL4A1,eccentricity,is_Macrophages,0.033720241628670176
+S00292623,OA,Macrophages,COL4A1,alignment_score,is_Macrophages,0.027136058914539334
+S00292623,OA,Macrophages,COL6A1,major_axis_length,is_Macrophages,-0.0010626805122929375
+S00292623,OA,Macrophages,COL6A1,minor_axis_length,is_Macrophages,-0.008322069810787367
+S00292623,OA,Macrophages,COL6A1,area,is_Macrophages,-0.0062416760588100565
+S00292623,OA,Macrophages,COL6A1,eccentricity,is_Macrophages,-0.0058798163562367054
+S00292623,OA,Macrophages,COL6A1,alignment_score,is_Macrophages,-0.007145788328963366
+S00292623,OA,Macrophages,FN,major_axis_length,is_Macrophages,0.010838003111819214
+S00292623,OA,Macrophages,FN,minor_axis_length,is_Macrophages,0.008579531601480594
+S00292623,OA,Macrophages,FN,area,is_Macrophages,0.01220192102714313
+S00292623,OA,Macrophages,FN,eccentricity,is_Macrophages,-0.012977764384099573
+S00292623,OA,Macrophages,FN,alignment_score,is_Macrophages,-0.011860035896982982
+S00292623,OA,Macrophages,MFAP5,major_axis_length,is_Macrophages,0.010874079522928513
+S00292623,OA,Macrophages,MFAP5,minor_axis_length,is_Macrophages,0.006409629880095867
+S00292623,OA,Macrophages,MFAP5,area,is_Macrophages,0.003936695818062496
+S00292623,OA,Macrophages,MFAP5,eccentricity,is_Macrophages,-0.012289691784970386
+S00292623,OA,Macrophages,MFAP5,alignment_score,is_Macrophages,0.0007268778967154303
+S00292623,OA,MERTK+ Macrophages,CHP,major_axis_length,is_MERTKpos_Macrophages,0.0013141505827850947
+S00292623,OA,MERTK+ Macrophages,CHP,minor_axis_length,is_MERTKpos_Macrophages,0.00031161191505447625
+S00292623,OA,MERTK+ Macrophages,CHP,area,is_MERTKpos_Macrophages,0.0011215301012661271
+S00292623,OA,MERTK+ Macrophages,CHP,eccentricity,is_MERTKpos_Macrophages,0.0002427591883905912
+S00292623,OA,MERTK+ Macrophages,CHP,alignment_score,is_MERTKpos_Macrophages,0.012195344583581279
+S00292623,OA,MERTK+ Macrophages,COL1A1bis,major_axis_length,is_MERTKpos_Macrophages,-0.006747811420380191
+S00292623,OA,MERTK+ Macrophages,COL1A1bis,minor_axis_length,is_MERTKpos_Macrophages,-0.007080376356315385
+S00292623,OA,MERTK+ Macrophages,COL1A1bis,area,is_MERTKpos_Macrophages,-0.005502892996754654
+S00292623,OA,MERTK+ Macrophages,COL1A1bis,eccentricity,is_MERTKpos_Macrophages,-0.00032071103273145063
+S00292623,OA,MERTK+ Macrophages,COL1A1bis,alignment_score,is_MERTKpos_Macrophages,0.0130926926619464
+S00292623,OA,MERTK+ Macrophages,COL4A1,major_axis_length,is_MERTKpos_Macrophages,-0.0057085639641025875
+S00292623,OA,MERTK+ Macrophages,COL4A1,minor_axis_length,is_MERTKpos_Macrophages,-0.00787893874431263
+S00292623,OA,MERTK+ Macrophages,COL4A1,area,is_MERTKpos_Macrophages,-0.006008818562554487
+S00292623,OA,MERTK+ Macrophages,COL4A1,eccentricity,is_MERTKpos_Macrophages,0.00806212643643474
+S00292623,OA,MERTK+ Macrophages,COL4A1,alignment_score,is_MERTKpos_Macrophages,-0.007366323381583482
+S00292623,OA,MERTK+ Macrophages,COL6A1,major_axis_length,is_MERTKpos_Macrophages,-0.0009165296346390317
+S00292623,OA,MERTK+ Macrophages,COL6A1,minor_axis_length,is_MERTKpos_Macrophages,0.0014953134218414162
+S00292623,OA,MERTK+ Macrophages,COL6A1,area,is_MERTKpos_Macrophages,0.00015651933833035105
+S00292623,OA,MERTK+ Macrophages,COL6A1,eccentricity,is_MERTKpos_Macrophages,-0.004127819993231365
+S00292623,OA,MERTK+ Macrophages,COL6A1,alignment_score,is_MERTKpos_Macrophages,-0.0010315882881358162
+S00292623,OA,MERTK+ Macrophages,FN,major_axis_length,is_MERTKpos_Macrophages,0.002788278129405676
+S00292623,OA,MERTK+ Macrophages,FN,minor_axis_length,is_MERTKpos_Macrophages,0.003317307411747736
+S00292623,OA,MERTK+ Macrophages,FN,area,is_MERTKpos_Macrophages,0.003540036502757991
+S00292623,OA,MERTK+ Macrophages,FN,eccentricity,is_MERTKpos_Macrophages,-0.0020932002873388297
+S00292623,OA,MERTK+ Macrophages,FN,alignment_score,is_MERTKpos_Macrophages,-0.004690882717697069
+S00292623,OA,MERTK+ Macrophages,MFAP5,major_axis_length,is_MERTKpos_Macrophages,-0.004198087892589806
+S00292623,OA,MERTK+ Macrophages,MFAP5,minor_axis_length,is_MERTKpos_Macrophages,-0.0032741725278664507
+S00292623,OA,MERTK+ Macrophages,MFAP5,area,is_MERTKpos_Macrophages,-0.00152496556740374
+S00292623,OA,MERTK+ Macrophages,MFAP5,eccentricity,is_MERTKpos_Macrophages,-0.006296515101356518
+S00292623,OA,MERTK+ Macrophages,MFAP5,alignment_score,is_MERTKpos_Macrophages,0.009695290109402737
+S00292623,OA,Monocytes,CHP,major_axis_length,is_Monocytes,0.0015968661576366994
+S00292623,OA,Monocytes,CHP,minor_axis_length,is_Monocytes,-0.005061792405742183
+S00292623,OA,Monocytes,CHP,area,is_Monocytes,-0.005186682324247486
+S00292623,OA,Monocytes,CHP,eccentricity,is_Monocytes,0.015204406779025919
+S00292623,OA,Monocytes,CHP,alignment_score,is_Monocytes,-0.003596502622196287
+S00292623,OA,Monocytes,COL1A1bis,major_axis_length,is_Monocytes,0.01779830668636015
+S00292623,OA,Monocytes,COL1A1bis,minor_axis_length,is_Monocytes,0.04455761231041426
+S00292623,OA,Monocytes,COL1A1bis,area,is_Monocytes,0.03746594345587448
+S00292623,OA,Monocytes,COL1A1bis,eccentricity,is_Monocytes,-0.033972249289297964
+S00292623,OA,Monocytes,COL1A1bis,alignment_score,is_Monocytes,-0.009440218126261913
+S00292623,OA,Monocytes,COL4A1,major_axis_length,is_Monocytes,-0.0246202642865673
+S00292623,OA,Monocytes,COL4A1,minor_axis_length,is_Monocytes,-0.013819286592734603
+S00292623,OA,Monocytes,COL4A1,area,is_Monocytes,-0.013245833612096351
+S00292623,OA,Monocytes,COL4A1,eccentricity,is_Monocytes,0.007325971207270192
+S00292623,OA,Monocytes,COL4A1,alignment_score,is_Monocytes,-0.03403774359967505
+S00292623,OA,Monocytes,COL6A1,major_axis_length,is_Monocytes,-0.005808476917835302
+S00292623,OA,Monocytes,COL6A1,minor_axis_length,is_Monocytes,-0.0006218019714737308
+S00292623,OA,Monocytes,COL6A1,area,is_Monocytes,-0.002939849796940513
+S00292623,OA,Monocytes,COL6A1,eccentricity,is_Monocytes,-0.011261230077246706
+S00292623,OA,Monocytes,COL6A1,alignment_score,is_Monocytes,-0.0054769780694533
+S00292623,OA,Monocytes,FN,major_axis_length,is_Monocytes,0.003343361265621633
+S00292623,OA,Monocytes,FN,minor_axis_length,is_Monocytes,0.0036947741233848926
+S00292623,OA,Monocytes,FN,area,is_Monocytes,0.0024413751960404516
+S00292623,OA,Monocytes,FN,eccentricity,is_Monocytes,-0.0038834406854724992
+S00292623,OA,Monocytes,FN,alignment_score,is_Monocytes,-0.017008108781800407
+S00292623,OA,Monocytes,MFAP5,major_axis_length,is_Monocytes,0.001988387335979322
+S00292623,OA,Monocytes,MFAP5,minor_axis_length,is_Monocytes,0.0034313499000541577
+S00292623,OA,Monocytes,MFAP5,area,is_Monocytes,0.0045426954709630015
+S00292623,OA,Monocytes,MFAP5,eccentricity,is_Monocytes,0.006291475731777031
+S00292623,OA,Monocytes,MFAP5,alignment_score,is_Monocytes,0.0236832471786679
+S00292623,OA,Dendritic cells,CHP,major_axis_length,is_Dendritic_cells,-0.012018858974817248
+S00292623,OA,Dendritic cells,CHP,minor_axis_length,is_Dendritic_cells,-0.014880936052667824
+S00292623,OA,Dendritic cells,CHP,area,is_Dendritic_cells,-0.010566663142636804
+S00292623,OA,Dendritic cells,CHP,eccentricity,is_Dendritic_cells,0.006776846214303802
+S00292623,OA,Dendritic cells,CHP,alignment_score,is_Dendritic_cells,-0.008672885340480743
+S00292623,OA,Dendritic cells,COL1A1bis,major_axis_length,is_Dendritic_cells,-0.0009207943553630115
+S00292623,OA,Dendritic cells,COL1A1bis,minor_axis_length,is_Dendritic_cells,0.0005753771658671714
+S00292623,OA,Dendritic cells,COL1A1bis,area,is_Dendritic_cells,0.00473890421303091
+S00292623,OA,Dendritic cells,COL1A1bis,eccentricity,is_Dendritic_cells,-0.007029118814393627
+S00292623,OA,Dendritic cells,COL1A1bis,alignment_score,is_Dendritic_cells,-0.020326748688897563
+S00292623,OA,Dendritic cells,COL4A1,major_axis_length,is_Dendritic_cells,0.0024668404242644843
+S00292623,OA,Dendritic cells,COL4A1,minor_axis_length,is_Dendritic_cells,-0.0017086203546267836
+S00292623,OA,Dendritic cells,COL4A1,area,is_Dendritic_cells,-0.0031346922735784382
+S00292623,OA,Dendritic cells,COL4A1,eccentricity,is_Dendritic_cells,-0.0014697631232651488
+S00292623,OA,Dendritic cells,COL4A1,alignment_score,is_Dendritic_cells,-0.01477057703977052
+S00292623,OA,Dendritic cells,COL6A1,major_axis_length,is_Dendritic_cells,-0.014610212349682275
+S00292623,OA,Dendritic cells,COL6A1,minor_axis_length,is_Dendritic_cells,-0.01679463730313686
+S00292623,OA,Dendritic cells,COL6A1,area,is_Dendritic_cells,-0.007762497128330698
+S00292623,OA,Dendritic cells,COL6A1,eccentricity,is_Dendritic_cells,0.002930849763156225
+S00292623,OA,Dendritic cells,COL6A1,alignment_score,is_Dendritic_cells,0.001367932491701371
+S00292623,OA,Dendritic cells,FN,major_axis_length,is_Dendritic_cells,-0.010656479437108575
+S00292623,OA,Dendritic cells,FN,minor_axis_length,is_Dendritic_cells,-0.007202095502313624
+S00292623,OA,Dendritic cells,FN,area,is_Dendritic_cells,-0.0046766490947124035
+S00292623,OA,Dendritic cells,FN,eccentricity,is_Dendritic_cells,-0.003223925486487343
+S00292623,OA,Dendritic cells,FN,alignment_score,is_Dendritic_cells,0.003033006678179532
+S00292623,OA,Dendritic cells,MFAP5,major_axis_length,is_Dendritic_cells,-0.010625726136272252
+S00292623,OA,Dendritic cells,MFAP5,minor_axis_length,is_Dendritic_cells,-0.012827038998439346
+S00292623,OA,Dendritic cells,MFAP5,area,is_Dendritic_cells,-0.008345499028731078
+S00292623,OA,Dendritic cells,MFAP5,eccentricity,is_Dendritic_cells,0.0022983663537985612
+S00292623,OA,Dendritic cells,MFAP5,alignment_score,is_Dendritic_cells,0.0060494515857307885
+S00292623,OA,Neutrophils,CHP,major_axis_length,is_Neutrophils,0.023292395830916107
+S00292623,OA,Neutrophils,CHP,minor_axis_length,is_Neutrophils,0.015969105756256454
+S00292623,OA,Neutrophils,CHP,area,is_Neutrophils,0.015370676800707148
+S00292623,OA,Neutrophils,CHP,eccentricity,is_Neutrophils,0.005402329082677507
+S00292623,OA,Neutrophils,CHP,alignment_score,is_Neutrophils,0.010537595066531935
+S00292623,OA,Neutrophils,COL1A1bis,major_axis_length,is_Neutrophils,0.020932062918364927
+S00292623,OA,Neutrophils,COL1A1bis,minor_axis_length,is_Neutrophils,0.02408419635791429
+S00292623,OA,Neutrophils,COL1A1bis,area,is_Neutrophils,0.021616212101455947
+S00292623,OA,Neutrophils,COL1A1bis,eccentricity,is_Neutrophils,-0.012712429423664282
+S00292623,OA,Neutrophils,COL1A1bis,alignment_score,is_Neutrophils,0.02578958254157045
+S00292623,OA,Neutrophils,COL4A1,major_axis_length,is_Neutrophils,-0.01536816803456204
+S00292623,OA,Neutrophils,COL4A1,minor_axis_length,is_Neutrophils,-0.013574785374417494
+S00292623,OA,Neutrophils,COL4A1,area,is_Neutrophils,-0.007267349543724018
+S00292623,OA,Neutrophils,COL4A1,eccentricity,is_Neutrophils,-0.009851294366077597
+S00292623,OA,Neutrophils,COL4A1,alignment_score,is_Neutrophils,0.03796845334802995
+S00292623,OA,Neutrophils,COL6A1,major_axis_length,is_Neutrophils,0.016404588823461984
+S00292623,OA,Neutrophils,COL6A1,minor_axis_length,is_Neutrophils,0.015255140997983498
+S00292623,OA,Neutrophils,COL6A1,area,is_Neutrophils,0.014838623026267116
+S00292623,OA,Neutrophils,COL6A1,eccentricity,is_Neutrophils,0.0016234208702487856
+S00292623,OA,Neutrophils,COL6A1,alignment_score,is_Neutrophils,-0.013958555949116908
+S00292623,OA,Neutrophils,FN,major_axis_length,is_Neutrophils,0.024242412263722073
+S00292623,OA,Neutrophils,FN,minor_axis_length,is_Neutrophils,0.010845359182716658
+S00292623,OA,Neutrophils,FN,area,is_Neutrophils,0.022477331485060738
+S00292623,OA,Neutrophils,FN,eccentricity,is_Neutrophils,0.01384525355293531
+S00292623,OA,Neutrophils,FN,alignment_score,is_Neutrophils,0.0013240030729087706
+S00292623,OA,Neutrophils,MFAP5,major_axis_length,is_Neutrophils,0.00839744054745317
+S00292623,OA,Neutrophils,MFAP5,minor_axis_length,is_Neutrophils,0.008836582982817292
+S00292623,OA,Neutrophils,MFAP5,area,is_Neutrophils,0.003190017379119126
+S00292623,OA,Neutrophils,MFAP5,eccentricity,is_Neutrophils,0.0003929974283476499
+S00292623,OA,Neutrophils,MFAP5,alignment_score,is_Neutrophils,-0.005585333109425115
+S00292623,OA,Vascular cells,CHP,major_axis_length,is_Vascular_cells,0.030081132465673892
+S00292623,OA,Vascular cells,CHP,minor_axis_length,is_Vascular_cells,0.0056221754905474005
+S00292623,OA,Vascular cells,CHP,area,is_Vascular_cells,0.017227164817291973
+S00292623,OA,Vascular cells,CHP,eccentricity,is_Vascular_cells,0.03476667598203347
+S00292623,OA,Vascular cells,CHP,alignment_score,is_Vascular_cells,-0.028465380218755793
+S00292623,OA,Vascular cells,COL1A1bis,major_axis_length,is_Vascular_cells,0.07113481477190836
+S00292623,OA,Vascular cells,COL1A1bis,minor_axis_length,is_Vascular_cells,0.03078476808649698
+S00292623,OA,Vascular cells,COL1A1bis,area,is_Vascular_cells,0.029151626186783887
+S00292623,OA,Vascular cells,COL1A1bis,eccentricity,is_Vascular_cells,0.02743703300939711
+S00292623,OA,Vascular cells,COL1A1bis,alignment_score,is_Vascular_cells,-0.049472805826285465
+S00292623,OA,Vascular cells,COL4A1,major_axis_length,is_Vascular_cells,0.05826111076045125
+S00292623,OA,Vascular cells,COL4A1,minor_axis_length,is_Vascular_cells,0.052587645529157796
+S00292623,OA,Vascular cells,COL4A1,area,is_Vascular_cells,0.061448211219198426
+S00292623,OA,Vascular cells,COL4A1,eccentricity,is_Vascular_cells,-0.00258091714202499
+S00292623,OA,Vascular cells,COL4A1,alignment_score,is_Vascular_cells,-0.01018541837339771
+S00292623,OA,Vascular cells,COL6A1,major_axis_length,is_Vascular_cells,0.013800048805123697
+S00292623,OA,Vascular cells,COL6A1,minor_axis_length,is_Vascular_cells,0.004873277067425851
+S00292623,OA,Vascular cells,COL6A1,area,is_Vascular_cells,0.0018411607449924608
+S00292623,OA,Vascular cells,COL6A1,eccentricity,is_Vascular_cells,0.018005303712567824
+S00292623,OA,Vascular cells,COL6A1,alignment_score,is_Vascular_cells,-0.03507397150505702
+S00292623,OA,Vascular cells,FN,major_axis_length,is_Vascular_cells,0.00191027611252386
+S00292623,OA,Vascular cells,FN,minor_axis_length,is_Vascular_cells,-0.024425321452900932
+S00292623,OA,Vascular cells,FN,area,is_Vascular_cells,-0.00977609345715787
+S00292623,OA,Vascular cells,FN,eccentricity,is_Vascular_cells,0.04468457207813568
+S00292623,OA,Vascular cells,FN,alignment_score,is_Vascular_cells,-0.030198325214247885
+S00292623,OA,Vascular cells,MFAP5,major_axis_length,is_Vascular_cells,-0.014922441890741156
+S00292623,OA,Vascular cells,MFAP5,minor_axis_length,is_Vascular_cells,-0.026987118165462287
+S00292623,OA,Vascular cells,MFAP5,area,is_Vascular_cells,-0.016212219537304992
+S00292623,OA,Vascular cells,MFAP5,eccentricity,is_Vascular_cells,0.025321065542344073
+S00292623,OA,Vascular cells,MFAP5,alignment_score,is_Vascular_cells,-0.03126030928165282
+S00293087,OA,CD4 T cells,CHP,major_axis_length,is_CD4_T_cells,0.012878648452125089
+S00293087,OA,CD4 T cells,CHP,minor_axis_length,is_CD4_T_cells,0.006523345827190873
+S00293087,OA,CD4 T cells,CHP,area,is_CD4_T_cells,0.0036230112699734787
+S00293087,OA,CD4 T cells,CHP,eccentricity,is_CD4_T_cells,0.011232829859443811
+S00293087,OA,CD4 T cells,CHP,alignment_score,is_CD4_T_cells,-0.00984590180024923
+S00293087,OA,CD4 T cells,COL1A1bis,major_axis_length,is_CD4_T_cells,0.023323160498795625
+S00293087,OA,CD4 T cells,COL1A1bis,minor_axis_length,is_CD4_T_cells,0.017773195223062248
+S00293087,OA,CD4 T cells,COL1A1bis,area,is_CD4_T_cells,0.021693854420221786
+S00293087,OA,CD4 T cells,COL1A1bis,eccentricity,is_CD4_T_cells,-0.009024694574272563
+S00293087,OA,CD4 T cells,COL1A1bis,alignment_score,is_CD4_T_cells,-0.014929950003140733
+S00293087,OA,CD4 T cells,COL4A1,major_axis_length,is_CD4_T_cells,0.01840022184748071
+S00293087,OA,CD4 T cells,COL4A1,minor_axis_length,is_CD4_T_cells,0.019845640126458595
+S00293087,OA,CD4 T cells,COL4A1,area,is_CD4_T_cells,0.01550712713143928
+S00293087,OA,CD4 T cells,COL4A1,eccentricity,is_CD4_T_cells,0.010063212798789644
+S00293087,OA,CD4 T cells,COL4A1,alignment_score,is_CD4_T_cells,0.011007077105328614
+S00293087,OA,CD4 T cells,COL6A1,major_axis_length,is_CD4_T_cells,0.00229445211482557
+S00293087,OA,CD4 T cells,COL6A1,minor_axis_length,is_CD4_T_cells,0.003192976205077374
+S00293087,OA,CD4 T cells,COL6A1,area,is_CD4_T_cells,0.0006659605043525609
+S00293087,OA,CD4 T cells,COL6A1,eccentricity,is_CD4_T_cells,0.01126083958168493
+S00293087,OA,CD4 T cells,COL6A1,alignment_score,is_CD4_T_cells,0.00969353036696882
+S00293087,OA,CD4 T cells,FN,major_axis_length,is_CD4_T_cells,-0.007114144424516954
+S00293087,OA,CD4 T cells,FN,minor_axis_length,is_CD4_T_cells,-0.006693976534068831
+S00293087,OA,CD4 T cells,FN,area,is_CD4_T_cells,-0.004551260550542357
+S00293087,OA,CD4 T cells,FN,eccentricity,is_CD4_T_cells,0.007986430178420392
+S00293087,OA,CD4 T cells,FN,alignment_score,is_CD4_T_cells,0.011834828311276899
+S00293087,OA,CD4 T cells,MFAP5,major_axis_length,is_CD4_T_cells,0.004893364967086978
+S00293087,OA,CD4 T cells,MFAP5,minor_axis_length,is_CD4_T_cells,0.00486002281387657
+S00293087,OA,CD4 T cells,MFAP5,area,is_CD4_T_cells,-0.0028066008746083964
+S00293087,OA,CD4 T cells,MFAP5,eccentricity,is_CD4_T_cells,0.006672831336394184
+S00293087,OA,CD4 T cells,MFAP5,alignment_score,is_CD4_T_cells,0.0008990312544699939
+S00293087,OA,CD8 T cells,CHP,major_axis_length,is_CD8_T_cells,0.011318096973430536
+S00293087,OA,CD8 T cells,CHP,minor_axis_length,is_CD8_T_cells,0.005394939983489545
+S00293087,OA,CD8 T cells,CHP,area,is_CD8_T_cells,0.0001887329053587806
+S00293087,OA,CD8 T cells,CHP,eccentricity,is_CD8_T_cells,0.005948729270344969
+S00293087,OA,CD8 T cells,CHP,alignment_score,is_CD8_T_cells,-0.0069483388287909075
+S00293087,OA,CD8 T cells,COL1A1bis,major_axis_length,is_CD8_T_cells,0.024330547741094513
+S00293087,OA,CD8 T cells,COL1A1bis,minor_axis_length,is_CD8_T_cells,0.020207925691966205
+S00293087,OA,CD8 T cells,COL1A1bis,area,is_CD8_T_cells,0.02728926501075634
+S00293087,OA,CD8 T cells,COL1A1bis,eccentricity,is_CD8_T_cells,-0.00372951519391887
+S00293087,OA,CD8 T cells,COL1A1bis,alignment_score,is_CD8_T_cells,-0.015129618063808966
+S00293087,OA,CD8 T cells,COL4A1,major_axis_length,is_CD8_T_cells,0.027276972393793793
+S00293087,OA,CD8 T cells,COL4A1,minor_axis_length,is_CD8_T_cells,0.035767733515015665
+S00293087,OA,CD8 T cells,COL4A1,area,is_CD8_T_cells,0.03649687569165849
+S00293087,OA,CD8 T cells,COL4A1,eccentricity,is_CD8_T_cells,-0.02204809786445791
+S00293087,OA,CD8 T cells,COL4A1,alignment_score,is_CD8_T_cells,-0.020229392372098656
+S00293087,OA,CD8 T cells,COL6A1,major_axis_length,is_CD8_T_cells,-0.0020681093726821645
+S00293087,OA,CD8 T cells,COL6A1,minor_axis_length,is_CD8_T_cells,0.0017918579020542744
+S00293087,OA,CD8 T cells,COL6A1,area,is_CD8_T_cells,0.0006004392841866037
+S00293087,OA,CD8 T cells,COL6A1,eccentricity,is_CD8_T_cells,0.012263603083699288
+S00293087,OA,CD8 T cells,COL6A1,alignment_score,is_CD8_T_cells,0.013287579363976497
+S00293087,OA,CD8 T cells,FN,major_axis_length,is_CD8_T_cells,-0.008920867788939064
+S00293087,OA,CD8 T cells,FN,minor_axis_length,is_CD8_T_cells,-0.012331514525093838
+S00293087,OA,CD8 T cells,FN,area,is_CD8_T_cells,-0.016008893246510017
+S00293087,OA,CD8 T cells,FN,eccentricity,is_CD8_T_cells,0.020596556369186364
+S00293087,OA,CD8 T cells,FN,alignment_score,is_CD8_T_cells,0.005616127348560157
+S00293087,OA,CD8 T cells,MFAP5,major_axis_length,is_CD8_T_cells,-2.593864164098083e-05
+S00293087,OA,CD8 T cells,MFAP5,minor_axis_length,is_CD8_T_cells,0.003893581384966426
+S00293087,OA,CD8 T cells,MFAP5,area,is_CD8_T_cells,-0.0038416188474503735
+S00293087,OA,CD8 T cells,MFAP5,eccentricity,is_CD8_T_cells,0.013145648763914032
+S00293087,OA,CD8 T cells,MFAP5,alignment_score,is_CD8_T_cells,0.011760050165503097
+S00293087,OA,T cells,CHP,major_axis_length,is_T_cells,-0.0021196979391231397
+S00293087,OA,T cells,CHP,minor_axis_length,is_T_cells,0.005051468480964253
+S00293087,OA,T cells,CHP,area,is_T_cells,0.0022260372603811443
+S00293087,OA,T cells,CHP,eccentricity,is_T_cells,-0.006730014623422802
+S00293087,OA,T cells,CHP,alignment_score,is_T_cells,0.02077974735909124
+S00293087,OA,T cells,COL1A1bis,major_axis_length,is_T_cells,-0.0011700355574938142
+S00293087,OA,T cells,COL1A1bis,minor_axis_length,is_T_cells,0.00347920627444544
+S00293087,OA,T cells,COL1A1bis,area,is_T_cells,-0.0005486524098759653
+S00293087,OA,T cells,COL1A1bis,eccentricity,is_T_cells,0.004275190546984516
+S00293087,OA,T cells,COL1A1bis,alignment_score,is_T_cells,0.015355327605574495
+S00293087,OA,T cells,COL4A1,major_axis_length,is_T_cells,-0.008148276926566481
+S00293087,OA,T cells,COL4A1,minor_axis_length,is_T_cells,-0.010933627347663339
+S00293087,OA,T cells,COL4A1,area,is_T_cells,-0.0071013356531260405
+S00293087,OA,T cells,COL4A1,eccentricity,is_T_cells,0.013131317780934794
+S00293087,OA,T cells,COL4A1,alignment_score,is_T_cells,0.005829791375414001
+S00293087,OA,T cells,COL6A1,major_axis_length,is_T_cells,0.004488524509142774
+S00293087,OA,T cells,COL6A1,minor_axis_length,is_T_cells,0.006268541779555921
+S00293087,OA,T cells,COL6A1,area,is_T_cells,0.005780155541889723
+S00293087,OA,T cells,COL6A1,eccentricity,is_T_cells,-0.0012610703933899224
+S00293087,OA,T cells,COL6A1,alignment_score,is_T_cells,0.015893964607188206
+S00293087,OA,T cells,FN,major_axis_length,is_T_cells,0.035365682110599844
+S00293087,OA,T cells,FN,minor_axis_length,is_T_cells,0.04052648365203399
+S00293087,OA,T cells,FN,area,is_T_cells,0.04125892859763562
+S00293087,OA,T cells,FN,eccentricity,is_T_cells,-0.016124653328268082
+S00293087,OA,T cells,FN,alignment_score,is_T_cells,0.025585918461013483
+S00293087,OA,T cells,MFAP5,major_axis_length,is_T_cells,0.004534809275053465
+S00293087,OA,T cells,MFAP5,minor_axis_length,is_T_cells,0.006571002817835357
+S00293087,OA,T cells,MFAP5,area,is_T_cells,0.00259092416456293
+S00293087,OA,T cells,MFAP5,eccentricity,is_T_cells,-0.018705700720135523
+S00293087,OA,T cells,MFAP5,alignment_score,is_T_cells,0.005609350569995146
+S00293087,OA,B cells,CHP,major_axis_length,is_B_cells,0.0013711989718131214
+S00293087,OA,B cells,CHP,minor_axis_length,is_B_cells,-0.00041653892439855866
+S00293087,OA,B cells,CHP,area,is_B_cells,-0.00341507037703673
+S00293087,OA,B cells,CHP,eccentricity,is_B_cells,-7.423348566968598e-05
+S00293087,OA,B cells,CHP,alignment_score,is_B_cells,0.0054230441221025825
+S00293087,OA,B cells,COL1A1bis,major_axis_length,is_B_cells,0.013032588049663549
+S00293087,OA,B cells,COL1A1bis,minor_axis_length,is_B_cells,0.016804960226545235
+S00293087,OA,B cells,COL1A1bis,area,is_B_cells,0.018012599479170086
+S00293087,OA,B cells,COL1A1bis,eccentricity,is_B_cells,-0.009128751176083643
+S00293087,OA,B cells,COL1A1bis,alignment_score,is_B_cells,0.006144124815276659
+S00293087,OA,B cells,COL4A1,major_axis_length,is_B_cells,0.02071887258275999
+S00293087,OA,B cells,COL4A1,minor_axis_length,is_B_cells,0.02536892933288837
+S00293087,OA,B cells,COL4A1,area,is_B_cells,0.02894348640337649
+S00293087,OA,B cells,COL4A1,eccentricity,is_B_cells,-0.01440401425601243
+S00293087,OA,B cells,COL4A1,alignment_score,is_B_cells,0.014818862681160365
+S00293087,OA,B cells,COL6A1,major_axis_length,is_B_cells,0.0006098617806662091
+S00293087,OA,B cells,COL6A1,minor_axis_length,is_B_cells,0.004911293457070405
+S00293087,OA,B cells,COL6A1,area,is_B_cells,0.002749445872899327
+S00293087,OA,B cells,COL6A1,eccentricity,is_B_cells,-0.006980873698416061
+S00293087,OA,B cells,COL6A1,alignment_score,is_B_cells,0.0021225349324920134
+S00293087,OA,B cells,FN,major_axis_length,is_B_cells,0.008449826913347227
+S00293087,OA,B cells,FN,minor_axis_length,is_B_cells,0.007114379356624105
+S00293087,OA,B cells,FN,area,is_B_cells,0.0033844464140138815
+S00293087,OA,B cells,FN,eccentricity,is_B_cells,0.010850216819973085
+S00293087,OA,B cells,FN,alignment_score,is_B_cells,0.005490598872326174
+S00293087,OA,B cells,MFAP5,major_axis_length,is_B_cells,0.0015899619013387096
+S00293087,OA,B cells,MFAP5,minor_axis_length,is_B_cells,-0.00340164929796597
+S00293087,OA,B cells,MFAP5,area,is_B_cells,-0.00419570675500953
+S00293087,OA,B cells,MFAP5,eccentricity,is_B_cells,-0.0006442109217395205
+S00293087,OA,B cells,MFAP5,alignment_score,is_B_cells,-0.003925557247133896
+S00293087,OA,Plasma cells,CHP,major_axis_length,is_Plasma_cells,0.0006641514202604819
+S00293087,OA,Plasma cells,CHP,minor_axis_length,is_Plasma_cells,-2.1153161574212792e-05
+S00293087,OA,Plasma cells,CHP,area,is_Plasma_cells,-0.001721004162818146
+S00293087,OA,Plasma cells,CHP,eccentricity,is_Plasma_cells,0.0015785615889658143
+S00293087,OA,Plasma cells,CHP,alignment_score,is_Plasma_cells,-0.0069804832167571235
+S00293087,OA,Plasma cells,COL1A1bis,major_axis_length,is_Plasma_cells,0.011788116021709238
+S00293087,OA,Plasma cells,COL1A1bis,minor_axis_length,is_Plasma_cells,0.010350885177683226
+S00293087,OA,Plasma cells,COL1A1bis,area,is_Plasma_cells,0.01496814690088414
+S00293087,OA,Plasma cells,COL1A1bis,eccentricity,is_Plasma_cells,-0.0014074604126953427
+S00293087,OA,Plasma cells,COL1A1bis,alignment_score,is_Plasma_cells,-0.00034508027004254187
+S00293087,OA,Plasma cells,COL4A1,major_axis_length,is_Plasma_cells,0.012196705245967316
+S00293087,OA,Plasma cells,COL4A1,minor_axis_length,is_Plasma_cells,0.018222636180628457
+S00293087,OA,Plasma cells,COL4A1,area,is_Plasma_cells,0.021757838088735635
+S00293087,OA,Plasma cells,COL4A1,eccentricity,is_Plasma_cells,-0.0031015648019999775
+S00293087,OA,Plasma cells,COL4A1,alignment_score,is_Plasma_cells,0.011907017039998366
+S00293087,OA,Plasma cells,COL6A1,major_axis_length,is_Plasma_cells,0.008400539774070665
+S00293087,OA,Plasma cells,COL6A1,minor_axis_length,is_Plasma_cells,0.01219122452145044
+S00293087,OA,Plasma cells,COL6A1,area,is_Plasma_cells,0.013511696325315816
+S00293087,OA,Plasma cells,COL6A1,eccentricity,is_Plasma_cells,-0.0006196248893036718
+S00293087,OA,Plasma cells,COL6A1,alignment_score,is_Plasma_cells,-0.007977887278730627
+S00293087,OA,Plasma cells,FN,major_axis_length,is_Plasma_cells,-0.0056937551381699494
+S00293087,OA,Plasma cells,FN,minor_axis_length,is_Plasma_cells,-0.0029525436453273096
+S00293087,OA,Plasma cells,FN,area,is_Plasma_cells,-0.00451918214473047
+S00293087,OA,Plasma cells,FN,eccentricity,is_Plasma_cells,-0.0022289711164222496
+S00293087,OA,Plasma cells,FN,alignment_score,is_Plasma_cells,0.009839427710724392
+S00293087,OA,Plasma cells,MFAP5,major_axis_length,is_Plasma_cells,0.0046158245227174224
+S00293087,OA,Plasma cells,MFAP5,minor_axis_length,is_Plasma_cells,0.0038696510047863735
+S00293087,OA,Plasma cells,MFAP5,area,is_Plasma_cells,0.002431137836410755
+S00293087,OA,Plasma cells,MFAP5,eccentricity,is_Plasma_cells,0.0013165228026442342
+S00293087,OA,Plasma cells,MFAP5,alignment_score,is_Plasma_cells,-0.01003224629245766
+S00293087,OA,Macrophages,CHP,major_axis_length,is_Macrophages,-0.016451617846649898
+S00293087,OA,Macrophages,CHP,minor_axis_length,is_Macrophages,-0.03467591510289233
+S00293087,OA,Macrophages,CHP,area,is_Macrophages,-0.02700476877689147
+S00293087,OA,Macrophages,CHP,eccentricity,is_Macrophages,0.036891631607133955
+S00293087,OA,Macrophages,CHP,alignment_score,is_Macrophages,-0.0366275158424585
+S00293087,OA,Macrophages,COL1A1bis,major_axis_length,is_Macrophages,0.004861757835056199
+S00293087,OA,Macrophages,COL1A1bis,minor_axis_length,is_Macrophages,0.016885897591459396
+S00293087,OA,Macrophages,COL1A1bis,area,is_Macrophages,0.01085795713825532
+S00293087,OA,Macrophages,COL1A1bis,eccentricity,is_Macrophages,-0.008811566174057796
+S00293087,OA,Macrophages,COL1A1bis,alignment_score,is_Macrophages,-0.03731121315659085
+S00293087,OA,Macrophages,COL4A1,major_axis_length,is_Macrophages,-0.009629760928514744
+S00293087,OA,Macrophages,COL4A1,minor_axis_length,is_Macrophages,-0.0034481711732527193
+S00293087,OA,Macrophages,COL4A1,area,is_Macrophages,-0.0023687694862757416
+S00293087,OA,Macrophages,COL4A1,eccentricity,is_Macrophages,-0.012206014502502896
+S00293087,OA,Macrophages,COL4A1,alignment_score,is_Macrophages,-0.021873495635320876
+S00293087,OA,Macrophages,COL6A1,major_axis_length,is_Macrophages,0.026709169639396374
+S00293087,OA,Macrophages,COL6A1,minor_axis_length,is_Macrophages,0.015708739178979157
+S00293087,OA,Macrophages,COL6A1,area,is_Macrophages,0.018327544887217315
+S00293087,OA,Macrophages,COL6A1,eccentricity,is_Macrophages,0.006468588422078944
+S00293087,OA,Macrophages,COL6A1,alignment_score,is_Macrophages,-0.041413220763947156
+S00293087,OA,Macrophages,FN,major_axis_length,is_Macrophages,0.04469801886250314
+S00293087,OA,Macrophages,FN,minor_axis_length,is_Macrophages,0.023236826867201903
+S00293087,OA,Macrophages,FN,area,is_Macrophages,0.039197737961670684
+S00293087,OA,Macrophages,FN,eccentricity,is_Macrophages,-0.03790866899377774
+S00293087,OA,Macrophages,FN,alignment_score,is_Macrophages,-0.03361643203591194
+S00293087,OA,Macrophages,MFAP5,major_axis_length,is_Macrophages,0.029619656868407302
+S00293087,OA,Macrophages,MFAP5,minor_axis_length,is_Macrophages,0.02264166310150629
+S00293087,OA,Macrophages,MFAP5,area,is_Macrophages,0.025778852433158125
+S00293087,OA,Macrophages,MFAP5,eccentricity,is_Macrophages,-0.012699550422478148
+S00293087,OA,Macrophages,MFAP5,alignment_score,is_Macrophages,-0.02609323757353841
+S00293087,OA,MERTK+ Macrophages,CHP,major_axis_length,is_MERTKpos_Macrophages,-0.00292542306733103
+S00293087,OA,MERTK+ Macrophages,CHP,minor_axis_length,is_MERTKpos_Macrophages,-0.001881938770918685
+S00293087,OA,MERTK+ Macrophages,CHP,area,is_MERTKpos_Macrophages,-0.0003528729560771376
+S00293087,OA,MERTK+ Macrophages,CHP,eccentricity,is_MERTKpos_Macrophages,0.0024777823917945703
+S00293087,OA,MERTK+ Macrophages,CHP,alignment_score,is_MERTKpos_Macrophages,0.009565594139005719
+S00293087,OA,MERTK+ Macrophages,COL1A1bis,major_axis_length,is_MERTKpos_Macrophages,0.0024336018653462015
+S00293087,OA,MERTK+ Macrophages,COL1A1bis,minor_axis_length,is_MERTKpos_Macrophages,-0.011205253447765542
+S00293087,OA,MERTK+ Macrophages,COL1A1bis,area,is_MERTKpos_Macrophages,-0.005050800257273816
+S00293087,OA,MERTK+ Macrophages,COL1A1bis,eccentricity,is_MERTKpos_Macrophages,0.016568094674559195
+S00293087,OA,MERTK+ Macrophages,COL1A1bis,alignment_score,is_MERTKpos_Macrophages,0.005040245207117826
+S00293087,OA,MERTK+ Macrophages,COL4A1,major_axis_length,is_MERTKpos_Macrophages,0.010934363518820205
+S00293087,OA,MERTK+ Macrophages,COL4A1,minor_axis_length,is_MERTKpos_Macrophages,0.0022743806226483356
+S00293087,OA,MERTK+ Macrophages,COL4A1,area,is_MERTKpos_Macrophages,0.007939626726156796
+S00293087,OA,MERTK+ Macrophages,COL4A1,eccentricity,is_MERTKpos_Macrophages,0.005597776468599719
+S00293087,OA,MERTK+ Macrophages,COL4A1,alignment_score,is_MERTKpos_Macrophages,0.00883649142195609
+S00293087,OA,MERTK+ Macrophages,COL6A1,major_axis_length,is_MERTKpos_Macrophages,0.003284360485284391
+S00293087,OA,MERTK+ Macrophages,COL6A1,minor_axis_length,is_MERTKpos_Macrophages,0.0012652272148076682
+S00293087,OA,MERTK+ Macrophages,COL6A1,area,is_MERTKpos_Macrophages,0.0007952544983519161
+S00293087,OA,MERTK+ Macrophages,COL6A1,eccentricity,is_MERTKpos_Macrophages,0.009267889759221807
+S00293087,OA,MERTK+ Macrophages,COL6A1,alignment_score,is_MERTKpos_Macrophages,-0.007901452915805018
+S00293087,OA,MERTK+ Macrophages,FN,major_axis_length,is_MERTKpos_Macrophages,0.013292427467453025
+S00293087,OA,MERTK+ Macrophages,FN,minor_axis_length,is_MERTKpos_Macrophages,0.014806944050738735
+S00293087,OA,MERTK+ Macrophages,FN,area,is_MERTKpos_Macrophages,0.016805448664337874
+S00293087,OA,MERTK+ Macrophages,FN,eccentricity,is_MERTKpos_Macrophages,-0.007577369375395516
+S00293087,OA,MERTK+ Macrophages,FN,alignment_score,is_MERTKpos_Macrophages,0.001730800329672358
+S00293087,OA,MERTK+ Macrophages,MFAP5,major_axis_length,is_MERTKpos_Macrophages,0.008286376941045486
+S00293087,OA,MERTK+ Macrophages,MFAP5,minor_axis_length,is_MERTKpos_Macrophages,0.006742842042938076
+S00293087,OA,MERTK+ Macrophages,MFAP5,area,is_MERTKpos_Macrophages,0.007016278601106861
+S00293087,OA,MERTK+ Macrophages,MFAP5,eccentricity,is_MERTKpos_Macrophages,-0.002655275316974818
+S00293087,OA,MERTK+ Macrophages,MFAP5,alignment_score,is_MERTKpos_Macrophages,0.006363989136625852
+S00293087,OA,Monocytes,CHP,major_axis_length,is_Monocytes,-0.02399830674920545
+S00293087,OA,Monocytes,CHP,minor_axis_length,is_Monocytes,-0.025259123096229668
+S00293087,OA,Monocytes,CHP,area,is_Monocytes,-0.03397250842196404
+S00293087,OA,Monocytes,CHP,eccentricity,is_Monocytes,-0.01502006497775243
+S00293087,OA,Monocytes,CHP,alignment_score,is_Monocytes,0.028207921051009572
+S00293087,OA,Monocytes,COL1A1bis,major_axis_length,is_Monocytes,-0.005280908812937915
+S00293087,OA,Monocytes,COL1A1bis,minor_axis_length,is_Monocytes,0.019573138674340906
+S00293087,OA,Monocytes,COL1A1bis,area,is_Monocytes,0.025267951727888885
+S00293087,OA,Monocytes,COL1A1bis,eccentricity,is_Monocytes,-0.046103399381063524
+S00293087,OA,Monocytes,COL1A1bis,alignment_score,is_Monocytes,-0.012203943126503589
+S00293087,OA,Monocytes,COL4A1,major_axis_length,is_Monocytes,0.02263775263080374
+S00293087,OA,Monocytes,COL4A1,minor_axis_length,is_Monocytes,0.05565467453635237
+S00293087,OA,Monocytes,COL4A1,area,is_Monocytes,0.07909533916552224
+S00293087,OA,Monocytes,COL4A1,eccentricity,is_Monocytes,-0.07238575088669393
+S00293087,OA,Monocytes,COL4A1,alignment_score,is_Monocytes,0.025113665871670236
+S00293087,OA,Monocytes,COL6A1,major_axis_length,is_Monocytes,0.019723755279521447
+S00293087,OA,Monocytes,COL6A1,minor_axis_length,is_Monocytes,0.03442263188506666
+S00293087,OA,Monocytes,COL6A1,area,is_Monocytes,0.034071551784527344
+S00293087,OA,Monocytes,COL6A1,eccentricity,is_Monocytes,-0.03258834356574
+S00293087,OA,Monocytes,COL6A1,alignment_score,is_Monocytes,0.03027354718271731
+S00293087,OA,Monocytes,FN,major_axis_length,is_Monocytes,0.03196924015894282
+S00293087,OA,Monocytes,FN,minor_axis_length,is_Monocytes,0.03179826652554941
+S00293087,OA,Monocytes,FN,area,is_Monocytes,0.033414261931265975
+S00293087,OA,Monocytes,FN,eccentricity,is_Monocytes,0.0002947391286025752
+S00293087,OA,Monocytes,FN,alignment_score,is_Monocytes,0.023637851110704603
+S00293087,OA,Monocytes,MFAP5,major_axis_length,is_Monocytes,0.009996037908754096
+S00293087,OA,Monocytes,MFAP5,minor_axis_length,is_Monocytes,0.00716211629615855
+S00293087,OA,Monocytes,MFAP5,area,is_Monocytes,0.009354298770070891
+S00293087,OA,Monocytes,MFAP5,eccentricity,is_Monocytes,-0.0041057550730134625
+S00293087,OA,Monocytes,MFAP5,alignment_score,is_Monocytes,0.034525161091508424
+S00293087,OA,Dendritic cells,CHP,major_axis_length,is_Dendritic_cells,0.009996375482046087
+S00293087,OA,Dendritic cells,CHP,minor_axis_length,is_Dendritic_cells,0.01137242470460268
+S00293087,OA,Dendritic cells,CHP,area,is_Dendritic_cells,0.009997498812068066
+S00293087,OA,Dendritic cells,CHP,eccentricity,is_Dendritic_cells,-0.006846919670934322
+S00293087,OA,Dendritic cells,CHP,alignment_score,is_Dendritic_cells,0.003924795959639011
+S00293087,OA,Dendritic cells,COL1A1bis,major_axis_length,is_Dendritic_cells,0.018003966244614027
+S00293087,OA,Dendritic cells,COL1A1bis,minor_axis_length,is_Dendritic_cells,0.020939159698870818
+S00293087,OA,Dendritic cells,COL1A1bis,area,is_Dendritic_cells,0.017551143243002196
+S00293087,OA,Dendritic cells,COL1A1bis,eccentricity,is_Dendritic_cells,-0.0045254365688591446
+S00293087,OA,Dendritic cells,COL1A1bis,alignment_score,is_Dendritic_cells,0.009511834400316065
+S00293087,OA,Dendritic cells,COL4A1,major_axis_length,is_Dendritic_cells,-0.005456654464173825
+S00293087,OA,Dendritic cells,COL4A1,minor_axis_length,is_Dendritic_cells,-0.006175838766630607
+S00293087,OA,Dendritic cells,COL4A1,area,is_Dendritic_cells,-0.01478265048486523
+S00293087,OA,Dendritic cells,COL4A1,eccentricity,is_Dendritic_cells,0.014229583269872803
+S00293087,OA,Dendritic cells,COL4A1,alignment_score,is_Dendritic_cells,0.0426921059998065
+S00293087,OA,Dendritic cells,COL6A1,major_axis_length,is_Dendritic_cells,-0.00010631809927203609
+S00293087,OA,Dendritic cells,COL6A1,minor_axis_length,is_Dendritic_cells,-0.003073299557869455
+S00293087,OA,Dendritic cells,COL6A1,area,is_Dendritic_cells,-0.005225342694808488
+S00293087,OA,Dendritic cells,COL6A1,eccentricity,is_Dendritic_cells,0.006530457702805795
+S00293087,OA,Dendritic cells,COL6A1,alignment_score,is_Dendritic_cells,-0.004734228501829092
+S00293087,OA,Dendritic cells,FN,major_axis_length,is_Dendritic_cells,-0.004517636327548584
+S00293087,OA,Dendritic cells,FN,minor_axis_length,is_Dendritic_cells,-0.005993007067538882
+S00293087,OA,Dendritic cells,FN,area,is_Dendritic_cells,-0.006318403383379127
+S00293087,OA,Dendritic cells,FN,eccentricity,is_Dendritic_cells,0.004806139908619299
+S00293087,OA,Dendritic cells,FN,alignment_score,is_Dendritic_cells,0.01063417956966995
+S00293087,OA,Dendritic cells,MFAP5,major_axis_length,is_Dendritic_cells,-0.0003894201455412924
+S00293087,OA,Dendritic cells,MFAP5,minor_axis_length,is_Dendritic_cells,0.0005299467789939385
+S00293087,OA,Dendritic cells,MFAP5,area,is_Dendritic_cells,-0.0041855222266578085
+S00293087,OA,Dendritic cells,MFAP5,eccentricity,is_Dendritic_cells,0.0028233639856124274
+S00293087,OA,Dendritic cells,MFAP5,alignment_score,is_Dendritic_cells,-0.0023338302256946633
+S00293087,OA,Neutrophils,CHP,major_axis_length,is_Neutrophils,-0.00044531049574841436
+S00293087,OA,Neutrophils,CHP,minor_axis_length,is_Neutrophils,0.00541242406450175
+S00293087,OA,Neutrophils,CHP,area,is_Neutrophils,-0.0013778098571743216
+S00293087,OA,Neutrophils,CHP,eccentricity,is_Neutrophils,-0.013070034639472457
+S00293087,OA,Neutrophils,CHP,alignment_score,is_Neutrophils,0.007910642277943861
+S00293087,OA,Neutrophils,COL1A1bis,major_axis_length,is_Neutrophils,0.01057179526196341
+S00293087,OA,Neutrophils,COL1A1bis,minor_axis_length,is_Neutrophils,0.015738266370084478
+S00293087,OA,Neutrophils,COL1A1bis,area,is_Neutrophils,0.018160207379388085
+S00293087,OA,Neutrophils,COL1A1bis,eccentricity,is_Neutrophils,-0.009523237055286831
+S00293087,OA,Neutrophils,COL1A1bis,alignment_score,is_Neutrophils,0.014653339344385478
+S00293087,OA,Neutrophils,COL4A1,major_axis_length,is_Neutrophils,-0.01932710640351534
+S00293087,OA,Neutrophils,COL4A1,minor_axis_length,is_Neutrophils,-0.022355876895136264
+S00293087,OA,Neutrophils,COL4A1,area,is_Neutrophils,-0.017227502049789577
+S00293087,OA,Neutrophils,COL4A1,eccentricity,is_Neutrophils,-0.0005958474419398951
+S00293087,OA,Neutrophils,COL4A1,alignment_score,is_Neutrophils,-0.013884331541724084
+S00293087,OA,Neutrophils,COL6A1,major_axis_length,is_Neutrophils,0.015773618395536305
+S00293087,OA,Neutrophils,COL6A1,minor_axis_length,is_Neutrophils,0.017878960205293913
+S00293087,OA,Neutrophils,COL6A1,area,is_Neutrophils,0.01477929912084858
+S00293087,OA,Neutrophils,COL6A1,eccentricity,is_Neutrophils,-0.003401398323787151
+S00293087,OA,Neutrophils,COL6A1,alignment_score,is_Neutrophils,0.02093103571987372
+S00293087,OA,Neutrophils,FN,major_axis_length,is_Neutrophils,0.026081476220842992
+S00293087,OA,Neutrophils,FN,minor_axis_length,is_Neutrophils,0.02373363397718313
+S00293087,OA,Neutrophils,FN,area,is_Neutrophils,0.029250318135127164
+S00293087,OA,Neutrophils,FN,eccentricity,is_Neutrophils,-0.003186344829854294
+S00293087,OA,Neutrophils,FN,alignment_score,is_Neutrophils,0.0006239269864355744
+S00293087,OA,Neutrophils,MFAP5,major_axis_length,is_Neutrophils,0.0006555509383208495
+S00293087,OA,Neutrophils,MFAP5,minor_axis_length,is_Neutrophils,-0.0031904400850571286
+S00293087,OA,Neutrophils,MFAP5,area,is_Neutrophils,-0.0016530964861617016
+S00293087,OA,Neutrophils,MFAP5,eccentricity,is_Neutrophils,-0.008993734067623365
+S00293087,OA,Neutrophils,MFAP5,alignment_score,is_Neutrophils,0.026189539571825942
+S00293087,OA,Vascular cells,CHP,major_axis_length,is_Vascular_cells,0.07034277139012964
+S00293087,OA,Vascular cells,CHP,minor_axis_length,is_Vascular_cells,0.05097360899535054
+S00293087,OA,Vascular cells,CHP,area,is_Vascular_cells,0.038707662370517835
+S00293087,OA,Vascular cells,CHP,eccentricity,is_Vascular_cells,0.02595690606894297
+S00293087,OA,Vascular cells,CHP,alignment_score,is_Vascular_cells,-0.0055793292522595276
+S00293087,OA,Vascular cells,COL1A1bis,major_axis_length,is_Vascular_cells,0.08988983387130887
+S00293087,OA,Vascular cells,COL1A1bis,minor_axis_length,is_Vascular_cells,0.05158730179269688
+S00293087,OA,Vascular cells,COL1A1bis,area,is_Vascular_cells,0.05917801783369305
+S00293087,OA,Vascular cells,COL1A1bis,eccentricity,is_Vascular_cells,0.0494227355671103
+S00293087,OA,Vascular cells,COL1A1bis,alignment_score,is_Vascular_cells,-0.024148460974938373
+S00293087,OA,Vascular cells,COL4A1,major_axis_length,is_Vascular_cells,0.03194457705490053
+S00293087,OA,Vascular cells,COL4A1,minor_axis_length,is_Vascular_cells,0.01897391713747135
+S00293087,OA,Vascular cells,COL4A1,area,is_Vascular_cells,0.01928260019283733
+S00293087,OA,Vascular cells,COL4A1,eccentricity,is_Vascular_cells,0.012617071148764819
+S00293087,OA,Vascular cells,COL4A1,alignment_score,is_Vascular_cells,-0.02698632464463467
+S00293087,OA,Vascular cells,COL6A1,major_axis_length,is_Vascular_cells,0.020639359704216095
+S00293087,OA,Vascular cells,COL6A1,minor_axis_length,is_Vascular_cells,0.02199834684235369
+S00293087,OA,Vascular cells,COL6A1,area,is_Vascular_cells,0.011880725937437971
+S00293087,OA,Vascular cells,COL6A1,eccentricity,is_Vascular_cells,0.023186154604288474
+S00293087,OA,Vascular cells,COL6A1,alignment_score,is_Vascular_cells,0.0016250367574557768
+S00293087,OA,Vascular cells,FN,major_axis_length,is_Vascular_cells,0.005577706702184657
+S00293087,OA,Vascular cells,FN,minor_axis_length,is_Vascular_cells,-0.013368037647214398
+S00293087,OA,Vascular cells,FN,area,is_Vascular_cells,-0.0050815636489446045
+S00293087,OA,Vascular cells,FN,eccentricity,is_Vascular_cells,0.0438248269484876
+S00293087,OA,Vascular cells,FN,alignment_score,is_Vascular_cells,0.021839358562366684
+S00293087,OA,Vascular cells,MFAP5,major_axis_length,is_Vascular_cells,0.00914925919327654
+S00293087,OA,Vascular cells,MFAP5,minor_axis_length,is_Vascular_cells,0.004384345461935151
+S00293087,OA,Vascular cells,MFAP5,area,is_Vascular_cells,-0.006837798071514665
+S00293087,OA,Vascular cells,MFAP5,eccentricity,is_Vascular_cells,0.026528668316920512
+S00293087,OA,Vascular cells,MFAP5,alignment_score,is_Vascular_cells,0.015961861636261787

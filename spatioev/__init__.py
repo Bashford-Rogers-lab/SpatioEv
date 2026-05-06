@@ -111,4 +111,7 @@ from .spatial import (
     calculate_channel_correlation,
     extract_cell_pixel_features_for_fov,
     extract_cell_pixel_features,
+    assign_pseudotime_bins,
+    compute_epithelial_centered_interaction_dynamics,
+    summarize_epithelial_interaction_dynamics,
 )

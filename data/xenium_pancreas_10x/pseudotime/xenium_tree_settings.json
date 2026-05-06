@@ -1,0 +1,10 @@
+{
+  "n_niches": 5074,
+  "detailed_num_nodes": 100,
+  "simplified_num_nodes": 24,
+  "detailed_root_node": 68,
+  "simplified_root_node": 21,
+  "detailed_tree_min_nodes": 40,
+  "detailed_tree_max_nodes": 100,
+  "detailed_tree_node_scale": 2.5
+}

@@ -1,0 +1,36 @@
+Tier_A,n,sample_id,disease_group,fraction
+pancreatic ductal epithelium,40001,pdac_pancreas_v1,PDAC,0.2978547547599723
+Fibroblasts,27751,pdac_pancreas_v1,PDAC,0.20663901650818708
+pancreatic acinar epithelium,25389,pdac_pancreas_v1,PDAC,0.1890511329367
+Myeloid cells,15014,pdac_pancreas_v1,PDAC,0.11179698727447374
+T cells,10966,pdac_pancreas_v1,PDAC,0.08165483964645524
+Endothelial cells,9336,pdac_pancreas_v1,PDAC,0.06951756182193199
+Islets,2834,pdac_pancreas_v1,PDAC,0.02110248181269872
+Mast cells,1861,pdac_pancreas_v1,PDAC,0.013857346031556922
+B lineage,1145,pdac_pancreas_v1,PDAC,0.008525879208024006
+pancreatic ductal epithelium,49335,pdac_io_v1,PDAC,0.213115674704312
+Myeloid cells,40518,pdac_io_v1,PDAC,0.17502829446983506
+Fibroblasts,36836,pdac_io_v1,PDAC,0.15912291463277667
+B lineage,28278,pdac_io_v1,PDAC,0.12215435389254149
+Endothelial cells,24910,pdac_io_v1,PDAC,0.1076053807010117
+Mucosa gland,20236,pdac_io_v1,PDAC,0.08741479260801575
+Unknown,14078,pdac_io_v1,PDAC,0.06081367119666169
+T cells,12742,pdac_io_v1,PDAC,0.05504246330358454
+Submucosa,4561,pdac_io_v1,PDAC,0.019702454491261113
+pancreatic ductal epithelium,40604,pdac_addon_v1,PDAC,0.21272560576293387
+pancreatic acinar epithelium,40157,pdac_addon_v1,PDAC,0.21038375900458414
+Fibroblasts,36205,pdac_addon_v1,PDAC,0.1896791093647675
+Myeloid cells,24984,pdac_addon_v1,PDAC,0.1308919449901768
+Unknown,13613,pdac_addon_v1,PDAC,0.07131892599869025
+Endothelial cells,12110,pdac_addon_v1,PDAC,0.06344466273739358
+T cells,12020,pdac_addon_v1,PDAC,0.06297314996725606
+Islets,7994,pdac_addon_v1,PDAC,0.041880812049770795
+B lineage,1775,pdac_addon_v1,PDAC,0.009299279633267845
+Mast cells,1413,pdac_addon_v1,PDAC,0.0074027504911591355
+pancreatic acinar epithelium,53753,normal_nondiseased_v1,NormalPancreas,0.5173781221425477
+pancreatic ductal epithelium,30112,normal_nondiseased_v1,NormalPancreas,0.2898310794552192
+Fibroblasts,8800,normal_nondiseased_v1,NormalPancreas,0.08470089994706194
+Endothelial cells,5454,normal_nondiseased_v1,NormalPancreas,0.05249530776264498
+Myeloid cells,3359,normal_nondiseased_v1,NormalPancreas,0.03233071851388421
+T cells,1245,normal_nondiseased_v1,NormalPancreas,0.011983252322055922
+Islets,1172,normal_nondiseased_v1,NormalPancreas,0.011280619856585976
