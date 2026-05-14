@@ -1336,7 +1336,7 @@ def cluster_spatial_components_from_mask(
                             singleton_counter += 1
                     continue
 
-                    component_labels[idx] = f"{fov}__component_{component_counter}"
+                component_labels[idx] = f"{fov}__component_{component_counter}"
                 component_counter += 1
 
         row = row_lookup[fov]
