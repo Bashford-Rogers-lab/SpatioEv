@@ -19,6 +19,39 @@ def zscore_normalize(adata):
 
     return adata
 
+def gmm_normalize(adata, n_components=2, random_state=0):
+    from sklearn.mixture import GaussianMixture
+
+    if "raw" not in adata.layers:
+        adata.layers["raw"] = adata.X.copy()
+
+    for idx in range(adata.X.shape[1]):
+        values = np.asarray(adata.X[:, idx]).flatten()
+
+        gmm = GaussianMixture(n_components=n_components, random_state=random_state)
+        gmm.fit(values.reshape(-1, 1))
+
+        means = gmm.means_.flatten()
+        stds = np.sqrt(gmm.covariances_.flatten())
+        weights = gmm.weights_.flatten()
+
+        w_max, w_min = weights.max(), weights.min()
+        # dominant component (>4x weight) = negative; else lowest-mean = negative.
+        # note: weight rule may misidentify ubiquitously expressed markers.
+        neg_idx = int(np.argmax(weights) if w_max >= 4 * w_min else np.argmin(means))
+
+        mu_neg = means[neg_idx]
+        sigma_neg = stds[neg_idx]
+        if sigma_neg == 0:
+            raise ValueError(
+                f"Marker '{adata.var_names[idx]}': negative population has zero standard deviation."
+            )
+
+        adata.X[:, idx] = (values - mu_neg) / sigma_neg
+
+    adata.layers["gmm_normalized"] = adata.X.copy()
+
+    return adata
 
 def add_obs_from_var(
     adata,
