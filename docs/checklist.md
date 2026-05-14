@@ -1,0 +1,6 @@
+- [ ] Add GMM normalisation to code.
+- [ ] Add spatial-LDA to code.
+- [ ] Paper: state in Methods that the morphology feature weight for SVM annotation is 0.4 by default and can be adjusted.
+- [ ] Check hardocded versions of SCIMAP and scikit-learn if still accurate, no versions pinned in TOML.
+- [ ] Describe in paper new features e.g. Ripley's K and Moran's I.
+- [ ] Note: `spatioev/spatial/local_density_KNN.py` (lines 54, 102) has no guard if cells share coordinates so `1/mean_dist` = `1 / 0` (probably rare but just in case!).
