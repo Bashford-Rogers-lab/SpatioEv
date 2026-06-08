@@ -2,7 +2,7 @@ Metadata-Version: 2.4
 Name: spatioev
 Version: 0.1.0
 Summary: Spatial feature extraction and spatial evolution framework for multiplexed imaging
-Author: Shihong Wu, Sakina Amin, Liezel Tamon, Rachael Bashford-Rogers
+Author: Shihong Wu, Sakina Amin, Rachael Bashford-Rogers
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 Requires-Dist: scimap[napari]

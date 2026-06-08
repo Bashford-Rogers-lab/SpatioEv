@@ -7,7 +7,7 @@ name = "spatioev"
 version = "0.1.0"
 description = "Spatial feature extraction and spatial evolution framework for multiplexed imaging"
 authors = [
-    { name = "Shihong Wu, Sakina Amin, Liezel Tamon, Rachael Bashford-Rogers" }
+    { name = "Shihong Wu, Sakina Amin, Rachael Bashford-Rogers" }
 ]
 readme = "README.md"
 requires-python = ">=3.10"
