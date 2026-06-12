@@ -1061,15 +1061,20 @@
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[docs]&quot;</span><span class="w">         </span><span class="c1"># MkDocs documentation site</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span><span class="w">          </span><span class="c1"># tests and developer tools</span>
 </code></pre></div>
-<p>The repository <code>environments.yml</code> is a pinned export of a working environment
-that includes scimap/Napari, SpatialData, and <code>dask==2024.11.2</code>. It uses
-<code>pip --no-deps</code> so pip installs the same pinned package set instead of
-re-solving upstream dependency metadata.</p>
+<p>The repository <code>environments.yml</code> plus <code>requirements-spatioev_env.txt</code> recreate
+a pinned working environment that includes scimap/Napari, SpatialData, and
+<code>dask==2024.11.2</code>. Create the conda environment first, then install the pinned
+pip requirements with <code>--no-deps</code> so pip uses the same package set instead of
+re-solving upstream dependency metadata:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environments.yml
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>conda<span class="w"> </span>activate<span class="w"> </span>spatioev_env
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--no-deps<span class="w"> </span>-r<span class="w"> </span>requirements-spatioev_env.txt
+</code></pre></div>
 <p>Quick check:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">spatioev</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sv</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nb">print</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">morans_i</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">spatioev</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sv</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nb">print</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">morans_i</span><span class="p">)</span>
 </code></pre></div>
 
 
