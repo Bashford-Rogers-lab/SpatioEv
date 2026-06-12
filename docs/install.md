@@ -19,6 +19,11 @@ pip install -e ".[docs]"         # MkDocs documentation site
 pip install -e ".[dev]"          # tests and developer tools
 ```
 
+The `viewer` extra, via scimap/Napari, and the `spatialdata` extra currently
+require incompatible Dask versions in one environment. Use
+`environment-viewer.yml` for viewer workflows and `environment-spatialdata.yml`
+for SpatialData workflows.
+
 Quick check:
 
 ```python
@@ -27,4 +32,3 @@ import spatioev as sv
 print(sv.__version__)
 print(sv.tl.morans_i)
 ```
-

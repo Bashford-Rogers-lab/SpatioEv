@@ -78,7 +78,7 @@ docs = [
     "pymdown-extensions>=10.0",
 ]
 all = [
-    "spatioev[dev,scanpy,viewer,spatialdata,trajectory,docs]",
+    "spatioev[dev,scanpy,trajectory,docs]",
 ]
 
 [project.urls]

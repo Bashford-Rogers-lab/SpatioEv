@@ -47,6 +47,15 @@ pip install -e ".[trajectory]"   # UMAP and ElPiGraph trajectory notebooks
 pip install -e ".[dev]"          # tests and developer tools
 ```
 
+The `viewer` extra, via scimap/Napari, and the `spatialdata` extra currently
+require incompatible Dask versions in the same environment. Use separate
+environments when you need both workflows:
+
+```bash
+conda env create -f environment-viewer.yml
+conda env create -f environment-spatialdata.yml
+```
+
 Quick import check:
 
 ```python
