@@ -1,0 +1,76 @@
+# Python build and runtime artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Local environments
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/results/
+tutorials/results/
+~$*.docx
+
+# Local analysis data and generated exports
+data/
+background/
+results/
+manuscript/
+manuscript/*.docx
+manuscript/*.pptx
+*.h5ad
+*.zarr/
+*.ome.tif
+*.ome.tiff
+*.tif
+*.tiff
+*.pkl
+*.pickle
+*.pdf
+*.rds
+*.RData
+
+# OS/editor artifacts
+.DS_Store
+Icon?
+.vscode/
+.idea/
+
+# R session artifacts
+.Rhistory
+.Rproj.user/
+
+# Documentation build output
+site/
+docs/_build/
+
+# Supplementary tables (moved to data/supplementary — not tracked)
+Supplementary\ Table*.txt
+Supplementary\ Table*.csv
+
+# Notebooks — public API validation cache (generated)
+notebooks/public_api_validation/
+
+# Conda environments
+*.conda
+conda-env/
+
+# Coverage / test reports
+coverage.xml
+.tox/
+.nox/
