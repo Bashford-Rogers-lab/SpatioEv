@@ -35,8 +35,12 @@ Current implementation choices:
 - Builds ductal/tumor epithelial connected-component niches from 10x `cell_boundaries.parquet` boundary proximity first, with a centroid-radius fallback.
 - Adds cell/nucleus boundary shape summaries, including circularity, solidity, elongation, Feret diameter, and boundary irregularity.
 - Adds a runnable Xenium DAPI pixel-feature extraction path using `nucleus_boundaries.parquet` plus user-verified focus morphology images. The notebook defaults to a pilot run before full epithelial extraction.
-- Summarizes epithelial niche graph morphology, state markers, and surrounding cell context.
+- Summarizes epithelial niche graph morphology, state markers, surrounding cell context, duct/lumen topology, ductal-continuity/cancerization proxies, and epithelial-stromal interface disruption proxies.
 - Fits a pooled ElPiGraph pseudotime trajectory from niche-level Xenium features. The detailed tree node count is adaptive (`min(100, max(40, ceil(sqrt(n_niches) * 2.5)))`), while the simplified tree used for major branch labels defaults to 24 nodes.
+- Adds histology proxy scores for normal-duct-like, ADM/PanIN-like, glandular architecture, ductal-continuity/cancerization-like spread, epithelial-stromal interface disruption, desmoplastic tumor, immune-inflamed, immune-excluded, duodenum-invasion context, and gland-poor/undifferentiated-like states.
+- Uses block-balanced feature scaling so broad feature families (histology modules, epithelial state, architecture/topology, nuclear morphology, microenvironment) contribute more evenly to the pooled trajectory.
+- Adds an intrinsic epithelial sensitivity trajectory using within-sample centered epithelial, architecture, and nuclear morphology features only.
+- Adds automatic branch annotation summaries: branch structure is inferred from the simplified tree, then each branch receives sample composition, histology-score enrichment, and a suggested biological identity for manual review.
 
 Important caveat:
 

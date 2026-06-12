@@ -1,0 +1,10 @@
+include README.md
+include LICENSE
+include pyproject.toml
+recursive-include spatioev *.py
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude data *
+recursive-exclude background *
+recursive-exclude notebooks/results *
+recursive-exclude results *

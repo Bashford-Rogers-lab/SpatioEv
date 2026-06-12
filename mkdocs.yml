@@ -1,0 +1,70 @@
+site_name: SpatioEv
+site_description: Spatial evolution analysis for multiplexed imaging and spatial transcriptomics.
+site_url: https://bashford-rogers-lab.github.io/SpatioEv/
+repo_url: https://github.com/Bashford-Rogers-lab/SpatioEv
+repo_name: Bashford-Rogers-lab/SpatioEv
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_signature_annotations: true
+            separate_signature: true
+            members_order: source
+            heading_level: 3
+            merge_init_into_class: true
+
+nav:
+  - Home: index.md
+  - Installation: install.md
+  - Quick Start: quickstart.md
+  - Tutorials:
+      - Overview: tutorials/index.md
+      - Mastering Spatial Evolution Analysis: tutorials/md/spatial_evolution_spatioev.md
+  - API Reference:
+      - Preprocessing (pp): functions/preprocessing.md
+      - Spatial Statistics (tl.stats): functions/tools_spatial_statistics.md
+      - Density & Interactions (tl.density): functions/tools_density_interaction.md
+      - Niche Graphs & Pseudotime (tl.niche, tl.pseudotime): functions/tools_niche_pseudotime.md
+      - ECM–Cell Analysis (tl.ecm): functions/tools_ecm_cell.md
+      - Plotting (pl): functions/plotting.md
+      - Helper Functions (hl): functions/helper_functions.md
+      - Xenium (xe): functions/xenium.md
+  - Methods:
+      - Morphology & Topology Features: methods/morphology_topology_features.md
+      - Spatial Statistics: methods/spatial_statistics.md
+      - Niche Graph Pseudotime: methods/niche_graph_pseudotime.md
+      - ECM–Cell Model: methods/ecm_cell_model.md
+  - Publication:
+      - Reproducibility: publication/reproducibility.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true

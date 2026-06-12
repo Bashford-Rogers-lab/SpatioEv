@@ -1,0 +1,48 @@
+cff-version: 1.2.0
+message: >-
+  If you use SpatioEv in your research, please cite it using the
+  metadata below. Until a formal journal article is available, cite
+  the GitHub repository and include the commit hash used for analysis.
+
+title: "SpatioEv: a spatial feature extraction and evolution framework
+  for multiplexed imaging and spatial transcriptomics"
+
+authors:
+  - family-names: Wu
+    given-names: Shihong
+    orcid: ""
+  - family-names: Amin
+    given-names: Sakina
+    orcid: ""
+  - family-names: Tamon
+    given-names: Liezel
+    orcid: ""
+  - family-names: Bashford-Rogers
+    given-names: Rachael
+    orcid: ""
+
+version: 0.1.0
+date-released: "2025-05-01"
+url: "https://github.com/Bashford-Rogers-lab/SpatioEv"
+repository-code: "https://github.com/Bashford-Rogers-lab/SpatioEv"
+license: GPL-3.0-or-later
+
+keywords:
+  - spatial biology
+  - multiplexed imaging
+  - spatial transcriptomics
+  - single-cell analysis
+  - tissue microenvironment
+  - pancreatic cancer
+  - pseudotime
+  - ECM
+
+abstract: >-
+  SpatioEv is a Python toolbox for reusable spatial analysis over
+  multiplexed imaging data, with extensions for spatial transcriptomics
+  workflows such as 10x Xenium. It focuses on per-cell spatial features,
+  neighborhood organization, cell–cell and cell–ECM interactions, niche
+  graph summaries, and trajectory-ready feature engineering. Key
+  capabilities include Ripley and Moran spatial statistics families,
+  DBSCAN-based niche boundary detection, cell proximity graphs, ECM–cell
+  bipartite graphs, invasion scoring, and pseudotime branch analysis.

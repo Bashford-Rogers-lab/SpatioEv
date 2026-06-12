@@ -95,6 +95,81 @@ SAMPLE_CONFIGS = [
     },
 ]
 
+CLINICAL_SAMPLE_METADATA = {
+    "normal_nondiseased_v1": {
+        "clinical_diagnosis": "Nondiseased pancreas",
+        "clinical_stage": "Normal",
+        "clinical_grade": "Normal",
+        "clinical_grade_order": 0.0,
+        "tumor_content_percent": 0.0,
+        "clinical_progression_label": "Normal pancreas",
+        "clinical_progression_order": 0,
+        "clinical_note": "10x nondiseased pancreas reference",
+    },
+    "pdac_addon_v1": {
+        "clinical_diagnosis": "Adenocarcinoma",
+        "clinical_stage": "Not provided",
+        "clinical_grade": "Grade I-II",
+        "clinical_grade_order": 1.5,
+        "tumor_content_percent": 50.0,
+        "clinical_progression_label": "Grade I-II, 50% tumor",
+        "clinical_progression_order": 1,
+        "clinical_note": "10x pancreas cancer add-on sample; adenocarcinoma, Grade I-II, 50% tumor",
+    },
+    "pdac_pancreas_v1": {
+        "clinical_diagnosis": "Adenocarcinoma",
+        "clinical_stage": "Stage III",
+        "clinical_grade": "Not provided",
+        "clinical_grade_order": np.nan,
+        "tumor_content_percent": np.nan,
+        "clinical_progression_label": "Stage III adenocarcinoma",
+        "clinical_progression_order": 2,
+        "clinical_note": "10x human pancreas FFPE sample; Stage III adenocarcinoma",
+    },
+    "pdac_io_v1": {
+        "clinical_diagnosis": "Pancreatic ductal adenocarcinoma",
+        "clinical_stage": "Stage IIB",
+        "clinical_grade": "Grade 3",
+        "clinical_grade_order": 3.0,
+        "tumor_content_percent": np.nan,
+        "clinical_progression_label": "Stage IIB, Grade 3 PDAC",
+        "clinical_progression_order": 3,
+        "clinical_note": "10x human ductal adenocarcinoma FFPE sample; Stage IIB, Grade 3",
+    },
+}
+
+CLINICAL_SAMPLE_ORDER = [
+    "normal_nondiseased_v1",
+    "pdac_addon_v1",
+    "pdac_pancreas_v1",
+    "pdac_io_v1",
+]
+CLINICAL_LABEL_ORDER = [
+    CLINICAL_SAMPLE_METADATA[sample_id]["clinical_progression_label"]
+    for sample_id in CLINICAL_SAMPLE_ORDER
+]
+CLINICAL_PALETTE = {
+    "Normal pancreas": "#4daf4a",
+    "Grade I-II, 50% tumor": "#ffb000",
+    "Stage III adenocarcinoma": "#e41a1c",
+    "Stage IIB, Grade 3 PDAC": "#6a3d9a",
+}
+
+def clinical_metadata_frame():
+    return (
+        pd.DataFrame.from_dict(CLINICAL_SAMPLE_METADATA, orient="index")
+        .rename_axis("sample_id")
+        .reset_index()
+        .sort_values("clinical_progression_order")
+    )
+
+def attach_clinical_metadata(df):
+    meta = clinical_metadata_frame()
+    existing_meta_cols = [col for col in meta.columns if col != "sample_id" and col in df.columns]
+    if existing_meta_cols:
+        df = df.drop(columns=existing_meta_cols)
+    return df.merge(meta, on="sample_id", how="left", validate="many_to_one")
+
 def package_available(name):
     return importlib.util.find_spec(name) is not None
 
@@ -126,7 +201,7 @@ def write_notebook(path: Path, cells):
     nb["metadata"]["kernelspec"] = {
         "display_name": "spatioev_env",
         "language": "python",
-        "name": "python3",
+        "name": "spatioev_env",
     }
     nb["metadata"]["language_info"] = {"name": "python", "pygments_lexer": "ipython3"}
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -1789,6 +1864,7 @@ from spatioev.spatial.cell_pixel_features import extract_xenium_dapi_features
 
 try:
     from shapely.geometry import Polygon
+    from shapely.ops import unary_union
     from shapely.strtree import STRtree
     SHAPELY_AVAILABLE = True
 except Exception as exc:
@@ -1802,7 +1878,7 @@ DAPI_FEATURE_DIR = OUTPUT_DIR / "dapi_features"
 DAPI_FEATURE_DIR.mkdir(exist_ok=True)
 
 NICHE_KEY = "xenium_ductal_epithelium_component"
-NICHE_FEATURE_VERSION = "boundary_components_v2"
+NICHE_FEATURE_VERSION = "boundary_components_v3_lumen_continuity_interface"
 EXPECTED_ANNOTATION_VERSION = "cluster_full_panel_v9_xenium_graphclust_io_mucosa_submucosa_k24"
 EPITHELIAL_COMPONENT_METHOD = "boundary_proximity"
 EPITHELIAL_BOUNDARY_GAP_UM = 3.0
@@ -1810,6 +1886,9 @@ EPITHELIAL_COMPONENT_RADIUS_UM = 35.0  # fallback only
 CELL_GRAPH_RADIUS_UM = 35.0
 SURROUND_HOPS = 5
 MIN_NICHE_CELLS = 5
+LUMEN_CLOSING_BUFFER_UM = 2.0
+DUCT_CONTINUITY_RADIUS_UM = 150.0
+BUDDING_DISTANCE_UM = 50.0
 DAPI_TARGET_TIER_A = "pancreatic ductal epithelium"
 DAPI_COMPUTE_TEXTURE = True
 DAPI_COMPUTE_HARALICK = False
@@ -2278,6 +2357,261 @@ def assign_epithelial_components(adata, cfg):
             return assign_centroid_epithelial_components(adata)
     return assign_centroid_epithelial_components(adata)
 
+def polygon_parts(geom):
+    if geom is None or geom.is_empty:
+        return []
+    if geom.geom_type == "Polygon":
+        return [geom]
+    if geom.geom_type == "MultiPolygon":
+        return list(geom.geoms)
+    if hasattr(geom, "geoms"):
+        return [part for part in geom.geoms if part.geom_type == "Polygon"]
+    return []
+
+def polygon_hole_metrics(geom):
+    outer_area = 0.0
+    hole_area = 0.0
+    max_hole_area = 0.0
+    n_holes = 0
+    for poly in polygon_parts(geom):
+        try:
+            outer_area += float(Polygon(poly.exterior).area)
+        except Exception:
+            continue
+        for interior in poly.interiors:
+            area = float(Polygon(interior).area)
+            hole_area += area
+            max_hole_area = max(max_hole_area, area)
+            n_holes += 1
+    return outer_area, hole_area, max_hole_area, n_holes
+
+def rotated_rect_axis_metrics(geom):
+    if geom is None or geom.is_empty:
+        return np.nan, np.nan, np.nan, np.nan
+    try:
+        rect = geom.minimum_rotated_rectangle
+        coords = np.asarray(rect.exterior.coords, dtype=float)
+    except Exception:
+        return np.nan, np.nan, np.nan, np.nan
+    if coords.shape[0] < 4:
+        return np.nan, np.nan, np.nan, np.nan
+    edges = coords[1:] - coords[:-1]
+    lengths = np.sqrt((edges * edges).sum(axis=1))
+    lengths = lengths[np.isfinite(lengths) & (lengths > 0)]
+    if len(lengths) == 0:
+        return np.nan, np.nan, np.nan, np.nan
+    major = float(lengths.max())
+    minor = float(lengths.min())
+    major_edge = edges[np.argmax(np.sqrt((edges * edges).sum(axis=1)))]
+    orientation = float(np.arctan2(major_edge[1], major_edge[0]))
+    axis_ratio = major / minor if minor > 0 else np.nan
+    return major, minor, axis_ratio, orientation
+
+def summarize_epithelial_interface_features(adata, niche_key=NICHE_KEY):
+    if "cell_graph_connectivities" not in adata.obsp:
+        return pd.DataFrame(columns=[niche_key, "sample_id"])
+
+    A = adata.obsp["cell_graph_connectivities"].tocsr()
+    obs = adata.obs
+    tier_a = obs["Tier_A"].astype(str).to_numpy()
+    niche_values = (
+        obs[niche_key]
+        .astype("string")
+        .fillna("__not_in_epithelial_niche__")
+        .astype(str)
+        .to_numpy()
+    )
+    sample_values = obs["sample_id"].astype(str).to_numpy() if "sample_id" in obs.columns else np.repeat("sample", obs.shape[0])
+
+    rows = []
+    niche_series = obs[niche_key].dropna()
+    for niche_value, niche_obs_names in niche_series.groupby(niche_series, sort=False).groups.items():
+        niche_idx = obs.index.get_indexer(pd.Index(niche_obs_names))
+        niche_idx = niche_idx[niche_idx >= 0]
+        if len(niche_idx) == 0:
+            continue
+
+        neighbor_idx = A[niche_idx].nonzero()[1]
+        if len(neighbor_idx) > 0:
+            in_niche = np.asarray(niche_values[neighbor_idx] == str(niche_value), dtype=bool)
+            neighbor_idx = np.unique(neighbor_idx[~in_niche])
+        else:
+            neighbor_idx = np.array([], dtype=int)
+
+        neighbor_labels = tier_a[neighbor_idx] if len(neighbor_idx) > 0 else np.array([], dtype=str)
+        fibro_count = int(np.sum(neighbor_labels == "Fibroblasts"))
+        non_epi_count = int(np.sum(neighbor_labels != "pancreatic ductal epithelium"))
+        all_count = int(len(neighbor_idx))
+
+        rows.append(
+            {
+                niche_key: niche_value,
+                "sample_id": sample_values[niche_idx[0]],
+                "interface__hop1_neighbor_cells": all_count,
+                "interface__fibroblast_contact_cells_hop1": fibro_count,
+                "interface__fibroblast_contact_fraction_hop1": fibro_count / all_count if all_count > 0 else np.nan,
+                "interface__fibroblast_contacts_per_epithelial_cell": fibro_count / len(niche_idx),
+                "interface__non_epithelial_contact_fraction_hop1": non_epi_count / all_count if all_count > 0 else np.nan,
+            }
+        )
+    return pd.DataFrame(rows)
+
+def summarize_epithelial_architecture_extensions(adata, cfg, force=False):
+    """Add literature-motivated duct/lumen, duct-continuity, and interface features."""
+    if not SHAPELY_AVAILABLE:
+        print(f"Skipping architecture extensions; shapely import failed: {SHAPELY_IMPORT_ERROR}")
+        return pd.DataFrame(columns=[NICHE_KEY, "sample_id"])
+
+    cache_path = NICHE_DIR / f"{cfg['sample_id']}_architecture_extensions_{NICHE_FEATURE_VERSION}.pkl"
+    if cache_path.exists() and not force:
+        return load_df(cache_path)
+
+    obs = adata.obs.copy()
+    epithelial_mask = obs["Tier_A"].astype(str) == "pancreatic ductal epithelium"
+    epithelial_ids = obs.index[epithelial_mask].astype(str)
+    if len(epithelial_ids) == 0:
+        return pd.DataFrame(columns=[NICHE_KEY, "sample_id"])
+
+    points = load_boundary_points(cfg, "cell", cell_ids=epithelial_ids)
+    polygon_by_cell = {}
+    for cell_id, group in points.groupby("cell_id", sort=False):
+        poly = polygon_from_xy(group[["vertex_x", "vertex_y"]].to_numpy(dtype=float))
+        if poly is not None:
+            polygon_by_cell[str(cell_id)] = poly
+
+    assigned = obs.loc[epithelial_mask & obs[NICHE_KEY].notna(), [NICHE_KEY]].copy()
+    if assigned.empty:
+        return pd.DataFrame(columns=[NICHE_KEY, "sample_id"])
+
+    all_assigned_ids = set(assigned.index.astype(str))
+    unassigned_ids = [
+        str(cell_id)
+        for cell_id in epithelial_ids
+        if str(cell_id) in polygon_by_cell and str(cell_id) not in all_assigned_ids
+    ]
+    unassigned_polygons = [polygon_by_cell[cell_id] for cell_id in unassigned_ids]
+    unassigned_tree = STRtree(unassigned_polygons) if len(unassigned_polygons) > 0 else None
+    unassigned_lookup = {id(geom): i for i, geom in enumerate(unassigned_polygons)}
+
+    rows = []
+    component_geoms = []
+    component_labels = []
+    component_orientations = []
+
+    for niche_value, cell_index in assigned.groupby(NICHE_KEY, sort=False).groups.items():
+        cell_ids = [str(cell_id) for cell_id in cell_index if str(cell_id) in polygon_by_cell]
+        polys = [polygon_by_cell[cell_id] for cell_id in cell_ids]
+        if len(polys) == 0:
+            continue
+
+        geom = unary_union(polys)
+        if LUMEN_CLOSING_BUFFER_UM > 0:
+            try:
+                geom_closed = geom.buffer(LUMEN_CLOSING_BUFFER_UM).buffer(-LUMEN_CLOSING_BUFFER_UM)
+                if geom_closed is not None and not geom_closed.is_empty:
+                    geom_for_lumen = geom_closed
+                else:
+                    geom_for_lumen = geom
+            except Exception:
+                geom_for_lumen = geom
+        else:
+            geom_for_lumen = geom
+
+        epi_area = float(geom.area)
+        boundary_length = float(geom.length)
+        hull = geom.convex_hull
+        hull_area = float(hull.area) if hull is not None and not hull.is_empty else np.nan
+        hull_perimeter = float(hull.length) if hull is not None and not hull.is_empty else np.nan
+        outer_area, lumen_area, max_lumen_area, n_lumens = polygon_hole_metrics(geom_for_lumen)
+        outer_area = outer_area if outer_area > 0 else epi_area + lumen_area
+        outer_equiv_diameter = np.sqrt(4.0 * outer_area / np.pi) if outer_area > 0 else np.nan
+        lumen_equiv_diameter = np.sqrt(4.0 * lumen_area / np.pi) if lumen_area > 0 else 0.0
+        ring_thickness = (outer_equiv_diameter - lumen_equiv_diameter) / 2.0 if lumen_area > 0 else np.nan
+        major, minor, axis_ratio, orientation = rotated_rect_axis_metrics(geom)
+        boundary_roughness = boundary_length / hull_perimeter - 1.0 if hull_perimeter and hull_perimeter > 0 else np.nan
+
+        nearby_budding_count = 0
+        if unassigned_tree is not None:
+            query_geom = geom.buffer(BUDDING_DISTANCE_UM)
+            for j in strtree_query_indices(unassigned_tree, query_geom, unassigned_lookup):
+                if geom.distance(unassigned_polygons[j]) <= BUDDING_DISTANCE_UM:
+                    nearby_budding_count += 1
+
+        rec = {
+            NICHE_KEY: niche_value,
+            "sample_id": cfg["sample_id"],
+            "duct_lumen__component_epithelium_area_um2": epi_area,
+            "duct_lumen__component_outer_area_um2": outer_area,
+            "duct_lumen__lumen_area_um2": lumen_area,
+            "duct_lumen__max_lumen_area_um2": max_lumen_area,
+            "duct_lumen__n_lumens": n_lumens,
+            "duct_lumen__lumen_fraction": lumen_area / outer_area if outer_area > 0 else np.nan,
+            "duct_lumen__lumen_to_epithelium_area_ratio": lumen_area / epi_area if epi_area > 0 else np.nan,
+            "duct_lumen__outer_equivalent_diameter_um": outer_equiv_diameter,
+            "duct_lumen__lumen_equivalent_diameter_um": lumen_equiv_diameter,
+            "duct_lumen__epithelial_ring_thickness_um": ring_thickness,
+            "duct_lumen__cystic_dilation_proxy": (lumen_area / outer_area) * np.log1p(max_lumen_area) if outer_area > 0 else np.nan,
+            "duct_continuity__component_axis_length_um": major,
+            "duct_continuity__component_axis_width_um": minor,
+            "duct_continuity__component_axis_ratio": axis_ratio,
+            "duct_continuity__component_orientation": orientation,
+            "duct_continuity__component_area_um2": epi_area,
+            "duct_continuity__component_perimeter_um": boundary_length,
+            "duct_continuity__cells_per_100um_axis": len(cell_ids) / (major / 100.0) if major and major > 0 else np.nan,
+            "interface__epithelial_boundary_length_um": boundary_length,
+            "interface__epithelial_boundary_roughness": boundary_roughness,
+            "interface__boundary_length_per_area": boundary_length / epi_area if epi_area > 0 else np.nan,
+            "interface__boundary_length_per_epithelial_cell": boundary_length / len(cell_ids),
+            "interface__nearby_unassigned_epithelial_cells_50um": nearby_budding_count,
+            "interface__nearby_unassigned_epithelial_cells_per_100um_boundary": (
+                nearby_budding_count / (boundary_length / 100.0) if boundary_length > 0 else np.nan
+            ),
+        }
+        rows.append(rec)
+        component_geoms.append(geom)
+        component_labels.append(niche_value)
+        component_orientations.append(orientation)
+
+    arch_df = pd.DataFrame(rows)
+    if arch_df.empty:
+        return arch_df
+
+    comp_tree = STRtree(component_geoms)
+    comp_lookup = {id(geom): i for i, geom in enumerate(component_geoms)}
+    continuity_rows = []
+    for i, geom in enumerate(component_geoms):
+        distances = []
+        alignments = []
+        for j in strtree_query_indices(comp_tree, geom.buffer(DUCT_CONTINUITY_RADIUS_UM), comp_lookup):
+            if j == i:
+                continue
+            dist = geom.distance(component_geoms[j])
+            if dist <= DUCT_CONTINUITY_RADIUS_UM:
+                distances.append(float(dist))
+                oi = component_orientations[i]
+                oj = component_orientations[j]
+                if np.isfinite(oi) and np.isfinite(oj):
+                    alignments.append(abs(np.cos(oi - oj)))
+        continuity_rows.append(
+            {
+                NICHE_KEY: component_labels[i],
+                "sample_id": cfg["sample_id"],
+                "duct_continuity__nearby_components_150um": len(distances),
+                "duct_continuity__nearest_component_distance_um": min(distances) if len(distances) > 0 else np.nan,
+                "duct_continuity__mean_neighbor_distance_um": float(np.mean(distances)) if len(distances) > 0 else np.nan,
+                "duct_continuity__neighbor_orientation_alignment_150um": (
+                    float(np.mean(alignments)) if len(alignments) > 0 else np.nan
+                ),
+            }
+        )
+
+    continuity_df = pd.DataFrame(continuity_rows)
+    interface_df = summarize_epithelial_interface_features(adata, NICHE_KEY)
+    arch_df = arch_df.merge(continuity_df, on=[NICHE_KEY, "sample_id"], how="left")
+    arch_df = arch_df.merge(interface_df, on=[NICHE_KEY, "sample_id"], how="left")
+    save_df(arch_df, cache_path)
+    return arch_df
+
 def score_signed_module(df, positive_cols, negative_cols=None, score_name=None):
     negative_cols = negative_cols or []
     pos = [c for c in positive_cols if c in df.columns]
@@ -2380,6 +2714,41 @@ def add_xenium_niche_module_scores(df):
             "state__dapi_lacunarity_z__mean",
         ],
         score_name="xenium_nuclear_dapi_texture_score",
+    )
+    df["xenium_duct_lumen_topology_score"] = score_signed_module(
+        df,
+        [
+            "duct_lumen__lumen_fraction",
+            "duct_lumen__max_lumen_area_um2",
+            "duct_lumen__outer_equivalent_diameter_um",
+            "duct_lumen__cystic_dilation_proxy",
+        ],
+        score_name="xenium_duct_lumen_topology_score",
+    )
+    df["xenium_duct_continuity_cancerization_score"] = score_signed_module(
+        df,
+        [
+            "duct_continuity__component_axis_length_um",
+            "duct_continuity__component_axis_ratio",
+            "duct_continuity__nearby_components_150um",
+            "duct_continuity__neighbor_orientation_alignment_150um",
+            "topology__skeleton_total_length",
+            "topology__skeleton_n_edges",
+        ],
+        ["duct_continuity__nearest_component_distance_um"],
+        "xenium_duct_continuity_cancerization_score",
+    )
+    df["xenium_epithelial_stromal_interface_disruption_score"] = score_signed_module(
+        df,
+        [
+            "interface__epithelial_boundary_roughness",
+            "interface__boundary_length_per_area",
+            "interface__nearby_unassigned_epithelial_cells_per_100um_boundary",
+            "interface__fibroblast_contact_fraction_hop1",
+            "interface__fibroblast_contacts_per_epithelial_cell",
+            "interface__non_epithelial_contact_fraction_hop1",
+        ],
+        score_name="xenium_epithelial_stromal_interface_disruption_score",
     )
     return df
 '''
@@ -2545,6 +2914,17 @@ for cfg in SAMPLE_CONFIGS:
     feature_df["xenium_epithelial_component_method"] = (
         component_methods.mode().iat[0] if len(component_methods) > 0 else "unknown"
     )
+    architecture_extension_df = summarize_epithelial_architecture_extensions(
+        adata,
+        cfg,
+        force=FORCE_REBUILD_NICHES,
+    )
+    if not architecture_extension_df.empty:
+        feature_df = feature_df.merge(
+            architecture_extension_df,
+            on=[NICHE_KEY, "sample_id"],
+            how="left",
+        )
 
     phenotype_labels = (
         adata.obs["Tier_A"]
@@ -2662,8 +3042,26 @@ feature_coverage_df = pd.DataFrame(
         {
             "axis": "Architectural complexity",
             "covered_now": True,
-            "current_features": "Boundary-proximity epithelial components, hull geometry, topology/skeleton features",
-            "missing_or_optional": "2D section limitation remains; H&E features could add gland lumen/mucin morphology",
+            "current_features": "Boundary-proximity epithelial components, hull geometry, topology/skeleton features, duct/lumen topology, duct continuity proxies",
+            "missing_or_optional": "2D section limitation remains; true 3D duct connectedness requires serial sections or registration",
+        },
+        {
+            "axis": "Duct/lumen topology",
+            "covered_now": True,
+            "current_features": "Polygon-union hole/lumen fraction, lumen area, outer duct caliber, epithelial ring thickness, cystic dilation proxy",
+            "missing_or_optional": "Depends on cell-boundary polygon quality; H&E would improve mucin/lumen interpretation",
+        },
+        {
+            "axis": "Ductal continuity / cancerization",
+            "covered_now": True,
+            "current_features": "Component axis length/ratio, nearby epithelial components, nearest component distance, neighbor orientation alignment",
+            "missing_or_optional": "This is a 2D local proxy for intraductal spread, not proof of clonal ductal migration",
+        },
+        {
+            "axis": "Epithelial-stromal interface disruption",
+            "covered_now": True,
+            "current_features": "Union-boundary roughness, boundary length per area, nearby unassigned epithelial cells, immediate fibroblast contact from cell graph",
+            "missing_or_optional": "Budding/extrusion calls are proxy features and should be spatially checked in representative regions",
         },
         {
             "axis": "Proliferation",
@@ -2717,12 +3115,25 @@ SIMPLIFIED_NUM_NODES = 24
 DETAILED_TREE_MIN_NODES = 40
 DETAILED_TREE_MAX_NODES = 100
 DETAILED_TREE_NODE_SCALE = 2.5
-EXPECTED_NICHE_FEATURE_VERSION = "boundary_components_v2"
+EXPECTED_NICHE_FEATURE_VERSION = "boundary_components_v3_lumen_continuity_interface"
 EXPECTED_DAPI_FEATURE_VERSION = "user_verified_focus_dapi_sources_v2"
 EXPECTED_ANNOTATION_VERSION = "cluster_full_panel_v9_xenium_graphclust_io_mucosa_submucosa_k24"
 
-pooled_niche_feature_df = load_df(OUTPUT_DIR / "pooled_xenium_niche_feature_df.pkl")
+pooled_niche_feature_df = attach_clinical_metadata(load_df(OUTPUT_DIR / "pooled_xenium_niche_feature_df.pkl"))
 print(pooled_niche_feature_df.shape)
+clinical_sample_metadata_df = clinical_metadata_frame()
+display(
+    clinical_sample_metadata_df[
+        [
+            "sample_id",
+            "clinical_diagnosis",
+            "clinical_stage",
+            "clinical_grade",
+            "tumor_content_percent",
+            "clinical_progression_label",
+        ]
+    ]
+)
 
 version_cols = [
     col for col in [
@@ -2771,9 +3182,149 @@ MODULE_COLS = [
     "xenium_immune_context_score",
     "xenium_checkpoint_context_score",
     "xenium_nuclear_dapi_texture_score",
+    "xenium_duct_lumen_topology_score",
+    "xenium_duct_continuity_cancerization_score",
+    "xenium_epithelial_stromal_interface_disruption_score",
 ]
 
+HISTOLOGY_PROXY_DEFINITIONS = {
+    "histology__normal_duct_like_score": [
+        ("xenium_epithelial_identity_score", 1),
+        ("state__CFTR_expr_z__mean", 1),
+        ("state__FXYD2_expr_z__mean", 1),
+        ("state__TM4SF4_expr_z__mean", 1),
+        ("state__PROX1_expr_z__mean", 1),
+        ("xenium_panin_like_remodeling_score", -1),
+        ("xenium_proliferation_score", -1),
+        ("xenium_desmoplastic_context_score", -1),
+    ],
+    "histology__adm_panin_like_score": [
+        ("xenium_panin_like_remodeling_score", 1),
+        ("state__MUC5AC_expr_z__mean", 1),
+        ("state__TFF1_expr_z__mean", 1),
+        ("state__TFF2_expr_z__mean", 1),
+        ("state__TFF3_expr_z__mean", 1),
+        ("state__CEACAM6_expr_z__mean", 1),
+        ("state__AGR3_expr_z__mean", 1),
+        ("state__SOX9_expr_z__mean", 1),
+    ],
+    "histology__glandular_architecture_score": [
+        ("xenium_epithelial_identity_score", 1),
+        ("xenium_duct_lumen_topology_score", 1),
+        ("geometry__hull_circularity", 1),
+        ("geometry__orientation_coherence", 1),
+        ("duct_lumen__lumen_fraction", 1),
+        ("duct_lumen__epithelial_ring_thickness_um", 1),
+        ("topology__skeleton_branchpoint_fraction", 1),
+        ("topology__skeleton_n_edges", 1),
+        ("topology__skeleton_total_length", 1),
+        ("geometry__cell_density_hull", -1),
+    ],
+    "histology__ductal_continuity_cancerization_score": [
+        ("xenium_duct_continuity_cancerization_score", 1),
+        ("duct_continuity__component_axis_length_um", 1),
+        ("duct_continuity__component_axis_ratio", 1),
+        ("duct_continuity__nearby_components_150um", 1),
+        ("duct_continuity__neighbor_orientation_alignment_150um", 1),
+        ("duct_continuity__nearest_component_distance_um", -1),
+    ],
+    "histology__epithelial_stromal_interface_disruption_score": [
+        ("xenium_epithelial_stromal_interface_disruption_score", 1),
+        ("interface__epithelial_boundary_roughness", 1),
+        ("interface__nearby_unassigned_epithelial_cells_per_100um_boundary", 1),
+        ("interface__fibroblast_contact_fraction_hop1", 1),
+        ("interface__non_epithelial_contact_fraction_hop1", 1),
+    ],
+    "histology__desmoplastic_tumor_score": [
+        ("xenium_desmoplastic_context_score", 1),
+        ("xenium_epithelial_stromal_interface_disruption_score", 1),
+        ("surround_prop__Fibroblasts", 1),
+        ("surround__Fibroblasts__ACTA2_expr_z__mean", 1),
+        ("surround__Fibroblasts__PDGFRA_expr_z__mean", 1),
+        ("surround__Fibroblasts__THY1_expr_z__mean", 1),
+        ("surround__Fibroblasts__PDPN_expr_z__mean", 1),
+        ("graph_surround__phenotype_entropy", 1),
+    ],
+    "histology__immune_inflamed_score": [
+        ("xenium_immune_context_score", 1),
+        ("xenium_checkpoint_context_score", 1),
+        ("surround_prop__T_cells", 1),
+        ("surround_prop__B_lineage", 1),
+        ("surround_prop__Myeloid_cells", 1),
+        ("surround__T_cells__CD3D_expr_z__mean", 1),
+        ("surround__B_lineage__CD79A_expr_z__mean", 1),
+    ],
+    "histology__immune_exclusion_score": [
+        ("xenium_immune_context_score", -1),
+        ("surround_prop__T_cells", -1),
+        ("surround_prop__B_lineage", -1),
+        ("surround_prop__Myeloid_cells", -1),
+        ("graph_surround__phenotype_entropy", -1),
+    ],
+    "histology__duodenum_invasion_context_score": [
+        ("surround_prop__Mucosa_gland", 1),
+        ("surround_prop__Submucosa", 1),
+        ("surround__Duodenum_epithelial__DMBT1_expr_z__mean", 1),
+        ("surround__Duodenum_epithelial__KRT20_expr_z__mean", 1),
+    ],
+    "histology__gland_poor_undifferentiated_score": [
+        ("histology__glandular_architecture_score", -1),
+        ("histology__epithelial_stromal_interface_disruption_score", 1),
+        ("xenium_epithelial_identity_score", -1),
+        ("xenium_proliferation_score", 1),
+        ("histology__immune_exclusion_score", 1),
+        ("xenium_desmoplastic_context_score", -1),
+    ],
+}
+
+def _zscore_series(values):
+    values = pd.to_numeric(values, errors="coerce")
+    sd = values.std(ddof=0)
+    if not np.isfinite(sd) or np.isclose(sd, 0):
+        return pd.Series(np.nan, index=values.index)
+    return (values - values.mean()) / sd
+
+def add_histology_proxy_scores(df, definitions):
+    df = df.copy()
+    availability_rows = []
+    for score_name, components in definitions.items():
+        component_values = []
+        used = []
+        missing = []
+        for col, sign in components:
+            if col not in df.columns:
+                missing.append(col)
+                continue
+            component_values.append(sign * _zscore_series(df[col]))
+            used.append(col)
+        if len(component_values) == 0:
+            df[score_name] = np.nan
+        else:
+            df[score_name] = pd.concat(component_values, axis=1).mean(axis=1, skipna=True)
+        availability_rows.append(
+            {
+                "score": score_name,
+                "n_used": len(used),
+                "n_missing": len(missing),
+                "used_features": ", ".join(used),
+                "missing_features": ", ".join(missing),
+            }
+        )
+    return df, pd.DataFrame(availability_rows)
+
+pooled_niche_feature_df, histology_proxy_availability_df = add_histology_proxy_scores(
+    pooled_niche_feature_df,
+    HISTOLOGY_PROXY_DEFINITIONS,
+)
+HISTOLOGY_PROXY_COLS = [col for col in HISTOLOGY_PROXY_DEFINITIONS if col in pooled_niche_feature_df.columns]
+MODULE_COLS = list(dict.fromkeys(MODULE_COLS + HISTOLOGY_PROXY_COLS))
+
+display(histology_proxy_availability_df)
+
 SUPPLEMENTAL_PATTERNS = [
+    "duct_lumen__",
+    "duct_continuity__",
+    "interface__",
     "geometry__",
     "topology__skeleton",
     "surround_prop__",
@@ -2824,8 +3375,64 @@ pd.Series(selected_cols, name="feature").to_frame().head(25)
     ),
     code(
         r'''
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X_pool)
+TRAJECTORY_SCALING = "block_balanced"
+
+def assign_feature_block(feature):
+    if feature.startswith("histology__") or feature in MODULE_COLS:
+        return "histology_modules"
+    if feature.startswith("duct_lumen__") or feature.startswith("duct_continuity__"):
+        return "duct_architecture"
+    if feature.startswith("interface__"):
+        return "epithelial_stromal_interface"
+    if feature.startswith("surround_prop__") or feature.startswith("surround__") or feature.startswith("graph_surround__"):
+        return "microenvironment"
+    if feature.startswith("state__dapi_") or feature.startswith("state__nucleus_boundary"):
+        return "nuclear_morphology"
+    if feature.startswith("geometry__") or feature.startswith("topology__"):
+        return "architecture_topology"
+    if feature.startswith("state__"):
+        return "epithelial_state"
+    return "other"
+
+def block_balance_feature_matrix(X):
+    X_scaled_df = pd.DataFrame(
+        StandardScaler().fit_transform(X),
+        index=X.index,
+        columns=X.columns,
+    )
+    feature_block_df = pd.DataFrame(
+        {
+            "feature": X.columns,
+            "feature_block": [assign_feature_block(col) for col in X.columns],
+        }
+    )
+    X_balanced_df = X_scaled_df.copy()
+    for block, block_features in feature_block_df.groupby("feature_block")["feature"]:
+        block_features = block_features.tolist()
+        if len(block_features) == 0:
+            continue
+        # Equalize broad information families so DAPI/shape or context columns
+        # cannot dominate only because there are more of them.
+        X_balanced_df[block_features] = X_balanced_df[block_features] / np.sqrt(len(block_features))
+    return X_balanced_df, feature_block_df
+
+if TRAJECTORY_SCALING == "block_balanced":
+    X_scaled_df, feature_block_df = block_balance_feature_matrix(X_pool)
+else:
+    X_scaled_df = pd.DataFrame(
+        StandardScaler().fit_transform(X_pool),
+        index=X_pool.index,
+        columns=X_pool.columns,
+    )
+    feature_block_df = pd.DataFrame(
+        {
+            "feature": X_pool.columns,
+            "feature_block": [assign_feature_block(col) for col in X_pool.columns],
+        }
+    )
+
+display(feature_block_df["feature_block"].value_counts().rename("n_features").reset_index())
+X_scaled = X_scaled_df.to_numpy()
 
 pca = PCA(n_components=min(12, X_scaled.shape[1]), random_state=RANDOM_STATE)
 X_pca = pca.fit_transform(X_scaled)
@@ -2839,7 +3446,25 @@ umap_model = UMAP(
 )
 X_umap = umap_model.fit_transform(X_pca_use)
 
-embedding_df = pooled_niche_feature_df[[NICHE_KEY, "sample_id", "display_name", "disease_group"]].copy()
+embedding_meta_cols = [
+    col
+    for col in [
+        NICHE_KEY,
+        "sample_id",
+        "display_name",
+        "disease_group",
+        "clinical_diagnosis",
+        "clinical_stage",
+        "clinical_grade",
+        "clinical_grade_order",
+        "tumor_content_percent",
+        "clinical_progression_label",
+        "clinical_progression_order",
+        "clinical_note",
+    ]
+    if col in pooled_niche_feature_df.columns
+]
+embedding_df = pooled_niche_feature_df[embedding_meta_cols].copy()
 embedding_df["UMAP1"] = X_umap[:, 0]
 embedding_df["UMAP2"] = X_umap[:, 1]
 
@@ -3133,6 +3758,709 @@ plt.tight_layout()
 plt.show()
 '''
     ),
+    md(
+        """
+## Sample Effect Diagnostic and Batch-Aware Sensitivity Trajectory
+
+The pooled Xenium datasets can separate by sample because disease, tissue region, panel content, and technical acquisition are partly confounded. This section does **not** replace the original trajectory. It adds a sensitivity trajectory where selected features are z-scored within each sample before PCA/tree fitting, and the root is anchored by normal-like epithelial niches from all samples.
+
+This is especially useful for checking residual normal pancreas regions inside PDAC samples. If those niches are late only in the original trajectory but early/intermediate after sample-centering, the original result is likely influenced by sample-specific feature shifts.
+"""
+    ),
+    code(
+        r'''
+from sklearn.neighbors import NearestNeighbors
+from sklearn.feature_selection import f_classif
+
+def minmax(values):
+    values = np.asarray(values, dtype=float)
+    lo = np.nanmin(values)
+    hi = np.nanmax(values)
+    if not np.isfinite(hi - lo) or np.isclose(hi, lo):
+        return np.full(values.shape, np.nan)
+    return (values - lo) / (hi - lo)
+
+def knn_purity(embedding, labels, n_neighbors=15):
+    labels = np.asarray(labels).astype(str)
+    nbrs = NearestNeighbors(n_neighbors=min(n_neighbors + 1, len(embedding))).fit(embedding)
+    idx = nbrs.kneighbors(return_distance=False)[:, 1:]
+    return (labels[idx] == labels[:, None]).mean(axis=1)
+
+sample_ids = pooled_niche_feature_df["sample_id"].astype(str)
+disease_ids = pooled_niche_feature_df["disease_group"].astype(str)
+same_sample_fraction = knn_purity(X_pca_use, sample_ids, n_neighbors=15)
+same_disease_fraction = knn_purity(X_pca_use, disease_ids, n_neighbors=15)
+
+sample_effect_qc_df = pd.DataFrame(
+    {
+        "sample_id": sample_ids,
+        "disease_group": disease_ids,
+        "same_sample_fraction": same_sample_fraction,
+        "same_disease_fraction": same_disease_fraction,
+        "xenium_pseudotime": result_df["xenium_pseudotime"],
+    }
+)
+
+feature_sample_F, _ = f_classif(
+    StandardScaler().fit_transform(X_pool),
+    sample_ids.to_numpy(),
+)
+sample_discriminating_feature_df = (
+    pd.DataFrame({"feature": X_pool.columns, "sample_F": feature_sample_F})
+    .sort_values("sample_F", ascending=False)
+    .reset_index(drop=True)
+)
+
+display(
+    sample_effect_qc_df.groupby(["sample_id", "disease_group"])[
+        ["same_sample_fraction", "same_disease_fraction", "xenium_pseudotime"]
+    ]
+    .median()
+    .round(3)
+)
+display(sample_discriminating_feature_df.head(20))
+'''
+    ),
+    code(
+        r'''
+def sample_center_feature_matrix(X, sample_ids):
+    X_centered = X.copy()
+    sample_ids = pd.Series(sample_ids, index=X.index).astype(str)
+    for sample_id in sample_ids.unique():
+        idx = sample_ids == sample_id
+        mu = X_centered.loc[idx].mean(axis=0)
+        sd = X_centered.loc[idx].std(axis=0, ddof=0).replace(0, np.nan)
+        X_centered.loc[idx] = (X_centered.loc[idx] - mu) / sd
+    return X_centered.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+
+def build_normal_like_root_mask(df):
+    epi = pd.to_numeric(df["xenium_epithelial_identity_score"], errors="coerce")
+    normal_mask = df["disease_group"].astype(str).eq("NormalPancreas")
+    root_normal = normal_mask & (epi >= epi[normal_mask].quantile(0.85))
+
+    normal_like = epi >= epi.quantile(0.50)
+    for feature, quantile in [
+        ("xenium_panin_like_remodeling_score", 0.40),
+        ("xenium_proliferation_score", 0.50),
+        ("xenium_desmoplastic_context_score", 0.40),
+        ("xenium_immune_context_score", 0.40),
+    ]:
+        if feature in df.columns:
+            vals = pd.to_numeric(df[feature], errors="coerce")
+            normal_like &= vals <= vals.quantile(quantile)
+
+    root_mask = root_normal | normal_like
+    if root_mask.sum() < 20:
+        root_mask = root_normal
+    if root_mask.sum() == 0:
+        root_mask = normal_mask
+    return root_mask.fillna(False)
+
+X_pool_sample_centered = sample_center_feature_matrix(X_pool, pooled_niche_feature_df["sample_id"])
+X_sample_centered_scaled_df, sample_centered_feature_block_df = block_balance_feature_matrix(X_pool_sample_centered)
+X_sample_centered_scaled = X_sample_centered_scaled_df.to_numpy()
+X_pca_sample_centered = PCA(
+    n_components=min(12, X_sample_centered_scaled.shape[1]),
+    random_state=RANDOM_STATE,
+).fit_transform(X_sample_centered_scaled)
+X_pca_sample_centered_use = X_pca_sample_centered[:, : min(6, X_pca_sample_centered.shape[1])]
+
+X_umap_sample_centered = UMAP(
+    n_neighbors=15,
+    min_dist=0.20,
+    n_components=2,
+    random_state=RANDOM_STATE,
+).fit_transform(X_pca_sample_centered_use)
+
+pg_tree_sample_centered = elpigraph.computeElasticPrincipalTree(
+    X=X_pca_sample_centered_use,
+    NumNodes=num_nodes,
+    Lambda=0.005,
+    Mu=0.01,
+)[0]
+
+root_mask_sample_centered = build_normal_like_root_mask(pooled_niche_feature_df)
+root_anchor_sample_centered = X_pca_sample_centered_use[root_mask_sample_centered.to_numpy()].mean(axis=0)
+source_node_sample_centered = int(
+    np.argmin(np.sum((pg_tree_sample_centered["NodePositions"] - root_anchor_sample_centered) ** 2, axis=1))
+)
+elpigraph.utils.getPseudotime(
+    X=X_pca_sample_centered_use,
+    PG=pg_tree_sample_centered,
+    source=source_node_sample_centered,
+    target=None,
+)
+
+result_df["UMAP1_sample_centered"] = X_umap_sample_centered[:, 0]
+result_df["UMAP2_sample_centered"] = X_umap_sample_centered[:, 1]
+result_df["xenium_pseudotime_sample_centered"] = pg_tree_sample_centered["pseudotime"]
+result_df["xenium_pseudotime_norm"] = minmax(result_df["xenium_pseudotime"])
+result_df["xenium_pseudotime_sample_centered_norm"] = minmax(result_df["xenium_pseudotime_sample_centered"])
+result_df["xenium_node_id_sample_centered"] = pg_tree_sample_centered["projection"]["node_id"]
+result_df["xenium_edge_id_sample_centered"] = pg_tree_sample_centered["projection"]["edge_id"]
+result_df["normal_like_root_candidate"] = root_mask_sample_centered.to_numpy()
+
+print("Sample-centered root node:", source_node_sample_centered)
+print("Sample-centered root candidates by sample:")
+print(pooled_niche_feature_df.loc[root_mask_sample_centered, "sample_id"].value_counts().to_string())
+
+display(
+    result_df.groupby(["sample_id", "disease_group"])[
+        ["xenium_pseudotime", "xenium_pseudotime_sample_centered"]
+    ]
+    .describe(percentiles=[0.25, 0.5, 0.75])
+    .round(3)
+)
+'''
+    ),
+    code(
+        r'''
+fig, axes = plt.subplots(1, 3, figsize=(13, 3.8))
+
+s0 = axes[0].scatter(
+    result_df["UMAP1_sample_centered"],
+    result_df["UMAP2_sample_centered"],
+    c=result_df["xenium_pseudotime_sample_centered"],
+    s=5,
+    linewidth=0,
+    alpha=0.75,
+    cmap="viridis",
+)
+axes[0].set_title("Sample-centered UMAP by pseudotime")
+axes[0].grid(False)
+plt.colorbar(s0, ax=axes[0], fraction=0.046, pad=0.04)
+
+sns.scatterplot(
+    data=result_df,
+    x="xenium_pseudotime_norm",
+    y="xenium_pseudotime_sample_centered_norm",
+    hue="sample_id",
+    palette="tab10",
+    s=10,
+    linewidth=0,
+    alpha=0.55,
+    ax=axes[1],
+)
+axes[1].plot([0, 1], [0, 1], color="#333333", linewidth=1, linestyle="--")
+axes[1].set_xlabel("Original pseudotime, normalized")
+axes[1].set_ylabel("Sample-centered pseudotime, normalized")
+axes[1].set_title("Original vs sample-centered pseudotime")
+axes[1].grid(False)
+axes[1].legend(frameon=False, fontsize=6, bbox_to_anchor=(1.02, 1), loc="upper left")
+
+plot_df = result_df.melt(
+    id_vars=["sample_id", "disease_group"],
+    value_vars=["xenium_pseudotime", "xenium_pseudotime_sample_centered"],
+    var_name="trajectory",
+    value_name="pseudotime",
+)
+sns.boxplot(
+    data=plot_df,
+    x="sample_id",
+    y="pseudotime",
+    hue="trajectory",
+    fliersize=0,
+    ax=axes[2],
+)
+axes[2].set_title("Pseudotime distributions by sample")
+axes[2].tick_params(axis="x", rotation=30)
+axes[2].grid(False)
+axes[2].legend(frameon=False, fontsize=6)
+
+plt.tight_layout()
+plt.show()
+'''
+    ),
+    md(
+        """
+## Clinical Metadata Sanity Check
+
+The clinical labels are **not** used to fit the trajectory. They are added here as an external interpretation layer: if the morphology/transcriptome-driven trajectory is sensible, the clinical contexts should show interpretable enrichment patterns without requiring a perfectly linear stage order.
+"""
+    ),
+    code(
+        r'''
+clinical_plot_df = result_df.copy()
+clinical_plot_df["clinical_progression_label"] = pd.Categorical(
+    clinical_plot_df["clinical_progression_label"],
+    categories=CLINICAL_LABEL_ORDER,
+    ordered=True,
+)
+
+clinical_summary_df = (
+    clinical_plot_df.groupby(
+        [
+            "sample_id",
+            "clinical_progression_label",
+            "clinical_diagnosis",
+            "clinical_stage",
+            "clinical_grade",
+            "tumor_content_percent",
+        ],
+        observed=True,
+        dropna=False,
+    )
+    .agg(
+        n_niches=(NICHE_KEY, "nunique"),
+        pseudotime_median=("xenium_pseudotime", "median"),
+        pseudotime_q25=("xenium_pseudotime", lambda x: np.nanquantile(x, 0.25)),
+        pseudotime_q75=("xenium_pseudotime", lambda x: np.nanquantile(x, 0.75)),
+        sample_centered_pseudotime_median=("xenium_pseudotime_sample_centered", "median"),
+        sample_centered_pseudotime_q25=("xenium_pseudotime_sample_centered", lambda x: np.nanquantile(x, 0.25)),
+        sample_centered_pseudotime_q75=("xenium_pseudotime_sample_centered", lambda x: np.nanquantile(x, 0.75)),
+    )
+    .reset_index()
+    .sort_values("clinical_progression_label")
+)
+display(clinical_summary_df)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+for ax, y_col, title in [
+    (axes[0], "xenium_pseudotime", "Original pooled pseudotime by clinical context"),
+    (axes[1], "xenium_pseudotime_sample_centered", "Sample-centered pseudotime by clinical context"),
+]:
+    sns.boxplot(
+        data=clinical_plot_df,
+        x="clinical_progression_label",
+        y=y_col,
+        hue="clinical_progression_label",
+        order=CLINICAL_LABEL_ORDER,
+        palette=CLINICAL_PALETTE,
+        legend=False,
+        fliersize=0,
+        ax=ax,
+    )
+    sns.stripplot(
+        data=clinical_plot_df.sample(min(len(clinical_plot_df), 1200), random_state=RANDOM_STATE),
+        x="clinical_progression_label",
+        y=y_col,
+        order=CLINICAL_LABEL_ORDER,
+        color="black",
+        size=1.0,
+        alpha=0.12,
+        jitter=0.25,
+        ax=ax,
+    )
+    ax.set_xlabel("")
+    ax.set_ylabel("Pseudotime")
+    ax.set_title(title)
+    ax.tick_params(axis="x", rotation=25)
+    ax.grid(False)
+
+plt.tight_layout()
+plt.show()
+
+clinical_branch_occupancy_df = (
+    clinical_plot_df.groupby(["clinical_progression_label", "major_branch"], observed=True)
+    .size()
+    .rename("n")
+    .reset_index()
+)
+clinical_branch_occupancy_df["fraction_within_clinical_context"] = (
+    clinical_branch_occupancy_df["n"]
+    / clinical_branch_occupancy_df.groupby("clinical_progression_label", observed=True)["n"].transform("sum")
+)
+branch_occupancy_heatmap_df = (
+    clinical_branch_occupancy_df.pivot(
+        index="major_branch",
+        columns="clinical_progression_label",
+        values="fraction_within_clinical_context",
+    )
+    .reindex(index=branch_order, columns=CLINICAL_LABEL_ORDER)
+    .fillna(0)
+)
+
+fig, axes = plt.subplots(1, 2, figsize=(13, max(3.5, 0.4 * len(branch_occupancy_heatmap_df))))
+sns.heatmap(
+    branch_occupancy_heatmap_df,
+    cmap="YlOrRd",
+    vmin=0,
+    linewidths=0.25,
+    linecolor="white",
+    cbar_kws={"label": "Fraction within clinical context"},
+    ax=axes[0],
+)
+axes[0].set_title("Automatic branch occupancy by clinical context")
+axes[0].set_xlabel("")
+axes[0].set_ylabel("")
+
+sns.barplot(
+    data=clinical_branch_occupancy_df,
+    x="major_branch",
+    y="fraction_within_clinical_context",
+    hue="clinical_progression_label",
+    hue_order=CLINICAL_LABEL_ORDER,
+    palette=CLINICAL_PALETTE,
+    ax=axes[1],
+)
+axes[1].set_title("Clinical context distribution across branches")
+axes[1].set_xlabel("")
+axes[1].set_ylabel("Fraction within clinical context")
+axes[1].tick_params(axis="x", rotation=35)
+axes[1].grid(False)
+axes[1].legend(frameon=False, fontsize=6, bbox_to_anchor=(1.02, 1), loc="upper left")
+
+plt.tight_layout()
+plt.show()
+
+clinical_score_cols = [
+    col
+    for col in [
+        "histology__normal_duct_like_score",
+        "histology__adm_panin_like_score",
+        "histology__glandular_architecture_score",
+        "histology__ductal_continuity_cancerization_score",
+        "histology__epithelial_stromal_interface_disruption_score",
+        "histology__desmoplastic_tumor_score",
+        "histology__immune_inflamed_score",
+        "histology__immune_exclusion_score",
+        "histology__gland_poor_undifferentiated_score",
+        "histology__duodenum_invasion_context_score",
+    ]
+    if col in clinical_plot_df.columns
+]
+clinical_score_median_df = (
+    clinical_plot_df.groupby("clinical_progression_label", observed=True)[clinical_score_cols]
+    .median()
+    .reindex(CLINICAL_LABEL_ORDER)
+)
+clinical_score_heatmap_df = clinical_score_median_df.apply(_zscore_series, axis=0)
+clinical_score_heatmap_df.columns = [
+    col.replace("histology__", "").replace("_score", "").replace("_", " ")
+    for col in clinical_score_heatmap_df.columns
+]
+
+plt.figure(figsize=(9.5, 3.4))
+sns.heatmap(
+    clinical_score_heatmap_df,
+    cmap="RdBu_r",
+    center=0,
+    linewidths=0.25,
+    linecolor="white",
+    cbar_kws={"label": "Clinical-context median z-score"},
+)
+plt.title("Histology proxy enrichment by clinical context")
+plt.xlabel("")
+plt.ylabel("")
+plt.tight_layout()
+plt.show()
+
+save_df(clinical_sample_metadata_df, RESULT_DIR / "xenium_clinical_sample_metadata.csv")
+save_df(clinical_summary_df, RESULT_DIR / "xenium_clinical_pseudotime_summary.csv")
+save_df(clinical_branch_occupancy_df, RESULT_DIR / "xenium_clinical_branch_occupancy.csv")
+save_df(clinical_score_median_df.reset_index(), RESULT_DIR / "xenium_clinical_histology_score_medians.csv")
+'''
+    ),
+    md(
+        """
+## Intrinsic Epithelial Sensitivity Trajectory
+
+The microenvironment-aware trajectory is useful for disease-state mapping, but fibrosis and immune exclusion can dominate sample separation. This intrinsic sensitivity trajectory uses only epithelial/histology modules, epithelial state, duct architecture, architecture/topology, and nuclear morphology blocks after within-sample centering.
+"""
+    ),
+    code(
+        r'''
+INTRINSIC_FEATURE_BLOCKS = {
+    "histology_modules",
+    "epithelial_state",
+    "duct_architecture",
+    "architecture_topology",
+    "nuclear_morphology",
+}
+intrinsic_feature_cols = feature_block_df.loc[
+    feature_block_df["feature_block"].isin(INTRINSIC_FEATURE_BLOCKS),
+    "feature",
+].tolist()
+intrinsic_feature_cols = [col for col in intrinsic_feature_cols if col in X_pool.columns]
+
+if len(intrinsic_feature_cols) < 5:
+    print("Too few intrinsic features for intrinsic sensitivity trajectory.")
+    source_node_intrinsic = None
+else:
+    X_intrinsic = X_pool[intrinsic_feature_cols].copy()
+    X_intrinsic_sample_centered = sample_center_feature_matrix(
+        X_intrinsic,
+        pooled_niche_feature_df["sample_id"],
+    )
+    X_intrinsic_scaled_df, intrinsic_feature_block_df = block_balance_feature_matrix(X_intrinsic_sample_centered)
+    X_intrinsic_scaled = X_intrinsic_scaled_df.to_numpy()
+    X_intrinsic_pca = PCA(
+        n_components=min(12, X_intrinsic_scaled.shape[1]),
+        random_state=RANDOM_STATE,
+    ).fit_transform(X_intrinsic_scaled)
+    X_intrinsic_pca_use = X_intrinsic_pca[:, : min(6, X_intrinsic_pca.shape[1])]
+
+    pg_tree_intrinsic = elpigraph.computeElasticPrincipalTree(
+        X=X_intrinsic_pca_use,
+        NumNodes=num_nodes,
+        Lambda=0.005,
+        Mu=0.01,
+    )[0]
+    root_anchor_intrinsic = X_intrinsic_pca_use[root_mask_sample_centered.to_numpy()].mean(axis=0)
+    source_node_intrinsic = int(
+        np.argmin(np.sum((pg_tree_intrinsic["NodePositions"] - root_anchor_intrinsic) ** 2, axis=1))
+    )
+    elpigraph.utils.getPseudotime(
+        X=X_intrinsic_pca_use,
+        PG=pg_tree_intrinsic,
+        source=source_node_intrinsic,
+        target=None,
+    )
+    result_df["xenium_pseudotime_intrinsic_sample_centered"] = pg_tree_intrinsic["pseudotime"]
+    result_df["xenium_pseudotime_intrinsic_sample_centered_norm"] = minmax(
+        result_df["xenium_pseudotime_intrinsic_sample_centered"]
+    )
+    result_df["xenium_node_id_intrinsic_sample_centered"] = pg_tree_intrinsic["projection"]["node_id"]
+    result_df["xenium_edge_id_intrinsic_sample_centered"] = pg_tree_intrinsic["projection"]["edge_id"]
+
+    print("Intrinsic feature blocks:")
+    display(intrinsic_feature_block_df["feature_block"].value_counts().rename("n_features").reset_index())
+    print("Intrinsic root node:", source_node_intrinsic)
+    display(
+        result_df.groupby(["sample_id", "disease_group"])[
+            ["xenium_pseudotime_sample_centered", "xenium_pseudotime_intrinsic_sample_centered"]
+        ]
+        .median()
+        .round(3)
+    )
+'''
+    ),
+    md(
+        """
+## Automatic Branch Annotation
+
+Branch IDs are assigned from the simplified tree structure. The table below does not hard-code biology; it summarizes each branch by sample composition, pseudotime, and histology proxy enrichment, then proposes a suggested biological identity for review.
+"""
+    ),
+    code(
+        r'''
+BRANCH_BIOLOGY_SCORE_COLS = [
+    col
+    for col in [
+        "histology__normal_duct_like_score",
+        "histology__adm_panin_like_score",
+        "histology__glandular_architecture_score",
+        "histology__ductal_continuity_cancerization_score",
+        "histology__epithelial_stromal_interface_disruption_score",
+        "histology__desmoplastic_tumor_score",
+        "histology__immune_inflamed_score",
+        "histology__immune_exclusion_score",
+        "histology__duodenum_invasion_context_score",
+        "histology__gland_poor_undifferentiated_score",
+        "xenium_epithelial_identity_score",
+        "xenium_panin_like_remodeling_score",
+        "xenium_proliferation_score",
+        "xenium_desmoplastic_context_score",
+        "xenium_immune_context_score",
+        "xenium_checkpoint_context_score",
+        "xenium_nuclear_dapi_texture_score",
+        "xenium_duct_lumen_topology_score",
+        "xenium_duct_continuity_cancerization_score",
+        "xenium_epithelial_stromal_interface_disruption_score",
+    ]
+    if col in result_df.columns
+]
+
+SAMPLE_HISTOLOGY_CONTEXT = {
+    "normal_nondiseased_v1": "normal pancreas reference",
+    "pdac_addon_v1": "Grade I-II adenocarcinoma, 50% tumor; earlier PDAC with preserved lobular architecture, interlobular fibrosis, glandular tumor/PanIN regions",
+    "pdac_pancreas_v1": "Stage III adenocarcinoma; mixed residual normal pancreas, ADM/PanIN, and desmoplastic glandular tumor regions",
+    "pdac_io_v1": "Stage IIB Grade 3 PDAC; less fibrotic, gland-poor/undifferentiated-looking, duodenum-invasive, immune-exclusive tumor",
+}
+
+def branch_score_enrichment(df, score_cols):
+    out = {}
+    for col in score_cols:
+        vals = pd.to_numeric(df[col], errors="coerce")
+        out[col] = vals.median()
+    return out
+
+def summarize_auto_branches(df, branch_col="major_branch"):
+    rows = []
+    score_median_all = {
+        col: pd.to_numeric(df[col], errors="coerce").median()
+        for col in BRANCH_BIOLOGY_SCORE_COLS
+    }
+    score_sd_all = {
+        col: pd.to_numeric(df[col], errors="coerce").std(ddof=0)
+        for col in BRANCH_BIOLOGY_SCORE_COLS
+    }
+
+    for branch, sub in df.groupby(branch_col, observed=True):
+        sample_fracs = sub["sample_id"].value_counts(normalize=True)
+        disease_fracs = sub["disease_group"].value_counts(normalize=True)
+        row = {
+            "branch": branch,
+            "n_niches": len(sub),
+            "fraction_of_all_niches": len(sub) / len(df),
+            "median_original_pseudotime": pd.to_numeric(sub["xenium_pseudotime"], errors="coerce").median(),
+            "median_sample_centered_pseudotime": pd.to_numeric(sub["xenium_pseudotime_sample_centered"], errors="coerce").median(),
+            "dominant_sample": sample_fracs.index[0],
+            "dominant_sample_fraction": sample_fracs.iloc[0],
+            "dominant_sample_histology_context": SAMPLE_HISTOLOGY_CONTEXT.get(sample_fracs.index[0], ""),
+            "dominant_disease_group": disease_fracs.index[0],
+            "dominant_disease_fraction": disease_fracs.iloc[0],
+        }
+        for sample_id, frac in sample_fracs.items():
+            row[f"sample_frac__{sample_id}"] = frac
+        for col in BRANCH_BIOLOGY_SCORE_COLS:
+            median_val = pd.to_numeric(sub[col], errors="coerce").median()
+            sd = score_sd_all[col]
+            row[f"{col}__median"] = median_val
+            row[f"{col}__z_enrichment"] = (
+                (median_val - score_median_all[col]) / sd
+                if np.isfinite(sd) and not np.isclose(sd, 0)
+                else np.nan
+            )
+        rows.append(row)
+
+    branch_summary = pd.DataFrame(rows)
+    branch_summary["branch"] = pd.Categorical(branch_summary["branch"], categories=branch_order, ordered=True)
+    return branch_summary.sort_values(["branch"]).reset_index(drop=True)
+
+def row_score(row, name):
+    return row.get(f"{name}__z_enrichment", np.nan)
+
+def suggest_branch_biology(row):
+    sample_io = row.get("sample_frac__pdac_io_v1", 0.0)
+    sample_pancreas = row.get("sample_frac__pdac_pancreas_v1", 0.0)
+    sample_addon = row.get("sample_frac__pdac_addon_v1", 0.0)
+    sample_normal = row.get("sample_frac__normal_nondiseased_v1", 0.0)
+
+    # Histology-informed sample priors are only used when a branch is strongly
+    # dominated by a reviewed sample and the proxy scores do not contradict the
+    # review. The tree structure and branch assignment remain automatic.
+    if sample_io >= 0.65:
+        immune_inflamed = row_score(row, "histology__immune_inflamed_score")
+        desmoplastic = row_score(row, "histology__desmoplastic_tumor_score")
+        duodenum_context = row_score(row, "histology__duodenum_invasion_context_score")
+        if (
+            (pd.isna(immune_inflamed) or immune_inflamed < 0.35)
+            and (pd.isna(desmoplastic) or desmoplastic < 0.45)
+        ):
+            label = "gland-poor / undifferentiated immune-excluded tumor"
+            if pd.notna(duodenum_context) and duodenum_context >= -0.10:
+                label += " with duodenum-invasion context"
+            return label
+
+    if sample_addon >= 0.55:
+        adm_panin = row_score(row, "histology__adm_panin_like_score")
+        glandular = row_score(row, "histology__glandular_architecture_score")
+        if (
+            (pd.notna(adm_panin) and adm_panin > 0.20)
+            or (pd.notna(glandular) and glandular > 0.25)
+        ):
+            return "early disease / PanIN-glandular lobule-preserved branch"
+
+    if sample_pancreas >= 0.55:
+        desmoplastic = row_score(row, "histology__desmoplastic_tumor_score")
+        glandular = row_score(row, "histology__glandular_architecture_score")
+        if pd.notna(desmoplastic) and desmoplastic > 0.35:
+            if pd.notna(glandular) and glandular > 0.10:
+                return "desmoplastic glandular tumor branch"
+            return "desmoplastic tumor / stromal-remodeled"
+
+    candidates = {
+        "normal / residual normal duct-like": row_score(row, "histology__normal_duct_like_score") + sample_normal,
+        "ADM / PanIN-like remodeling": row_score(row, "histology__adm_panin_like_score") + 0.3 * (sample_addon + sample_pancreas),
+        "glandular architecture / differentiated tumor": row_score(row, "histology__glandular_architecture_score") + 0.2 * sample_pancreas,
+        "ductal continuity / cancerization-like spread": row_score(row, "histology__ductal_continuity_cancerization_score"),
+        "interface-disrupted budding / stromal-contact state": row_score(row, "histology__epithelial_stromal_interface_disruption_score"),
+        "desmoplastic tumor / stromal-remodeled": row_score(row, "histology__desmoplastic_tumor_score") + 0.3 * sample_pancreas,
+        "immune-inflamed epithelial niche": row_score(row, "histology__immune_inflamed_score"),
+        "immune-excluded gland-poor / undifferentiated-like": (
+            row_score(row, "histology__gland_poor_undifferentiated_score")
+            + row_score(row, "histology__immune_exclusion_score")
+            + 0.4 * sample_io
+        ),
+        "duodenum-invasion-associated context": row_score(row, "histology__duodenum_invasion_context_score") + 0.4 * sample_io,
+    }
+    candidates = {k: v for k, v in candidates.items() if pd.notna(v)}
+    if len(candidates) == 0:
+        return "mixed / unclear"
+    ranked = sorted(candidates.items(), key=lambda item: item[1], reverse=True)
+    if ranked[0][1] < 0.35:
+        return "mixed / unclear"
+    if len(ranked) > 1 and ranked[1][1] > ranked[0][1] - 0.25:
+        return f"{ranked[0][0]} + {ranked[1][0]}"
+    return ranked[0][0]
+
+branch_biology_summary_df = summarize_auto_branches(result_df)
+branch_biology_summary_df["suggested_biology"] = branch_biology_summary_df.apply(suggest_branch_biology, axis=1)
+
+top_feature_rows = []
+for _, row in branch_biology_summary_df.iterrows():
+    enrichments = []
+    for col in BRANCH_BIOLOGY_SCORE_COLS:
+        enrichments.append((col, row.get(f"{col}__z_enrichment", np.nan)))
+    enrichments = [(col, val) for col, val in enrichments if pd.notna(val)]
+    top = sorted(enrichments, key=lambda item: abs(item[1]), reverse=True)[:5]
+    top_feature_rows.append("; ".join(f"{col}:{val:+.2f}" for col, val in top))
+branch_biology_summary_df["top_enriched_scores"] = top_feature_rows
+
+display_cols = [
+    "branch",
+    "suggested_biology",
+    "n_niches",
+    "dominant_sample",
+    "dominant_sample_histology_context",
+    "dominant_sample_fraction",
+    "median_sample_centered_pseudotime",
+    "top_enriched_scores",
+]
+display(branch_biology_summary_df[display_cols])
+'''
+    ),
+    code(
+        r'''
+branch_heatmap_cols = [f"{col}__z_enrichment" for col in BRANCH_BIOLOGY_SCORE_COLS]
+branch_heatmap_df = branch_biology_summary_df.set_index("branch")[branch_heatmap_cols].copy()
+branch_heatmap_df.columns = [
+    col.replace("__z_enrichment", "").replace("histology__", "").replace("xenium_", "").replace("_score", "")
+    for col in branch_heatmap_df.columns
+]
+
+fig, axes = plt.subplots(1, 2, figsize=(14, max(3.5, 0.45 * len(branch_heatmap_df))))
+sns.heatmap(
+    branch_heatmap_df,
+    cmap="RdBu_r",
+    center=0,
+    linewidths=0.2,
+    linecolor="white",
+    cbar_kws={"label": "Branch median z-enrichment"},
+    ax=axes[0],
+)
+axes[0].set_title("Automatic branch histology enrichment")
+axes[0].set_xlabel("")
+axes[0].set_ylabel("")
+
+branch_sample_comp_df = (
+    result_df.groupby(["major_branch", "sample_id"], observed=True)
+    .size()
+    .rename("n")
+    .reset_index()
+)
+branch_sample_comp_df["fraction"] = (
+    branch_sample_comp_df["n"]
+    / branch_sample_comp_df.groupby("major_branch", observed=True)["n"].transform("sum")
+)
+sns.barplot(
+    data=branch_sample_comp_df,
+    x="major_branch",
+    y="fraction",
+    hue="sample_id",
+    palette="tab10",
+    ax=axes[1],
+)
+axes[1].set_title("Sample composition by automatic branch")
+axes[1].tick_params(axis="x", rotation=35)
+axes[1].grid(False)
+axes[1].legend(frameon=False, fontsize=6, bbox_to_anchor=(1.02, 1), loc="upper left")
+
+plt.tight_layout()
+plt.show()
+'''
+    ),
     code(
         r'''
 def plot_sample_spatial_pseudotime(sample_id, max_background=80000):
@@ -3144,7 +4472,11 @@ def plot_sample_spatial_pseudotime(sample_id, max_background=80000):
     obs = adata.obs[["x_centroid", "y_centroid", NICHE_KEY, "Tier_A"]].copy()
     adata.file.close()
 
-    lookup = result_df[result_df["sample_id"] == sample_id][[NICHE_KEY, "xenium_pseudotime", "major_branch"]].drop_duplicates()
+    lookup_cols = [NICHE_KEY, "xenium_pseudotime", "major_branch"]
+    has_sample_centered_pt = "xenium_pseudotime_sample_centered" in result_df.columns
+    if has_sample_centered_pt:
+        lookup_cols.append("xenium_pseudotime_sample_centered")
+    lookup = result_df[result_df["sample_id"] == sample_id][lookup_cols].drop_duplicates()
     obs = obs.merge(lookup, on=NICHE_KEY, how="left")
     rng = np.random.default_rng(42)
     bg = obs
@@ -3152,7 +4484,9 @@ def plot_sample_spatial_pseudotime(sample_id, max_background=80000):
         bg = bg.iloc[rng.choice(len(bg), size=max_background, replace=False)]
     niche = obs[obs["xenium_pseudotime"].notna()].copy()
 
-    fig, axes = plt.subplots(1, 2, figsize=(9, 4))
+    n_panels = 3 if has_sample_centered_pt else 2
+    fig, axes = plt.subplots(1, n_panels, figsize=(4.5 * n_panels, 4))
+    axes = np.asarray(axes).reshape(-1)
     axes[0].scatter(bg["x_centroid"], bg["y_centroid"], s=0.2, color="#d9d9d9", alpha=0.25, linewidth=0)
     sc0 = axes[0].scatter(
         niche["x_centroid"],
@@ -3169,7 +4503,26 @@ def plot_sample_spatial_pseudotime(sample_id, max_background=80000):
     axes[0].grid(False)
     plt.colorbar(sc0, ax=axes[0], fraction=0.046, pad=0.04)
 
-    axes[1].scatter(bg["x_centroid"], bg["y_centroid"], s=0.2, color="#d9d9d9", alpha=0.25, linewidth=0)
+    panel_idx = 1
+    if has_sample_centered_pt:
+        axes[panel_idx].scatter(bg["x_centroid"], bg["y_centroid"], s=0.2, color="#d9d9d9", alpha=0.25, linewidth=0)
+        sc1 = axes[panel_idx].scatter(
+            niche["x_centroid"],
+            niche["y_centroid"],
+            c=niche["xenium_pseudotime_sample_centered"],
+            s=0.8,
+            cmap="viridis",
+            linewidth=0,
+            alpha=0.85,
+        )
+        axes[panel_idx].set_title(f"{sample_id}: sample-centered pseudotime")
+        axes[panel_idx].invert_yaxis()
+        axes[panel_idx].set_aspect("equal", adjustable="box")
+        axes[panel_idx].grid(False)
+        plt.colorbar(sc1, ax=axes[panel_idx], fraction=0.046, pad=0.04)
+        panel_idx += 1
+
+    axes[panel_idx].scatter(bg["x_centroid"], bg["y_centroid"], s=0.2, color="#d9d9d9", alpha=0.25, linewidth=0)
     sns.scatterplot(
         data=niche,
         x="x_centroid",
@@ -3179,13 +4532,13 @@ def plot_sample_spatial_pseudotime(sample_id, max_background=80000):
         s=1.0,
         linewidth=0,
         alpha=0.85,
-        ax=axes[1],
+        ax=axes[panel_idx],
         legend=False,
     )
-    axes[1].set_title(f"{sample_id}: major branch")
-    axes[1].invert_yaxis()
-    axes[1].set_aspect("equal", adjustable="box")
-    axes[1].grid(False)
+    axes[panel_idx].set_title(f"{sample_id}: major branch")
+    axes[panel_idx].invert_yaxis()
+    axes[panel_idx].set_aspect("equal", adjustable="box")
+    axes[panel_idx].grid(False)
 
     plt.tight_layout()
     plt.show()
@@ -3198,6 +4551,11 @@ for cfg in SAMPLE_CONFIGS:
         r'''
 save_df(result_df, RESULT_DIR / "xenium_pseudotime_result_df.pkl")
 pd.Series(selected_cols, name="feature").to_csv(RESULT_DIR / "xenium_pseudotime_selected_features.csv", index=False)
+save_df(feature_block_df, RESULT_DIR / "xenium_pseudotime_feature_blocks.csv")
+save_df(histology_proxy_availability_df, RESULT_DIR / "xenium_histology_proxy_availability.csv")
+save_df(sample_effect_qc_df, RESULT_DIR / "xenium_sample_effect_qc.csv")
+save_df(sample_discriminating_feature_df, RESULT_DIR / "xenium_sample_discriminating_features.csv")
+save_df(branch_biology_summary_df, RESULT_DIR / "xenium_branch_biology_summary.csv")
 with open(RESULT_DIR / "xenium_branch_definitions.json", "w") as f:
     json.dump(branch_defs, f, indent=2)
 with open(RESULT_DIR / "xenium_tree_settings.json", "w") as f:
@@ -3208,6 +4566,12 @@ with open(RESULT_DIR / "xenium_tree_settings.json", "w") as f:
             "simplified_num_nodes": int(num_nodes_simple),
             "detailed_root_node": int(source_node),
             "simplified_root_node": int(source_node_simple),
+            "sample_centered_root_node": int(source_node_sample_centered),
+            "sample_centered_root_niches": int(root_mask_sample_centered.sum()),
+            "intrinsic_sample_centered_root_node": (
+                int(source_node_intrinsic) if source_node_intrinsic is not None else None
+            ),
+            "trajectory_scaling": TRAJECTORY_SCALING,
             "detailed_tree_min_nodes": int(DETAILED_TREE_MIN_NODES),
             "detailed_tree_max_nodes": int(DETAILED_TREE_MAX_NODES),
             "detailed_tree_node_scale": float(DETAILED_TREE_NODE_SCALE),
@@ -3259,8 +4623,12 @@ Current implementation choices:
 - Builds ductal/tumor epithelial connected-component niches from 10x `cell_boundaries.parquet` boundary proximity first, with a centroid-radius fallback.
 - Adds cell/nucleus boundary shape summaries, including circularity, solidity, elongation, Feret diameter, and boundary irregularity.
 - Adds a runnable Xenium DAPI pixel-feature extraction path using `nucleus_boundaries.parquet` plus user-verified focus morphology images. The notebook defaults to a pilot run before full epithelial extraction.
-- Summarizes epithelial niche graph morphology, state markers, and surrounding cell context.
+- Summarizes epithelial niche graph morphology, state markers, surrounding cell context, duct/lumen topology, ductal-continuity/cancerization proxies, and epithelial-stromal interface disruption proxies.
 - Fits a pooled ElPiGraph pseudotime trajectory from niche-level Xenium features. The detailed tree node count is adaptive (`min(100, max(40, ceil(sqrt(n_niches) * 2.5)))`), while the simplified tree used for major branch labels defaults to 24 nodes.
+- Adds histology proxy scores for normal-duct-like, ADM/PanIN-like, glandular architecture, ductal-continuity/cancerization-like spread, epithelial-stromal interface disruption, desmoplastic tumor, immune-inflamed, immune-excluded, duodenum-invasion context, and gland-poor/undifferentiated-like states.
+- Uses block-balanced feature scaling so broad feature families (histology modules, epithelial state, architecture/topology, nuclear morphology, microenvironment) contribute more evenly to the pooled trajectory.
+- Adds an intrinsic epithelial sensitivity trajectory using within-sample centered epithelial, architecture, and nuclear morphology features only.
+- Adds automatic branch annotation summaries: branch structure is inferred from the simplified tree, then each branch receives sample composition, histology-score enrichment, and a suggested biological identity for manual review.
 
 Important caveat:
 

@@ -12,7 +12,7 @@ os.environ.setdefault("NUMBA_CACHE_DIR", "/private/tmp/numba")
 
 import pandas as pd
 
-from spatioev.spatial.cell_pixel_features import extract_xenium_dapi_features
+from spatioev.xe import extract_xenium_dapi_features
 
 
 def parse_args() -> argparse.Namespace:

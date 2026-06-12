@@ -1,0 +1,283 @@
+# SpatioEv Function Catalog
+
+This catalog is generated from the current package source by `scripts/write_tutorial_notebooks.py`. It excludes private helpers and generated artifacts to keep the user-facing API readable.
+
+## ECM-Cell Analysis
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.spatial.spatial_ecm_graph` | `assign_niches_to_fibers` | Map per-image fiber-graph community labels back onto ``fiber_df``. | `05` |
+| `spatioev.spatial.spatial_ecm_graph` | `build_ecm_bipartite_graph_per_image` | Build bipartite graphs per image. | `05` |
+| `spatioev.spatial.spatial_ecm_graph` | `compute_invasion_score` | Summarize each ECM niche by tumor density, alignment, and a simple invasion score. | `05` |
+| `spatioev.spatial.spatial_ecm_graph` | `detect_ecm_niches_per_image` | Detect ECM niches separately per image. | `05` |
+| `spatioev.spatial.spatial_ecm_graph` | `project_fiber_graph_per_image` | Project each bipartite graph onto a fiber-only graph. | `05` |
+| `spatioev.spatial.spatial_ecm_links` | `build_cell_fiber_links` | Build bidirectional adjacency table linking cells and fibers. | `05` |
+| `spatioev.spatial.spatial_ecm_links` | `build_nearest_cell_fiber_map` | Compute nearest fiber for every cell. | `05` |
+| `spatioev.spatial.spatial_ecm_neighborhoods` | `add_neighborhoods_to_obs` | Copy neighborhood labels/features back into ``adata.obs`` by cell id. | `05` |
+| `spatioev.spatial.spatial_ecm_neighborhoods` | `build_ecm_cell_neighborhood_features` | Build radius-based ECM-cell neighborhood features around each cell. | `05` |
+| `spatioev.spatial.spatial_ecm_neighborhoods` | `cluster_ecm_cell_neighborhoods` | Cluster ECM-cell neighborhood features with K-means. | `05` |
+| `spatioev.spatial.spatial_ecm_neighborhoods` | `default_ecm_cell_neighborhood_feature_columns` | Select sensible default features for K-means neighborhood clustering. | `05` |
+| `spatioev.spatial.spatial_ecm_neighborhoods` | `detect_tissue_regions_dbscan` | Identify large tissue pieces from cell coordinates using DBSCAN. | `05` |
+| `spatioev.spatial.spatial_ecm_neighborhoods` | `filter_ecm_cell_inputs_by_tissue` | Filter cells, fibers, and links to retained tissue components. | `05` |
+| `spatioev.spatial.spatial_ecm_neighborhoods` | `score_col6_dark_neighborhoods` | Mark K-means neighborhoods that look COL6A1/CHP-poor inside tissue. | `05` |
+| `spatioev.spatial.spatial_ecm_neighborhoods` | `summarize_ecm_cell_neighborhoods` | Summarize K-means neighborhoods by size, phenotype composition, and features. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `cell_fiber_alignment` | Compute alignment between cell orientation and ECM fiber orientation. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `cell_to_fiber_distance` | Compute distance from cells to nearest ECM fiber. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `compute_convex_hull_area` | Compute area of convex hull. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `cross_morans_i_ecm_cells` | Cross Moran's I between ECM features and nearby cell features. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `cross_morans_i_ecm_cells_permutation_test` | Permutation test for global cross Moran's I between ECM and cell features. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `cross_ripleys_k` | Cross Ripley's K statistic between cells and ECM fibers. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `cross_ripleys_k_permutation_envelope` | Permutation envelope for cell-ECM cross Ripley's K. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `fiber_density_near_cells` | Count ECM fibers within radius of each cell. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `fiber_vectors` | Convert ECM fiber orientation into vector field representation. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `local_cross_morans_i_ecm_cells` | Local cross Moran's I. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `local_morans_i_fibers` | Local Moran's I spatial autocorrelation for ECM features. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `map_cells_to_fibers` | Map nearby cell features onto ECM fiber locations. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `map_cells_to_fibers_kernel` | Map cell influence onto ECM fibers using Gaussian kernel density. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `morans_i_fibers` | Spatial autocorrelation of ECM features. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `spatial_enrichment_score` | Spatial enrichment score. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `spatial_linear_regression` | Linear regression between spatial features. | `05` |
+| `spatioev.spatial.spatial_ecm_stats` | `spatial_mixed_model` | Mixed effects spatial regression. | `05` |
+
+## I/O
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.io.load` | `load_h5ad` | Load an AnnData h5ad file from disk. | `00` |
+
+## QC Plotting
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.plot.plot` | `plot_area_distribution` | Plot cell-area distributions with optional QC thresholds. | `01` |
+| `spatioev.plot.plot` | `plot_nc_ratio_distribution` | Plot nuclear-to-cell ratio distributions with optional QC threshold. | `01` |
+
+## Xenium Spatial Transcriptomics
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.xenium.annotation` | `assign_labels_from_marker_rules` | Assign cluster labels using simple thresholded marker-score rules. | `06` |
+| `spatioev.xenium.annotation` | `compute_marker_set_scores` | Compute per-cell marker-set scores from expression values. | `06` |
+| `spatioev.xenium.annotation` | `summarize_cluster_marker_scores` | Summarize marker scores per cluster or annotation label. | `06` |
+| `spatioev.xenium.niche_features` | `add_module_scores` | Return ``feature_table`` with module-score columns appended. | `06` |
+| `spatioev.xenium.niche_features` | `available_feature_map` | Resolve canonical feature names to the first available candidate column. | `06` |
+| `spatioev.xenium.niche_features` | `score_xenium_histology_modules` | Score Xenium epithelial-niche histology modules. | `06` |
+
+## Annotation Refinement
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.phenotype.annotate_loop` | `annotate_refinements` | Review and annotate subsets of cells selected for refinement. | `02` |
+| `spatioev.phenotype.annotation` | `annotate_from_csv` | Attach saved cluster annotations from a CSV file. | `02` |
+| `spatioev.phenotype.annotation` | `annotate_interactive` | Launch an interactive cluster-annotation workflow. | `02` |
+| `spatioev.phenotype.clustering` | `cluster_cells` | Run Scanpy preprocessing, neighbor graph construction, UMAP, and Leiden clustering. | `02` |
+| `spatioev.phenotype.merge` | `merge_annotations` | Merge multiple annotation columns into one prioritized annotation. | `02` |
+| `spatioev.phenotype.merge` | `merge_refinements` | Merge refined annotations back into a parent annotation column. | `02` |
+| `spatioev.phenotype.refine` | `refine_clusters` | Split one annotated population for subclustering/refinement. | `02` |
+| `spatioev.phenotype.subset` | `subset_cells` | Create an AnnData subset from an observation-column query. | `02` |
+
+## Cell-Cell Interaction
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.spatial.interaction` | `phenotype_interaction_density` | For each source cell, count target phenotype cells within radius, | `03` |
+| `spatioev.spatial.interaction` | `plot_interaction_density` | Plot interaction density helper used by the cell-cell interaction workflow. | `03` |
+| `spatioev.spatial.interaction` | `plot_interaction_distribution` | Plot interaction distribution helper used by the cell-cell interaction workflow. | `03` |
+| `spatioev.spatial.interaction` | `plot_interaction_overlay` | Plot interaction overlay helper used by the cell-cell interaction workflow. | `03` |
+
+## Configuration
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.config` | `ClusteringConfig` | Dataclass storing Scanpy/Leiden clustering settings. | `00` |
+| `spatioev.config` | `QCConfig` | Dataclass storing segmentation QC thresholds such as pixel size, area limits, and N:C-ratio limits. | `00` |
+
+## Density
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.spatial.general_density` | `assign_tiles` | Assign each cell to a spatial tile. | `03` |
+| `spatioev.spatial.general_density` | `compute_general_density` | Compute density per tile for all cells. | `03` |
+| `spatioev.spatial.general_density` | `compute_kde_density` | Estimate a smoothed 2D kernel-density surface for all cells or a phenotype. | `03` |
+| `spatioev.spatial.general_density` | `compute_phenotype_density` | Compute density per tile for each phenotype. | `03` |
+| `spatioev.spatial.general_density` | `phenotype_density_correlation` | Compute phenotype density correlations across tiles. | `03` |
+| `spatioev.spatial.general_density` | `plot_density_correlation` | Plot phenotype density correlation heatmap. | `03` |
+| `spatioev.spatial.general_density` | `plot_density_heatmap` | Plot tile density heatmap. | `03` |
+| `spatioev.spatial.general_density` | `plot_kde_density` | Plot a smoothed KDE density map. | `03` |
+| `spatioev.spatial.general_density` | `plot_phenotype_density_heatmap` | Plot tile density heatmap for a specific phenotype. | `03` |
+| `spatioev.spatial.local_density_KNN` | `compute_local_density_all_cells` | Compute local density for all cells. | `03` |
+| `spatioev.spatial.local_density_KNN` | `compute_local_density_by_phenotype` | Compute local density within each phenotype. | `03` |
+| `spatioev.spatial.local_density_KNN` | `plot_local_density_map` | Plot spatial density map. | `03` |
+| `spatioev.spatial.local_density_radius` | `compute_radius_density` | Compute local density within a fixed radius. | `03` |
+
+## Niche/Graph
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.spatial.spatial_cell_graph` | `build_cell_graph` | Build a Layer 1 spatial cell graph across all images. | `04` |
+| `spatioev.spatial.spatial_cell_graph` | `extract_all_niche_subgraphs` | Extract induced cell subgraphs for multiple niche labels. | `04` |
+| `spatioev.spatial.spatial_cell_graph` | `extract_niche_subgraph` | Extract the induced cell subgraph for one niche label. | `04` |
+| `spatioev.spatial.spatial_niche_boundaries` | `add_niche_regions_to_obs` | Merge niche-region assignments back into ``adata.obs``. | `04` |
+| `spatioev.spatial.spatial_niche_boundaries` | `assign_cells_to_niche_regions` | Assign cells to niche core and border regions. | `04` |
+| `spatioev.spatial.spatial_niche_boundaries` | `buffer_niche_boundaries` | Expand or shrink niche boundaries to define outer and inner regions. | `04` |
+| `spatioev.spatial.spatial_niche_boundaries` | `build_niche_boundaries` | Build one geometry per clustered niche component. | `04` |
+| `spatioev.spatial.spatial_niche_boundaries` | `cluster_spatial_components` | Cluster target cells within each image by spatial graph connected components. | `04` |
+| `spatioev.spatial.spatial_niche_boundaries` | `cluster_spatial_components_from_mask` | Cluster target cells within each FOV by connected components on a binary | `04` |
+| `spatioev.spatial.spatial_niche_boundaries` | `cluster_spatial_components_hdbscan` | Cluster target cells within each image using HDBSCAN. | `04` |
+| `spatioev.spatial.spatial_niche_boundaries` | `cluster_spatial_niches` | Cluster target cells within each image using DBSCAN. | `04` |
+| `spatioev.spatial.spatial_niche_boundaries` | `estimate_density_adaptive_dbscan_params` | Estimate image-specific DBSCAN parameters from the density of the target cells. | `04` |
+| `spatioev.spatial.spatial_niche_boundaries` | `estimate_spatial_component_params` | Estimate image-specific connection radii for graph connected components. | `04` |
+| `spatioev.spatial.spatial_niche_boundaries` | `summarize_niche_composition` | Summarize phenotype composition within niche regions. | `04` |
+| `spatioev.spatial.spatial_niche_graph_features` | `build_niche_feature_table` | Build a filtered per-niche graph-descriptor table in one call. | `04` |
+| `spatioev.spatial.spatial_niche_graph_features` | `build_niche_feature_table_batched` | Build the niche feature table in batches of niche labels. | `04` |
+| `spatioev.spatial.spatial_niche_graph_features` | `score_pdac_niche_pathology_modules` | Score PDAC pathology-inspired niche modules from a niche feature table. | `04` |
+| `spatioev.spatial.spatial_niche_graph_features` | `summarize_niche_graph_features` | Summarize each niche as a graph-derived descriptor vector. | `04` |
+| `spatioev.spatial.spatial_niche_graph_features` | `summarize_niche_surrounding_context` | Summarize the graph-defined surroundings of each niche. | `04` |
+
+## Phenotyping/SVM
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.ml.features` | `build_feature_matrix` | Combine marker and morphology features. | `02` |
+| `spatioev.ml.features` | `build_marker_features` | Extract and z-normalize marker expression matrix. | `02` |
+| `spatioev.ml.features` | `build_morphology_features` | Transform and scale morphology features. | `02` |
+| `spatioev.ml.prediction` | `predict_svm` | Predict phenotypes and probabilities. | `02` |
+| `spatioev.ml.svm` | `run_svm_phenotyping` | Train SVM classifier and predict phenotypes. | `02` |
+| `spatioev.ml.svm_inspection` | `inspect_disagreements` | Visualize cells where manual annotation and SVM prediction disagree. | `02` |
+| `spatioev.ml.svm_inspection` | `inspect_reassigned_cells` | Visualize cells reassigned by SVM. | `02` |
+| `spatioev.ml.training` | `train_svm_classifier` | Train a balanced radial-basis SVM and return a classification report. | `02` |
+
+## Pixel Morphology/Xenium
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.spatial.cell_pixel_features` | `calculate_channel_correlation` | Compute correlation between two channels inside a cell mask. | `01/06` |
+| `spatioev.spatial.cell_pixel_features` | `calculate_entropy` | Compute Shannon entropy of an intensity patch. | `01/06` |
+| `spatioev.spatial.cell_pixel_features` | `calculate_haralick_features` | Compute gray-level texture descriptors from an intensity patch. | `01/06` |
+| `spatioev.spatial.cell_pixel_features` | `calculate_haralick_features_rescaled` | Compute Haralick texture after rescaling intensity to uint8. | `01/06` |
+| `spatioev.spatial.cell_pixel_features` | `calculate_lacunarity` | Measure texture gap heterogeneity in a local image patch. | `01/06` |
+| `spatioev.spatial.cell_pixel_features` | `calculate_moment_of_inertia` | Quantify how dispersed intensity is around the intensity centroid. | `01/06` |
+| `spatioev.spatial.cell_pixel_features` | `calculate_polarity_score` | Measure displacement between geometric and intensity centroids normalized by cell size. | `01/06` |
+| `spatioev.spatial.cell_pixel_features` | `extract_cell_pixel_features` | Extract per-cell pixel features across multiple FOVs. | `01/06` |
+| `spatioev.spatial.cell_pixel_features` | `extract_cell_pixel_features_for_fov` | Extract per-cell pixel/morphotexture features for one FOV. | `01/06` |
+| `spatioev.spatial.cell_pixel_features` | `extract_xenium_dapi_features` | Extract per-nucleus DAPI pixel features from 10x Xenium morphology images. | `01/06` |
+
+## Preprocessing
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.preprocessing.normalize` | `add_obs_from_var` | Copy one or more features from ``adata.X``/``adata.var_names`` into ``adata.obs``. | `01` |
+| `spatioev.preprocessing.normalize` | `add_zscore_obs_features` | Add z-scored versions of numeric ``adata.obs`` columns. | `01` |
+| `spatioev.preprocessing.normalize` | `zscore_normalize` | Z-score normalize the expression matrix in AnnData.X. | `01` |
+
+## Segmentation QC
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.qc.segmentation` | `categorize_area` | Flag debris-like and merged-cell-like objects from physical area thresholds. | `01` |
+| `spatioev.qc.segmentation` | `categorize_nc_ratio` | Flag cells with implausible nuclear-to-cell area ratio. | `01` |
+| `spatioev.qc.segmentation` | `compute_area_um2` | Convert segmented cell area from pixels to square microns. | `01` |
+| `spatioev.qc.segmentation` | `filter_segmentation_errors` | Return a filtered AnnData containing cells that pass area and N:C-ratio QC. | `01` |
+| `spatioev.qc.segmentation` | `generate_qc_summary` | Generate a QC summary table from QC-annotated AnnData. | `01` |
+| `spatioev.qc.segmentation` | `run_segmentation_qc` | Run the complete area and N:C-ratio segmentation QC workflow. | `01` |
+
+## Spatial Preprocessing
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.spatial.preprocessing` | `compute_convex_hull` | Compute convex hull from Nx2 coordinates. | `03` |
+| `spatioev.spatial.preprocessing` | `compute_convex_hull_area` | Compute convex hull area from Nx2 coordinates. | `03` |
+| `spatioev.spatial.preprocessing` | `compute_tissue_areas` | Compute convex-hull tissue area for each image. | `03` |
+| `spatioev.spatial.preprocessing` | `detect_edge_cells` | Detect cells whose radius-neighborhood intersects the convex hull boundary. | `03` |
+| `spatioev.spatial.preprocessing` | `distance_to_convex_hull_boundary` | Compute minimum distance from each point to convex hull boundary. | `03` |
+| `spatioev.spatial.preprocessing` | `validate_spatial_coordinates` | Validate required spatial coordinate columns and basic integrity. | `03` |
+
+## Spatial Statistics
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.spatial.spatial_stats` | `add_local_cross_morans_i` | Compute local cross Moran's I and add it to ``adata.obs``. | `03` |
+| `spatioev.spatial.spatial_stats` | `add_local_cross_morans_i_between_phenotypes` | Compute local cross Moran's I between a source-cell feature and a | `03` |
+| `spatioev.spatial.spatial_stats` | `add_local_cross_morans_i_quadrants` | Add quadrant-style local cross Moran classification to ``adata.obs``. | `03` |
+| `spatioev.spatial.spatial_stats` | `add_local_morans_i` | Compute Local Moran's I and add to adata.obs. | `03` |
+| `spatioev.spatial.spatial_stats` | `add_local_morans_i_quadrants` | Add quadrant-style local Moran classification to ``adata.obs``. | `03` |
+| `spatioev.spatial.spatial_stats` | `classify_local_cross_morans_i` | Classify local cross Moran's I into quadrant-style labels. | `03` |
+| `spatioev.spatial.spatial_stats` | `classify_local_morans_i` | Classify local Moran's I into hotspot/coldspot/outlier quadrants. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_morans_i` | Cross Moran's I. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_morans_i_by_image` | Compute cross Moran's I per image for two spatial features. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_morans_i_by_image_permutation_test` | Permutation test for cross Moran's I per image. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_morans_i_feature_matrix` | Compute a feature-by-feature cross Moran's I matrix between two phenotypes. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_morans_i_permutation_test` | Permutation test for global cross Moran's I. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_ripley_envelope` | Monte Carlo envelope for cross Ripley analysis. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_ripley_envelope_by_phenotype` | Monte Carlo cross-Ripley envelope between two phenotypes. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_ripley_local_counts` | Identify source cells embedded in target-enriched local neighborhoods. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_ripley_permutation_envelope` | Cross-Ripley permutation envelope. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_ripleys_curve` | Compute cross Ripley curve K(r), L(r), and L(r)-r. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_ripleys_curve_by_phenotype` | Compute cross Ripley curve between two phenotypes. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_ripleys_k` | Cross Ripley's K statistic. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_ripleys_k_all_pairs` | Compute cross-Ripley statistics for all phenotype pairs. | `03` |
+| `spatioev.spatial.spatial_stats` | `cross_ripleys_k_by_phenotype` | Compute cross Ripley's K between two phenotypes. | `03` |
+| `spatioev.spatial.spatial_stats` | `local_cross_morans_i` | Local cross Moran's I. | `03` |
+| `spatioev.spatial.spatial_stats` | `local_morans_i` | Local Moran's I. | `03` |
+| `spatioev.spatial.spatial_stats` | `morans_i` | Global Moran's I. | `03` |
+| `spatioev.spatial.spatial_stats` | `morans_i_by_image` | Compute Moran's I per image for a spatial feature. | `03` |
+| `spatioev.spatial.spatial_stats` | `morans_i_by_image_permutation_test` | Permutation test for Moran's I per image. | `03` |
+| `spatioev.spatial.spatial_stats` | `morans_i_permutation_test` | Permutation test for global Moran's I. | `03` |
+| `spatioev.spatial.spatial_stats` | `ripley_envelope` | Monte Carlo envelope test for Ripley statistics. | `03` |
+| `spatioev.spatial.spatial_stats` | `ripley_interaction_scale` | Extract characteristic interaction scale from a Ripley curve. | `03` |
+| `spatioev.spatial.spatial_stats` | `ripley_local_counts_by_phenotype` | Identify cells contributing to phenotype clustering at a chosen radius. | `03` |
+| `spatioev.spatial.spatial_stats` | `ripley_spatial_scales` | Extract biologically meaningful spatial scales from a Ripley curve. | `03` |
+| `spatioev.spatial.spatial_stats` | `ripleys_curve` | Compute Ripley statistics across radii. | `03` |
+| `spatioev.spatial.spatial_stats` | `ripleys_k` | Compute Ripley's K statistic and derived transforms. | `03` |
+| `spatioev.spatial.spatial_stats` | `ripleys_k_by_image` | Compute Ripley's K statistics for each image. | `03` |
+| `spatioev.spatial.spatial_stats` | `ripleys_k_by_phenotype` | Compute Ripley's K separately for each phenotype. | `03` |
+| `spatioev.spatial.spatial_stats` | `summarize_target_features_around_source_cells` | Summarize target-cell features in neighborhoods around source cells. | `03` |
+
+## Spatial Visualization
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.spatial.visualization` | `plot_correlation_heatmap` | Pretty lower-triangle correlation heatmap. | `03/04` |
+| `spatioev.spatial.visualization` | `plot_niche_boundaries` | Overlay niche boundary geometries on top of spatial cell coordinates. | `03/04` |
+| `spatioev.spatial.visualization` | `plot_spatial_category` | Scatter plot of a categorical spatial feature. | `03/04` |
+| `spatioev.spatial.visualization` | `plot_spatial_feature` | Scatter plot of a spatial feature. | `03/04` |
+
+## Trajectory Dynamics
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.spatial.pseudotime_dynamics` | `assign_pseudotime_bins` | Assign integer pseudotime bins and return per-bin pseudotime summaries. | `06` |
+| `spatioev.spatial.pseudotime_dynamics` | `compute_epithelial_centered_interaction_dynamics` | Compute epithelial-centered local interaction metrics along pseudotime. | `06` |
+| `spatioev.spatial.pseudotime_dynamics` | `summarize_epithelial_interaction_dynamics` | Aggregate epithelial-centered local interaction metrics by pseudotime bin. | `06` |
+| `spatioev.spatial.pseudotime_trends` | `add_branch_time_bins` | Add within-branch pseudotime bins to a copy of ``data``. | `06` |
+| `spatioev.spatial.pseudotime_trends` | `benjamini_hochberg` | Benjamini-Hochberg FDR correction that preserves input order. | `06` |
+| `spatioev.spatial.pseudotime_trends` | `branch_time_feature_matrix` | Build a branch-by-time feature summary matrix. | `06` |
+| `spatioev.spatial.pseudotime_trends` | `compute_feature_trend_table` | Summarize monotonic and early/late changes along pseudotime. | `06` |
+| `spatioev.spatial.pseudotime_trends` | `find_branch_transition_features` | Rank features by the largest adjacent branch-time change. | `06` |
+
+## Trajectory Pseudotime
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.spatial.pseudotime` | `FeatureMatrixResult` | Container returned by :func:`prepare_pseudotime_feature_matrix`. | `06` |
+| `spatioev.spatial.pseudotime` | `assign_feature_blocks` | Assign each feature to a broad information block by name prefix. | `06` |
+| `spatioev.spatial.pseudotime` | `block_balance_feature_matrix` | Equalize broad feature families before trajectory fitting. | `06` |
+| `spatioev.spatial.pseudotime` | `infer_branch_labels` | Assign observation-level branch labels from a principal tree. | `06` |
+| `spatioev.spatial.pseudotime` | `minmax_scale` | Scale numeric values into ``feature_range`` while preserving NaNs. | `06` |
+| `spatioev.spatial.pseudotime` | `node_graph` | Convert principal-tree edges to a NetworkX graph. | `06` |
+| `spatioev.spatial.pseudotime` | `prepare_pseudotime_feature_matrix` | Prepare a clean numeric matrix for pseudotime or trajectory models. | `06` |
+| `spatioev.spatial.pseudotime` | `project_tree_nodes_to_embedding` | Estimate tree-node positions in a plotted embedding from assigned cells. | `06` |
+| `spatioev.spatial.pseudotime` | `sample_center_feature_matrix` | Z-center a feature matrix within each sample or image. | `06` |
+| `spatioev.spatial.pseudotime` | `score_signed_feature_module` | Score a signed feature module from candidate feature columns. | `06` |
+| `spatioev.spatial.pseudotime` | `summarize_branches` | Summarize branch size, composition, pseudotime, and score enrichment. | `06` |
+| `spatioev.spatial.pseudotime` | `tree_edges` | Return principal-tree edges as ``(source, target)`` integer tuples. | `06` |
+| `spatioev.spatial.pseudotime` | `zscore_series` | Return a NaN-aware z-score Series aligned to the input index. | `06` |
+
+## Visualization
+
+| Module | API | Purpose | Tutorial |
+|---|---|---|---|
+| `spatioev.visualization.heatmap` | `plot_cluster_heatmap` | Plot a cluster-marker heatmap with Scanpy. | `02/03` |
+| `spatioev.visualization.overview` | `plot_refinement_umaps` | Plot UMAPs from refinement runs. | `02/03` |
+| `spatioev.visualization.spatial` | `inspect_clusters` | Open interactive image/cluster inspection with optional viewer dependencies. | `02/03` |
+| `spatioev.visualization.spatial_scatter` | `spatial_scatter_plot` | Plot spatial coordinates colored by phenotype or continuous feature. | `02/03` |
