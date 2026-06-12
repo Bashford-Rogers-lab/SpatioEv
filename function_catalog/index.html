@@ -1,0 +1,2674 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Spatial evolution analysis for multiplexed imaging and spatial transcriptomics.">
+      
+      
+      
+        <link rel="canonical" href="https://bashford-rogers-lab.github.io/SpatioEv/function_catalog/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>SpatioEv Function Catalog - SpatioEv</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#spatioev-function-catalog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SpatioEv" class="md-header__button md-logo" aria-label="SpatioEv" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SpatioEv
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              SpatioEv Function Catalog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Bashford-Rogers-lab/SpatioEv" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Bashford-Rogers-lab/SpatioEv
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SpatioEv" class="md-nav__button md-logo" aria-label="SpatioEv" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    SpatioEv
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Bashford-Rogers-lab/SpatioEv" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Bashford-Rogers-lab/SpatioEv
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../tutorials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/md/spatial_evolution_spatioev/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mastering Spatial Evolution Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/preprocessing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preprocessing (pp)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/tools_spatial_statistics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial Statistics (tl.stats)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/tools_density_interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Density & Interactions (tl.density)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/tools_niche_pseudotime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Niche Graphs & Pseudotime (tl.niche, tl.pseudotime)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/tools_ecm_cell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECM–Cell Analysis (tl.ecm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/plotting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting (pl)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/helper_functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Helper Functions (hl)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/xenium/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Xenium (xe)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Methods
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methods/morphology_topology_features/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Morphology & Topology Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methods/spatial_statistics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial Statistics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methods/niche_graph_pseudotime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Niche Graph Pseudotime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methods/ecm_cell_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECM–Cell Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Publication
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Publication
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../publication/reproducibility/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ecm-cell-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ECM-Cell Analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        I/O
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qc-plotting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QC Plotting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#xenium-spatial-transcriptomics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Xenium Spatial Transcriptomics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#annotation-refinement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Annotation Refinement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cell-cell-interaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cell-Cell Interaction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#density" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Density
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nichegraph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Niche/Graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phenotypingsvm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phenotyping/SVM
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pixel-morphologyxenium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pixel Morphology/Xenium
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preprocessing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#segmentation-qc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Segmentation QC
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spatial-preprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spatial Preprocessing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spatial-statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spatial Statistics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spatial-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spatial Visualization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trajectory-dynamics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trajectory Dynamics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trajectory-pseudotime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trajectory Pseudotime
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Visualization
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="spatioev-function-catalog">SpatioEv Function Catalog<a class="headerlink" href="#spatioev-function-catalog" title="Permanent link">&para;</a></h1>
+<p>This catalog is generated from the current package source by <code>scripts/write_tutorial_notebooks.py</code>. It excludes private helpers and generated artifacts to keep the user-facing API readable.</p>
+<h2 id="ecm-cell-analysis">ECM-Cell Analysis<a class="headerlink" href="#ecm-cell-analysis" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_graph</code></td>
+<td><code>assign_niches_to_fibers</code></td>
+<td>Map per-image fiber-graph community labels back onto <code>fiber_df</code>.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_graph</code></td>
+<td><code>build_ecm_bipartite_graph_per_image</code></td>
+<td>Build bipartite graphs per image.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_graph</code></td>
+<td><code>compute_invasion_score</code></td>
+<td>Summarize each ECM niche by tumor density, alignment, and a simple invasion score.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_graph</code></td>
+<td><code>detect_ecm_niches_per_image</code></td>
+<td>Detect ECM niches separately per image.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_graph</code></td>
+<td><code>project_fiber_graph_per_image</code></td>
+<td>Project each bipartite graph onto a fiber-only graph.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_links</code></td>
+<td><code>build_cell_fiber_links</code></td>
+<td>Build bidirectional adjacency table linking cells and fibers.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_links</code></td>
+<td><code>build_nearest_cell_fiber_map</code></td>
+<td>Compute nearest fiber for every cell.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_neighborhoods</code></td>
+<td><code>add_neighborhoods_to_obs</code></td>
+<td>Copy neighborhood labels/features back into <code>adata.obs</code> by cell id.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_neighborhoods</code></td>
+<td><code>build_ecm_cell_neighborhood_features</code></td>
+<td>Build radius-based ECM-cell neighborhood features around each cell.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_neighborhoods</code></td>
+<td><code>cluster_ecm_cell_neighborhoods</code></td>
+<td>Cluster ECM-cell neighborhood features with K-means.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_neighborhoods</code></td>
+<td><code>default_ecm_cell_neighborhood_feature_columns</code></td>
+<td>Select sensible default features for K-means neighborhood clustering.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_neighborhoods</code></td>
+<td><code>detect_tissue_regions_dbscan</code></td>
+<td>Identify large tissue pieces from cell coordinates using DBSCAN.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_neighborhoods</code></td>
+<td><code>filter_ecm_cell_inputs_by_tissue</code></td>
+<td>Filter cells, fibers, and links to retained tissue components.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_neighborhoods</code></td>
+<td><code>score_col6_dark_neighborhoods</code></td>
+<td>Mark K-means neighborhoods that look COL6A1/CHP-poor inside tissue.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_neighborhoods</code></td>
+<td><code>summarize_ecm_cell_neighborhoods</code></td>
+<td>Summarize K-means neighborhoods by size, phenotype composition, and features.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>cell_fiber_alignment</code></td>
+<td>Compute alignment between cell orientation and ECM fiber orientation.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>cell_to_fiber_distance</code></td>
+<td>Compute distance from cells to nearest ECM fiber.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>compute_convex_hull_area</code></td>
+<td>Compute area of convex hull.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>cross_morans_i_ecm_cells</code></td>
+<td>Cross Moran's I between ECM features and nearby cell features.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>cross_morans_i_ecm_cells_permutation_test</code></td>
+<td>Permutation test for global cross Moran's I between ECM and cell features.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>cross_ripleys_k</code></td>
+<td>Cross Ripley's K statistic between cells and ECM fibers.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>cross_ripleys_k_permutation_envelope</code></td>
+<td>Permutation envelope for cell-ECM cross Ripley's K.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>fiber_density_near_cells</code></td>
+<td>Count ECM fibers within radius of each cell.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>fiber_vectors</code></td>
+<td>Convert ECM fiber orientation into vector field representation.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>local_cross_morans_i_ecm_cells</code></td>
+<td>Local cross Moran's I.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>local_morans_i_fibers</code></td>
+<td>Local Moran's I spatial autocorrelation for ECM features.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>map_cells_to_fibers</code></td>
+<td>Map nearby cell features onto ECM fiber locations.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>map_cells_to_fibers_kernel</code></td>
+<td>Map cell influence onto ECM fibers using Gaussian kernel density.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>morans_i_fibers</code></td>
+<td>Spatial autocorrelation of ECM features.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>spatial_enrichment_score</code></td>
+<td>Spatial enrichment score.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>spatial_linear_regression</code></td>
+<td>Linear regression between spatial features.</td>
+<td><code>05</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_ecm_stats</code></td>
+<td><code>spatial_mixed_model</code></td>
+<td>Mixed effects spatial regression.</td>
+<td><code>05</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="io">I/O<a class="headerlink" href="#io" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.io.load</code></td>
+<td><code>load_h5ad</code></td>
+<td>Load an AnnData h5ad file from disk.</td>
+<td><code>00</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="qc-plotting">QC Plotting<a class="headerlink" href="#qc-plotting" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.plot.plot</code></td>
+<td><code>plot_area_distribution</code></td>
+<td>Plot cell-area distributions with optional QC thresholds.</td>
+<td><code>01</code></td>
+</tr>
+<tr>
+<td><code>spatioev.plot.plot</code></td>
+<td><code>plot_nc_ratio_distribution</code></td>
+<td>Plot nuclear-to-cell ratio distributions with optional QC threshold.</td>
+<td><code>01</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="xenium-spatial-transcriptomics">Xenium Spatial Transcriptomics<a class="headerlink" href="#xenium-spatial-transcriptomics" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.xenium.annotation</code></td>
+<td><code>assign_labels_from_marker_rules</code></td>
+<td>Assign cluster labels using simple thresholded marker-score rules.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.xenium.annotation</code></td>
+<td><code>compute_marker_set_scores</code></td>
+<td>Compute per-cell marker-set scores from expression values.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.xenium.annotation</code></td>
+<td><code>summarize_cluster_marker_scores</code></td>
+<td>Summarize marker scores per cluster or annotation label.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.xenium.niche_features</code></td>
+<td><code>add_module_scores</code></td>
+<td>Return <code>feature_table</code> with module-score columns appended.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.xenium.niche_features</code></td>
+<td><code>available_feature_map</code></td>
+<td>Resolve canonical feature names to the first available candidate column.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.xenium.niche_features</code></td>
+<td><code>score_xenium_histology_modules</code></td>
+<td>Score Xenium epithelial-niche histology modules.</td>
+<td><code>06</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="annotation-refinement">Annotation Refinement<a class="headerlink" href="#annotation-refinement" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.phenotype.annotate_loop</code></td>
+<td><code>annotate_refinements</code></td>
+<td>Review and annotate subsets of cells selected for refinement.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.phenotype.annotation</code></td>
+<td><code>annotate_from_csv</code></td>
+<td>Attach saved cluster annotations from a CSV file.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.phenotype.annotation</code></td>
+<td><code>annotate_interactive</code></td>
+<td>Launch an interactive cluster-annotation workflow.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.phenotype.clustering</code></td>
+<td><code>cluster_cells</code></td>
+<td>Run Scanpy preprocessing, neighbor graph construction, UMAP, and Leiden clustering.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.phenotype.merge</code></td>
+<td><code>merge_annotations</code></td>
+<td>Merge multiple annotation columns into one prioritized annotation.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.phenotype.merge</code></td>
+<td><code>merge_refinements</code></td>
+<td>Merge refined annotations back into a parent annotation column.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.phenotype.refine</code></td>
+<td><code>refine_clusters</code></td>
+<td>Split one annotated population for subclustering/refinement.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.phenotype.subset</code></td>
+<td><code>subset_cells</code></td>
+<td>Create an AnnData subset from an observation-column query.</td>
+<td><code>02</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="cell-cell-interaction">Cell-Cell Interaction<a class="headerlink" href="#cell-cell-interaction" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.spatial.interaction</code></td>
+<td><code>phenotype_interaction_density</code></td>
+<td>For each source cell, count target phenotype cells within radius,</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.interaction</code></td>
+<td><code>plot_interaction_density</code></td>
+<td>Plot interaction density helper used by the cell-cell interaction workflow.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.interaction</code></td>
+<td><code>plot_interaction_distribution</code></td>
+<td>Plot interaction distribution helper used by the cell-cell interaction workflow.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.interaction</code></td>
+<td><code>plot_interaction_overlay</code></td>
+<td>Plot interaction overlay helper used by the cell-cell interaction workflow.</td>
+<td><code>03</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.config</code></td>
+<td><code>ClusteringConfig</code></td>
+<td>Dataclass storing Scanpy/Leiden clustering settings.</td>
+<td><code>00</code></td>
+</tr>
+<tr>
+<td><code>spatioev.config</code></td>
+<td><code>QCConfig</code></td>
+<td>Dataclass storing segmentation QC thresholds such as pixel size, area limits, and N:C-ratio limits.</td>
+<td><code>00</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="density">Density<a class="headerlink" href="#density" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.spatial.general_density</code></td>
+<td><code>assign_tiles</code></td>
+<td>Assign each cell to a spatial tile.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.general_density</code></td>
+<td><code>compute_general_density</code></td>
+<td>Compute density per tile for all cells.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.general_density</code></td>
+<td><code>compute_kde_density</code></td>
+<td>Estimate a smoothed 2D kernel-density surface for all cells or a phenotype.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.general_density</code></td>
+<td><code>compute_phenotype_density</code></td>
+<td>Compute density per tile for each phenotype.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.general_density</code></td>
+<td><code>phenotype_density_correlation</code></td>
+<td>Compute phenotype density correlations across tiles.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.general_density</code></td>
+<td><code>plot_density_correlation</code></td>
+<td>Plot phenotype density correlation heatmap.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.general_density</code></td>
+<td><code>plot_density_heatmap</code></td>
+<td>Plot tile density heatmap.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.general_density</code></td>
+<td><code>plot_kde_density</code></td>
+<td>Plot a smoothed KDE density map.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.general_density</code></td>
+<td><code>plot_phenotype_density_heatmap</code></td>
+<td>Plot tile density heatmap for a specific phenotype.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.local_density_KNN</code></td>
+<td><code>compute_local_density_all_cells</code></td>
+<td>Compute local density for all cells.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.local_density_KNN</code></td>
+<td><code>compute_local_density_by_phenotype</code></td>
+<td>Compute local density within each phenotype.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.local_density_KNN</code></td>
+<td><code>plot_local_density_map</code></td>
+<td>Plot spatial density map.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.local_density_radius</code></td>
+<td><code>compute_radius_density</code></td>
+<td>Compute local density within a fixed radius.</td>
+<td><code>03</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="nichegraph">Niche/Graph<a class="headerlink" href="#nichegraph" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.spatial.spatial_cell_graph</code></td>
+<td><code>build_cell_graph</code></td>
+<td>Build a Layer 1 spatial cell graph across all images.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_cell_graph</code></td>
+<td><code>extract_all_niche_subgraphs</code></td>
+<td>Extract induced cell subgraphs for multiple niche labels.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_cell_graph</code></td>
+<td><code>extract_niche_subgraph</code></td>
+<td>Extract the induced cell subgraph for one niche label.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_boundaries</code></td>
+<td><code>add_niche_regions_to_obs</code></td>
+<td>Merge niche-region assignments back into <code>adata.obs</code>.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_boundaries</code></td>
+<td><code>assign_cells_to_niche_regions</code></td>
+<td>Assign cells to niche core and border regions.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_boundaries</code></td>
+<td><code>buffer_niche_boundaries</code></td>
+<td>Expand or shrink niche boundaries to define outer and inner regions.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_boundaries</code></td>
+<td><code>build_niche_boundaries</code></td>
+<td>Build one geometry per clustered niche component.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_boundaries</code></td>
+<td><code>cluster_spatial_components</code></td>
+<td>Cluster target cells within each image by spatial graph connected components.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_boundaries</code></td>
+<td><code>cluster_spatial_components_from_mask</code></td>
+<td>Cluster target cells within each FOV by connected components on a binary</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_boundaries</code></td>
+<td><code>cluster_spatial_components_hdbscan</code></td>
+<td>Cluster target cells within each image using HDBSCAN.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_boundaries</code></td>
+<td><code>cluster_spatial_niches</code></td>
+<td>Cluster target cells within each image using DBSCAN.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_boundaries</code></td>
+<td><code>estimate_density_adaptive_dbscan_params</code></td>
+<td>Estimate image-specific DBSCAN parameters from the density of the target cells.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_boundaries</code></td>
+<td><code>estimate_spatial_component_params</code></td>
+<td>Estimate image-specific connection radii for graph connected components.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_boundaries</code></td>
+<td><code>summarize_niche_composition</code></td>
+<td>Summarize phenotype composition within niche regions.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_graph_features</code></td>
+<td><code>build_niche_feature_table</code></td>
+<td>Build a filtered per-niche graph-descriptor table in one call.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_graph_features</code></td>
+<td><code>build_niche_feature_table_batched</code></td>
+<td>Build the niche feature table in batches of niche labels.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_graph_features</code></td>
+<td><code>score_pdac_niche_pathology_modules</code></td>
+<td>Score PDAC pathology-inspired niche modules from a niche feature table.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_graph_features</code></td>
+<td><code>summarize_niche_graph_features</code></td>
+<td>Summarize each niche as a graph-derived descriptor vector.</td>
+<td><code>04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_niche_graph_features</code></td>
+<td><code>summarize_niche_surrounding_context</code></td>
+<td>Summarize the graph-defined surroundings of each niche.</td>
+<td><code>04</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="phenotypingsvm">Phenotyping/SVM<a class="headerlink" href="#phenotypingsvm" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.ml.features</code></td>
+<td><code>build_feature_matrix</code></td>
+<td>Combine marker and morphology features.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.ml.features</code></td>
+<td><code>build_marker_features</code></td>
+<td>Extract and z-normalize marker expression matrix.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.ml.features</code></td>
+<td><code>build_morphology_features</code></td>
+<td>Transform and scale morphology features.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.ml.prediction</code></td>
+<td><code>predict_svm</code></td>
+<td>Predict phenotypes and probabilities.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.ml.svm</code></td>
+<td><code>run_svm_phenotyping</code></td>
+<td>Train SVM classifier and predict phenotypes.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.ml.svm_inspection</code></td>
+<td><code>inspect_disagreements</code></td>
+<td>Visualize cells where manual annotation and SVM prediction disagree.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.ml.svm_inspection</code></td>
+<td><code>inspect_reassigned_cells</code></td>
+<td>Visualize cells reassigned by SVM.</td>
+<td><code>02</code></td>
+</tr>
+<tr>
+<td><code>spatioev.ml.training</code></td>
+<td><code>train_svm_classifier</code></td>
+<td>Train a balanced radial-basis SVM and return a classification report.</td>
+<td><code>02</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="pixel-morphologyxenium">Pixel Morphology/Xenium<a class="headerlink" href="#pixel-morphologyxenium" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.spatial.cell_pixel_features</code></td>
+<td><code>calculate_channel_correlation</code></td>
+<td>Compute correlation between two channels inside a cell mask.</td>
+<td><code>01/06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.cell_pixel_features</code></td>
+<td><code>calculate_entropy</code></td>
+<td>Compute Shannon entropy of an intensity patch.</td>
+<td><code>01/06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.cell_pixel_features</code></td>
+<td><code>calculate_haralick_features</code></td>
+<td>Compute gray-level texture descriptors from an intensity patch.</td>
+<td><code>01/06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.cell_pixel_features</code></td>
+<td><code>calculate_haralick_features_rescaled</code></td>
+<td>Compute Haralick texture after rescaling intensity to uint8.</td>
+<td><code>01/06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.cell_pixel_features</code></td>
+<td><code>calculate_lacunarity</code></td>
+<td>Measure texture gap heterogeneity in a local image patch.</td>
+<td><code>01/06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.cell_pixel_features</code></td>
+<td><code>calculate_moment_of_inertia</code></td>
+<td>Quantify how dispersed intensity is around the intensity centroid.</td>
+<td><code>01/06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.cell_pixel_features</code></td>
+<td><code>calculate_polarity_score</code></td>
+<td>Measure displacement between geometric and intensity centroids normalized by cell size.</td>
+<td><code>01/06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.cell_pixel_features</code></td>
+<td><code>extract_cell_pixel_features</code></td>
+<td>Extract per-cell pixel features across multiple FOVs.</td>
+<td><code>01/06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.cell_pixel_features</code></td>
+<td><code>extract_cell_pixel_features_for_fov</code></td>
+<td>Extract per-cell pixel/morphotexture features for one FOV.</td>
+<td><code>01/06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.cell_pixel_features</code></td>
+<td><code>extract_xenium_dapi_features</code></td>
+<td>Extract per-nucleus DAPI pixel features from 10x Xenium morphology images.</td>
+<td><code>01/06</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="preprocessing">Preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.preprocessing.normalize</code></td>
+<td><code>add_obs_from_var</code></td>
+<td>Copy one or more features from <code>adata.X</code>/<code>adata.var_names</code> into <code>adata.obs</code>.</td>
+<td><code>01</code></td>
+</tr>
+<tr>
+<td><code>spatioev.preprocessing.normalize</code></td>
+<td><code>add_zscore_obs_features</code></td>
+<td>Add z-scored versions of numeric <code>adata.obs</code> columns.</td>
+<td><code>01</code></td>
+</tr>
+<tr>
+<td><code>spatioev.preprocessing.normalize</code></td>
+<td><code>zscore_normalize</code></td>
+<td>Z-score normalize the expression matrix in AnnData.X.</td>
+<td><code>01</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="segmentation-qc">Segmentation QC<a class="headerlink" href="#segmentation-qc" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.qc.segmentation</code></td>
+<td><code>categorize_area</code></td>
+<td>Flag debris-like and merged-cell-like objects from physical area thresholds.</td>
+<td><code>01</code></td>
+</tr>
+<tr>
+<td><code>spatioev.qc.segmentation</code></td>
+<td><code>categorize_nc_ratio</code></td>
+<td>Flag cells with implausible nuclear-to-cell area ratio.</td>
+<td><code>01</code></td>
+</tr>
+<tr>
+<td><code>spatioev.qc.segmentation</code></td>
+<td><code>compute_area_um2</code></td>
+<td>Convert segmented cell area from pixels to square microns.</td>
+<td><code>01</code></td>
+</tr>
+<tr>
+<td><code>spatioev.qc.segmentation</code></td>
+<td><code>filter_segmentation_errors</code></td>
+<td>Return a filtered AnnData containing cells that pass area and N:C-ratio QC.</td>
+<td><code>01</code></td>
+</tr>
+<tr>
+<td><code>spatioev.qc.segmentation</code></td>
+<td><code>generate_qc_summary</code></td>
+<td>Generate a QC summary table from QC-annotated AnnData.</td>
+<td><code>01</code></td>
+</tr>
+<tr>
+<td><code>spatioev.qc.segmentation</code></td>
+<td><code>run_segmentation_qc</code></td>
+<td>Run the complete area and N:C-ratio segmentation QC workflow.</td>
+<td><code>01</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="spatial-preprocessing">Spatial Preprocessing<a class="headerlink" href="#spatial-preprocessing" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.spatial.preprocessing</code></td>
+<td><code>compute_convex_hull</code></td>
+<td>Compute convex hull from Nx2 coordinates.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.preprocessing</code></td>
+<td><code>compute_convex_hull_area</code></td>
+<td>Compute convex hull area from Nx2 coordinates.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.preprocessing</code></td>
+<td><code>compute_tissue_areas</code></td>
+<td>Compute convex-hull tissue area for each image.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.preprocessing</code></td>
+<td><code>detect_edge_cells</code></td>
+<td>Detect cells whose radius-neighborhood intersects the convex hull boundary.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.preprocessing</code></td>
+<td><code>distance_to_convex_hull_boundary</code></td>
+<td>Compute minimum distance from each point to convex hull boundary.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.preprocessing</code></td>
+<td><code>validate_spatial_coordinates</code></td>
+<td>Validate required spatial coordinate columns and basic integrity.</td>
+<td><code>03</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="spatial-statistics">Spatial Statistics<a class="headerlink" href="#spatial-statistics" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>add_local_cross_morans_i</code></td>
+<td>Compute local cross Moran's I and add it to <code>adata.obs</code>.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>add_local_cross_morans_i_between_phenotypes</code></td>
+<td>Compute local cross Moran's I between a source-cell feature and a</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>add_local_cross_morans_i_quadrants</code></td>
+<td>Add quadrant-style local cross Moran classification to <code>adata.obs</code>.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>add_local_morans_i</code></td>
+<td>Compute Local Moran's I and add to adata.obs.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>add_local_morans_i_quadrants</code></td>
+<td>Add quadrant-style local Moran classification to <code>adata.obs</code>.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>classify_local_cross_morans_i</code></td>
+<td>Classify local cross Moran's I into quadrant-style labels.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>classify_local_morans_i</code></td>
+<td>Classify local Moran's I into hotspot/coldspot/outlier quadrants.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_morans_i</code></td>
+<td>Cross Moran's I.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_morans_i_by_image</code></td>
+<td>Compute cross Moran's I per image for two spatial features.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_morans_i_by_image_permutation_test</code></td>
+<td>Permutation test for cross Moran's I per image.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_morans_i_feature_matrix</code></td>
+<td>Compute a feature-by-feature cross Moran's I matrix between two phenotypes.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_morans_i_permutation_test</code></td>
+<td>Permutation test for global cross Moran's I.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_ripley_envelope</code></td>
+<td>Monte Carlo envelope for cross Ripley analysis.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_ripley_envelope_by_phenotype</code></td>
+<td>Monte Carlo cross-Ripley envelope between two phenotypes.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_ripley_local_counts</code></td>
+<td>Identify source cells embedded in target-enriched local neighborhoods.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_ripley_permutation_envelope</code></td>
+<td>Cross-Ripley permutation envelope.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_ripleys_curve</code></td>
+<td>Compute cross Ripley curve K(r), L(r), and L(r)-r.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_ripleys_curve_by_phenotype</code></td>
+<td>Compute cross Ripley curve between two phenotypes.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_ripleys_k</code></td>
+<td>Cross Ripley's K statistic.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_ripleys_k_all_pairs</code></td>
+<td>Compute cross-Ripley statistics for all phenotype pairs.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>cross_ripleys_k_by_phenotype</code></td>
+<td>Compute cross Ripley's K between two phenotypes.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>local_cross_morans_i</code></td>
+<td>Local cross Moran's I.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>local_morans_i</code></td>
+<td>Local Moran's I.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>morans_i</code></td>
+<td>Global Moran's I.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>morans_i_by_image</code></td>
+<td>Compute Moran's I per image for a spatial feature.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>morans_i_by_image_permutation_test</code></td>
+<td>Permutation test for Moran's I per image.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>morans_i_permutation_test</code></td>
+<td>Permutation test for global Moran's I.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>ripley_envelope</code></td>
+<td>Monte Carlo envelope test for Ripley statistics.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>ripley_interaction_scale</code></td>
+<td>Extract characteristic interaction scale from a Ripley curve.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>ripley_local_counts_by_phenotype</code></td>
+<td>Identify cells contributing to phenotype clustering at a chosen radius.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>ripley_spatial_scales</code></td>
+<td>Extract biologically meaningful spatial scales from a Ripley curve.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>ripleys_curve</code></td>
+<td>Compute Ripley statistics across radii.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>ripleys_k</code></td>
+<td>Compute Ripley's K statistic and derived transforms.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>ripleys_k_by_image</code></td>
+<td>Compute Ripley's K statistics for each image.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>ripleys_k_by_phenotype</code></td>
+<td>Compute Ripley's K separately for each phenotype.</td>
+<td><code>03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.spatial_stats</code></td>
+<td><code>summarize_target_features_around_source_cells</code></td>
+<td>Summarize target-cell features in neighborhoods around source cells.</td>
+<td><code>03</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="spatial-visualization">Spatial Visualization<a class="headerlink" href="#spatial-visualization" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.spatial.visualization</code></td>
+<td><code>plot_correlation_heatmap</code></td>
+<td>Pretty lower-triangle correlation heatmap.</td>
+<td><code>03/04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.visualization</code></td>
+<td><code>plot_niche_boundaries</code></td>
+<td>Overlay niche boundary geometries on top of spatial cell coordinates.</td>
+<td><code>03/04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.visualization</code></td>
+<td><code>plot_spatial_category</code></td>
+<td>Scatter plot of a categorical spatial feature.</td>
+<td><code>03/04</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.visualization</code></td>
+<td><code>plot_spatial_feature</code></td>
+<td>Scatter plot of a spatial feature.</td>
+<td><code>03/04</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="trajectory-dynamics">Trajectory Dynamics<a class="headerlink" href="#trajectory-dynamics" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.spatial.pseudotime_dynamics</code></td>
+<td><code>assign_pseudotime_bins</code></td>
+<td>Assign integer pseudotime bins and return per-bin pseudotime summaries.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime_dynamics</code></td>
+<td><code>compute_epithelial_centered_interaction_dynamics</code></td>
+<td>Compute epithelial-centered local interaction metrics along pseudotime.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime_dynamics</code></td>
+<td><code>summarize_epithelial_interaction_dynamics</code></td>
+<td>Aggregate epithelial-centered local interaction metrics by pseudotime bin.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime_trends</code></td>
+<td><code>add_branch_time_bins</code></td>
+<td>Add within-branch pseudotime bins to a copy of <code>data</code>.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime_trends</code></td>
+<td><code>benjamini_hochberg</code></td>
+<td>Benjamini-Hochberg FDR correction that preserves input order.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime_trends</code></td>
+<td><code>branch_time_feature_matrix</code></td>
+<td>Build a branch-by-time feature summary matrix.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime_trends</code></td>
+<td><code>compute_feature_trend_table</code></td>
+<td>Summarize monotonic and early/late changes along pseudotime.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime_trends</code></td>
+<td><code>find_branch_transition_features</code></td>
+<td>Rank features by the largest adjacent branch-time change.</td>
+<td><code>06</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="trajectory-pseudotime">Trajectory Pseudotime<a class="headerlink" href="#trajectory-pseudotime" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.spatial.pseudotime</code></td>
+<td><code>FeatureMatrixResult</code></td>
+<td>Container returned by :func:<code>prepare_pseudotime_feature_matrix</code>.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime</code></td>
+<td><code>assign_feature_blocks</code></td>
+<td>Assign each feature to a broad information block by name prefix.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime</code></td>
+<td><code>block_balance_feature_matrix</code></td>
+<td>Equalize broad feature families before trajectory fitting.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime</code></td>
+<td><code>infer_branch_labels</code></td>
+<td>Assign observation-level branch labels from a principal tree.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime</code></td>
+<td><code>minmax_scale</code></td>
+<td>Scale numeric values into <code>feature_range</code> while preserving NaNs.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime</code></td>
+<td><code>node_graph</code></td>
+<td>Convert principal-tree edges to a NetworkX graph.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime</code></td>
+<td><code>prepare_pseudotime_feature_matrix</code></td>
+<td>Prepare a clean numeric matrix for pseudotime or trajectory models.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime</code></td>
+<td><code>project_tree_nodes_to_embedding</code></td>
+<td>Estimate tree-node positions in a plotted embedding from assigned cells.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime</code></td>
+<td><code>sample_center_feature_matrix</code></td>
+<td>Z-center a feature matrix within each sample or image.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime</code></td>
+<td><code>score_signed_feature_module</code></td>
+<td>Score a signed feature module from candidate feature columns.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime</code></td>
+<td><code>summarize_branches</code></td>
+<td>Summarize branch size, composition, pseudotime, and score enrichment.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime</code></td>
+<td><code>tree_edges</code></td>
+<td>Return principal-tree edges as <code>(source, target)</code> integer tuples.</td>
+<td><code>06</code></td>
+</tr>
+<tr>
+<td><code>spatioev.spatial.pseudotime</code></td>
+<td><code>zscore_series</code></td>
+<td>Return a NaN-aware z-score Series aligned to the input index.</td>
+<td><code>06</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="visualization">Visualization<a class="headerlink" href="#visualization" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Purpose</th>
+<th>Tutorial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spatioev.visualization.heatmap</code></td>
+<td><code>plot_cluster_heatmap</code></td>
+<td>Plot a cluster-marker heatmap with Scanpy.</td>
+<td><code>02/03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.visualization.overview</code></td>
+<td><code>plot_refinement_umaps</code></td>
+<td>Plot UMAPs from refinement runs.</td>
+<td><code>02/03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.visualization.spatial</code></td>
+<td><code>inspect_clusters</code></td>
+<td>Open interactive image/cluster inspection with optional viewer dependencies.</td>
+<td><code>02/03</code></td>
+</tr>
+<tr>
+<td><code>spatioev.visualization.spatial_scatter</code></td>
+<td><code>spatial_scatter_plot</code></td>
+<td>Plot spatial coordinates colored by phenotype or continuous feature.</td>
+<td><code>02/03</code></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
