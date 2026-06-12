@@ -19,10 +19,11 @@ pip install -e ".[docs]"         # MkDocs documentation site
 pip install -e ".[dev]"          # tests and developer tools
 ```
 
-The `viewer` extra, via scimap/Napari, and the `spatialdata` extra currently
-require incompatible Dask versions in one environment. Use
-`environment-viewer.yml` for viewer workflows and `environment-spatialdata.yml`
-for SpatialData workflows.
+The repository `environment.yml` is a pinned export of a working environment
+that includes scimap/Napari, SpatialData, and `dask==2024.11.2`. If you install
+optional extras manually without pins, use `environment-viewer.yml` for viewer
+workflows and `environment-spatialdata.yml` for SpatialData workflows because
+the latest upstream dependency ranges may not resolve together.
 
 Quick check:
 
