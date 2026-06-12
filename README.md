@@ -47,13 +47,16 @@ pip install -e ".[trajectory]"   # UMAP and ElPiGraph trajectory notebooks
 pip install -e ".[dev]"          # tests and developer tools
 ```
 
-The repository `environments.yml` is a pinned export of a working environment
-that includes scimap/Napari, SpatialData, and `dask==2024.11.2`. It uses
-`pip --no-deps` so pip installs the same pinned package set instead of
-re-solving upstream dependency metadata:
+The repository `environments.yml` plus `requirements-spatioev_env.txt` recreate
+a pinned working environment that includes scimap/Napari, SpatialData, and
+`dask==2024.11.2`. The pip requirements are installed with `--no-deps` so pip
+uses the same pinned package set instead of re-solving upstream dependency
+metadata:
 
 ```bash
 conda env create -f environments.yml
+conda activate spatioev_env
+python -m pip install --no-deps -r requirements-spatioev_env.txt
 ```
 
 Quick import check:
