@@ -19,11 +19,10 @@ pip install -e ".[docs]"         # MkDocs documentation site
 pip install -e ".[dev]"          # tests and developer tools
 ```
 
-The repository `environment.yml` is a pinned export of a working environment
-that includes scimap/Napari, SpatialData, and `dask==2024.11.2`. If you install
-optional extras manually without pins, use `environment-viewer.yml` for viewer
-workflows and `environment-spatialdata.yml` for SpatialData workflows because
-the latest upstream dependency ranges may not resolve together.
+The repository `environments.yml` is a pinned export of a working environment
+that includes scimap/Napari, SpatialData, and `dask==2024.11.2`. It uses
+`pip --no-deps` so pip installs the same pinned package set instead of
+re-solving upstream dependency metadata.
 
 Quick check:
 
