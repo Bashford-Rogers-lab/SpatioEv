@@ -108,7 +108,13 @@ _EXPORTS: dict[str, str] = {
     "compute_invasion_score": "spatioev.tl",
     # tl — phenotype / ML
     "cluster_cells": "spatioev.tl",
+    "scimap_napari_gater": "spatioev.tl",
+    "scimap_rescale": "spatioev.tl",
+    "scimap_phenotype_cells": "spatioev.tl",
+    "run_scimap_prior_knowledge_phenotyping": "spatioev.tl",
     "subset_cells": "spatioev.tl",
+    "annotate_interactive": "spatioev.tl",
+    "annotate_from_csv": "spatioev.tl",
     "merge_annotations": "spatioev.tl",
     "merge_refinements": "spatioev.tl",
     "refine_clusters": "spatioev.tl",

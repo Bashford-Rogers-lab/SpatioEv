@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
+
+import pandas as pd
+
+from spatioev.config import ClusteringConfig
 
 if TYPE_CHECKING:
     import anndata as ad
-
-from spatioev.config import ClusteringConfig
 
 
 # ============================================================
@@ -25,6 +28,100 @@ def _require_scanpy():
         ) from exc
 
     return sc
+
+
+def _require_scimap():
+    try:
+        import scimap as sm
+    except Exception as exc:  # pragma: no cover - depends on optional runtime
+        raise ImportError(
+            "Scimap prior-knowledge phenotyping requires the optional scimap "
+            "dependency. Install SpatioEv with `pip install -e '.[viewer]'` "
+            "or install `scimap[napari]`."
+        ) from exc
+
+    return sm
+
+
+def _read_csv_if_path(value: pd.DataFrame | str | Path) -> pd.DataFrame:
+    if isinstance(value, pd.DataFrame):
+        return value
+    return pd.read_csv(value)
+
+
+def scimap_napari_gater(
+    adata: ad.AnnData,
+    image_path: str | Path,
+    **kwargs: Any,
+) -> ad.AnnData:
+    """Launch Scimap's Napari gate finder for manual marker thresholds.
+
+    This is a light wrapper around ``scimap.pl.napariGater``. The function
+    mutates ``adata.uns["gates"]`` in the same way as Scimap and returns
+    ``adata`` for workflow chaining.
+    """
+    sm = _require_scimap()
+    sm.pl.napariGater(str(image_path), adata, **kwargs)
+    return adata
+
+
+def scimap_rescale(
+    adata: ad.AnnData,
+    gate: pd.DataFrame | str | Path | None = None,
+    **kwargs: Any,
+) -> ad.AnnData:
+    """Rescale marker intensities with Scimap gates.
+
+    Wraps ``scimap.pp.rescale``. ``gate`` may be a manual-gates DataFrame,
+    a CSV path, or ``None`` to let Scimap use ``adata.uns["gates"]`` or its
+    fallback GMM gate estimation.
+    """
+    sm = _require_scimap()
+    gate_df = None if gate is None else _read_csv_if_path(gate)
+    return sm.pp.rescale(adata, gate=gate_df, **kwargs)
+
+
+def scimap_phenotype_cells(
+    adata: ad.AnnData,
+    phenotype: pd.DataFrame | str | Path,
+    label: str = "phenotype",
+    **kwargs: Any,
+) -> ad.AnnData:
+    """Run Scimap prior-knowledge hierarchical phenotyping.
+
+    Wraps ``scimap.tl.phenotype_cells`` using a phenotype workflow table.
+    The table may be provided as a DataFrame or CSV path.
+    """
+    sm = _require_scimap()
+    phenotype_df = _read_csv_if_path(phenotype)
+    return sm.tl.phenotype_cells(adata, phenotype=phenotype_df, label=label, **kwargs)
+
+
+def run_scimap_prior_knowledge_phenotyping(
+    adata: ad.AnnData,
+    phenotype_workflow: pd.DataFrame | str | Path,
+    manual_gates: pd.DataFrame | str | Path | None = None,
+    label: str = "phenotype",
+    rescale_kwargs: dict[str, Any] | None = None,
+    phenotype_kwargs: dict[str, Any] | None = None,
+) -> ad.AnnData:
+    """Run Scimap's gate-rescale-phenotype prior-knowledge workflow.
+
+    This follows the Scimap prior-knowledge tutorial sequence:
+    manual gates or Napari-derived gates, ``sm.pp.rescale``, then
+    ``sm.tl.phenotype_cells``.
+    """
+    adata = scimap_rescale(
+        adata,
+        gate=manual_gates,
+        **(rescale_kwargs or {}),
+    )
+    return scimap_phenotype_cells(
+        adata,
+        phenotype=phenotype_workflow,
+        label=label,
+        **(phenotype_kwargs or {}),
+    )
 
 
 def cluster_cells(
@@ -106,7 +203,108 @@ def subset_cells(
 
 
 # ============================================================
-# Section 3: Annotation merging  (from archive/phenotype/merge.py)
+# Section 3: Interactive annotation  (from archive/phenotype/annotation.py)
+# ============================================================
+
+def _natural_cluster_sort_key(value: object) -> tuple[int, int | str]:
+    text = str(value)
+    return (0, int(text)) if text.isdigit() else (1, text)
+
+
+def annotate_interactive(
+    adata: ad.AnnData,
+    cluster_key: str = "leiden",
+    new_key: str = "annotation",
+) -> tuple[ad.AnnData, dict[str, str]]:
+    """Prompt for one annotation label per cluster and write it to ``adata.obs``.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        AnnData with cluster labels in ``adata.obs[cluster_key]``.
+    cluster_key : str
+        Column containing cluster IDs to annotate.
+    new_key : str
+        Target column for the entered annotation labels.
+
+    Returns
+    -------
+    tuple
+        ``(adata, mapping)`` where ``mapping`` maps cluster ID strings to
+        entered annotation labels.
+    """
+    if cluster_key not in adata.obs:
+        raise KeyError(f"{cluster_key!r} not found in adata.obs.")
+
+    clusters = sorted(
+        adata.obs[cluster_key].astype(str).dropna().unique(),
+        key=_natural_cluster_sort_key,
+    )
+    mapping: dict[str, str] = {}
+
+    existing = None
+    if new_key in adata.obs:
+        existing = (
+            adata.obs[[cluster_key, new_key]]
+            .astype(str)
+            .dropna()
+            .drop_duplicates(subset=[cluster_key])
+            .set_index(cluster_key)[new_key]
+            .to_dict()
+        )
+
+    print("\nEnter annotation for each cluster. Press Enter to keep the current label.\n")
+
+    for cluster in clusters:
+        current = existing.get(cluster, cluster) if existing is not None else cluster
+        label = input(f"Cluster {cluster} | current={current}: ").strip()
+        mapping[cluster] = label if label else current
+
+    adata.obs[new_key] = adata.obs[cluster_key].astype(str).map(mapping)
+
+    return adata, mapping
+
+
+def annotate_from_csv(
+    adata: ad.AnnData,
+    csv_file: str,
+    cluster_key: str = "leiden",
+    new_key: str = "annotation",
+) -> ad.AnnData:
+    """Attach cluster annotations from a CSV with ``cluster`` and ``annotation``.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        AnnData with cluster labels in ``adata.obs[cluster_key]``.
+    csv_file : str
+        Path to a CSV containing ``cluster`` and ``annotation`` columns.
+    cluster_key : str
+        Column containing cluster IDs to annotate.
+    new_key : str
+        Target column for annotation labels.
+    """
+    if cluster_key not in adata.obs:
+        raise KeyError(f"{cluster_key!r} not found in adata.obs.")
+
+    mapping_df = pd.read_csv(csv_file)
+    missing = {"cluster", "annotation"} - set(mapping_df.columns)
+    if missing:
+        raise ValueError(f"Annotation CSV is missing columns: {sorted(missing)}")
+
+    mapping = dict(
+        zip(
+            mapping_df["cluster"].astype(str),
+            mapping_df["annotation"].astype(str),
+        )
+    )
+    adata.obs[new_key] = adata.obs[cluster_key].astype(str).map(mapping)
+
+    return adata
+
+
+# ============================================================
+# Section 4: Annotation merging  (from archive/phenotype/merge.py)
 # ============================================================
 
 def merge_annotations(
@@ -187,7 +385,7 @@ def merge_refinements(
 
 
 # ============================================================
-# Section 4: Cluster refinement  (from archive/phenotype/refine.py)
+# Section 5: Cluster refinement  (from archive/phenotype/refine.py)
 # ============================================================
 
 def refine_clusters(
@@ -241,7 +439,13 @@ def refine_clusters(
 
 __all__ = [
     "cluster_cells",
+    "scimap_napari_gater",
+    "scimap_rescale",
+    "scimap_phenotype_cells",
+    "run_scimap_prior_knowledge_phenotyping",
     "subset_cells",
+    "annotate_interactive",
+    "annotate_from_csv",
     "merge_annotations",
     "merge_refinements",
     "refine_clusters",

@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import types
+
 import numpy as np
+import pandas as pd
 
 from spatioev.pp import (
     QCConfig,
@@ -14,6 +17,8 @@ from spatioev.pp import (
 )
 from spatioev.tl import (
     add_local_morans_i,
+    annotate_from_csv,
+    annotate_interactive,
     assign_pseudotime_bins,
     assign_tiles,
     build_feature_matrix,
@@ -28,6 +33,7 @@ from spatioev.tl import (
     morans_i,
     phenotype_density_correlation,
     phenotype_interaction_density,
+    run_scimap_prior_knowledge_phenotyping,
     ripleys_k_by_phenotype,
     summarize_epithelial_interaction_dynamics,
     summarize_target_features_around_source_cells,
@@ -51,6 +57,79 @@ def test_qc_preprocessing_and_ml_features(toy_adata):
     assert X.shape[0] == toy_adata.n_obs
     assert X.shape[1] > 2
     assert np.isfinite(X).all()
+
+
+def test_interactive_annotation_helpers(toy_adata, monkeypatch, tmp_path):
+    adata = toy_adata.copy()
+    adata.obs["leiden"] = ["0", "1", "10"] * 4
+
+    labels = iter(["ductal", "", "stromal"])
+    monkeypatch.setattr("builtins.input", lambda _prompt: next(labels))
+
+    annotated, mapping = annotate_interactive(
+        adata,
+        cluster_key="leiden",
+        new_key="annotation",
+    )
+
+    assert list(mapping) == ["0", "1", "10"]
+    assert mapping == {"0": "ductal", "1": "1", "10": "stromal"}
+    assert set(annotated.obs["annotation"]) == {"ductal", "1", "stromal"}
+
+    mapping_path = tmp_path / "cluster_annotations.csv"
+    mapping_path.write_text(
+        "cluster,annotation\n0,epithelial\n1,immune\n10,stroma\n",
+        encoding="utf-8",
+    )
+    from_csv = annotate_from_csv(
+        adata.copy(),
+        mapping_path,
+        cluster_key="leiden",
+        new_key="annotation_from_csv",
+    )
+    assert set(from_csv.obs["annotation_from_csv"]) == {"epithelial", "immune", "stroma"}
+
+
+def test_scimap_prior_knowledge_wrapper_uses_rescale_then_phenotype(toy_adata, monkeypatch):
+    calls = []
+
+    def fake_rescale(adata, gate=None, **kwargs):
+        calls.append(("rescale", gate.copy(), kwargs))
+        adata = adata.copy()
+        adata.layers["scaled"] = adata.X.copy()
+        return adata
+
+    def fake_phenotype_cells(adata, phenotype=None, label="phenotype", **kwargs):
+        calls.append(("phenotype_cells", phenotype.copy(), label, kwargs))
+        adata = adata.copy()
+        adata.obs[label] = "mock_phenotype"
+        return adata
+
+    fake_scimap = types.SimpleNamespace(
+        pp=types.SimpleNamespace(rescale=fake_rescale),
+        tl=types.SimpleNamespace(phenotype_cells=fake_phenotype_cells),
+        pl=types.SimpleNamespace(),
+    )
+    monkeypatch.setitem(__import__("sys").modules, "scimap", fake_scimap)
+
+    manual_gates = pd.DataFrame({"markers": ["CD8"], "img1": [1.0]})
+    phenotype = pd.DataFrame({"parent": ["all"], "phenotype": ["mock"], "CD8": ["pos"]})
+
+    out = run_scimap_prior_knowledge_phenotyping(
+        toy_adata.copy(),
+        manual_gates=manual_gates,
+        phenotype_workflow=phenotype,
+        label="scimap_phenotype",
+        rescale_kwargs={"gmm_components": 2},
+        phenotype_kwargs={"subset": None},
+    )
+
+    assert calls[0][0] == "rescale"
+    assert calls[0][2] == {"gmm_components": 2}
+    assert calls[1][0] == "phenotype_cells"
+    assert calls[1][2] == "scimap_phenotype"
+    assert calls[1][3] == {"subset": None}
+    assert set(out.obs["scimap_phenotype"]) == {"mock_phenotype"}
 
 
 def test_density_and_interaction_workflow(toy_adata):
