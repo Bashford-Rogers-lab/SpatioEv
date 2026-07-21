@@ -13,6 +13,7 @@ Optional extras:
 ```bash
 pip install -e ".[scanpy]"       # clustering and Scanpy plotting
 pip install -e ".[viewer]"       # scimap/Napari interactive viewers
+pip install -e ".[apps]"         # complete staged workflow interface
 pip install -e ".[spatialdata]"  # SpatialData and Squidpy workflows
 pip install -e ".[trajectory]"   # UMAP and ElPiGraph trajectory notebooks
 pip install -e ".[docs]"         # MkDocs documentation site
@@ -38,4 +39,10 @@ import spatioev as sv
 
 print(sv.__version__)
 print(sv.tl.morans_i)
+```
+
+Launch the interface after installing the `apps` extra:
+
+```bash
+spatioev ui --project-root /path/to/project
 ```

@@ -63,6 +63,15 @@ scanpy = [
 viewer = [
     "scimap[napari]>=2.0",
 ]
+ui = [
+    "dask[array]>=2024.1",
+    "streamlit>=1.40",
+    "tifffile>=2023.7",
+    "zarr>=2.16,<3",
+]
+apps = [
+    "spatioev[scanpy,ui,viewer]",
+]
 spatialdata = [
     "spatialdata>=0.2",
     "squidpy>=1.4",
@@ -78,8 +87,11 @@ docs = [
     "pymdown-extensions>=10.0",
 ]
 all = [
-    "spatioev[dev,scanpy,trajectory,docs]",
+    "spatioev[apps,dev,spatialdata,trajectory,docs]",
 ]
+
+[project.scripts]
+spatioev = "spatioev.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/Bashford-Rogers-lab/SpatioEv"
@@ -96,6 +108,9 @@ exclude = [
     "data*",
     "results*",
 ]
+
+[tool.setuptools.package-data]
+"spatioev.resources" = ["*.csv"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

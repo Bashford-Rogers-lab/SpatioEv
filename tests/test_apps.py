@@ -1,0 +1,32 @@
+from pathlib import Path
+
+from spatioev.apps._common import module_command, resource_path
+from spatioev.cli import build_parser, launch_ui
+
+
+def test_packaged_templates_exist():
+    assert resource_path("hcc_phenocycler_consensus_strategy.csv").is_file()
+    assert resource_path("hcc_immune_phenotype_workflow_example.csv").is_file()
+
+
+def test_module_command_uses_current_interpreter():
+    command = module_command("spatioev.workflows.cellsam", "--help")
+    assert command[1:] == ["-m", "spatioev.workflows.cellsam", "--help"]
+
+
+def test_ui_cli_defaults_to_launch_directory(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    args = build_parser().parse_args(["ui"])
+    assert args.project_root == Path.cwd()
+    assert args.port == 8501
+
+
+def test_ui_cli_handles_ctrl_c(monkeypatch):
+    args = build_parser().parse_args(["ui", "--no-browser"])
+    monkeypatch.setattr("spatioev.cli.importlib.util.find_spec", lambda name: object())
+
+    def interrupted(command):
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr("spatioev.cli.subprocess.call", interrupted)
+    assert launch_ui(args) == 130
