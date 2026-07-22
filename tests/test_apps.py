@@ -15,6 +15,8 @@ def test_ui_dependencies_follow_scimap_compatibility_ranges():
     metadata = tomllib.loads(pyproject.read_text(encoding="utf-8"))
     ui_dependencies = metadata["project"]["optional-dependencies"]["ui"]
     assert "dask[array]>=2023.11,<2024.0" in ui_dependencies
+    assert "numcodecs<0.16" in ui_dependencies
+    assert "numpy>=1.23,<2" in ui_dependencies
     assert "zarr==2.10.3" in ui_dependencies
 
 
