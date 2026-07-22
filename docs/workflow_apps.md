@@ -10,6 +10,8 @@ results remain inspectable outside the interface.
 Install the application dependencies from a checkout:
 
 ```bash
+conda create -n spatioev python=3.11
+conda activate spatioev
 pip install -e ".[apps]"
 spatioev ui --project-root /path/to/project
 ```

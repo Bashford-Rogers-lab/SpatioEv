@@ -1,3 +1,4 @@
+import tomllib
 from pathlib import Path
 
 from spatioev.apps._common import module_command, resource_path
@@ -7,6 +8,14 @@ from spatioev.cli import build_parser, launch_ui
 def test_packaged_templates_exist():
     assert resource_path("hcc_phenocycler_consensus_strategy.csv").is_file()
     assert resource_path("hcc_immune_phenotype_workflow_example.csv").is_file()
+
+
+def test_ui_dependencies_follow_scimap_compatibility_ranges():
+    pyproject = Path(__file__).resolve().parents[1] / "pyproject.toml"
+    metadata = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+    ui_dependencies = metadata["project"]["optional-dependencies"]["ui"]
+    assert "dask[array]>=2023.11,<2024.0" in ui_dependencies
+    assert "zarr==2.10.3" in ui_dependencies
 
 
 def test_module_command_uses_current_interpreter():
