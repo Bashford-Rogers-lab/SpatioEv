@@ -56,6 +56,28 @@ def slugify(value: str) -> str:
     return slug or "cluster"
 
 
+def cluster_imageid(config: dict) -> str | None:
+    value = config.get("cluster_imageid")
+    return str(value).strip() if value is not None and str(value).strip() else None
+
+
+def subset_for_clustering(source: ad.AnnData, config: dict) -> ad.AnnData:
+    imageid = cluster_imageid(config)
+    if imageid is None:
+        return source
+    if "imageid" not in source.obs:
+        raise KeyError("AnnData has no 'imageid' column for FOV-specific clustering")
+    mask = source.obs["imageid"].astype(str).eq(imageid)
+    if not mask.any():
+        raise ValueError(f"No cells have imageid={imageid!r}")
+    return source[mask].copy()
+
+
+def scoped_sample_id(sample_id: str, config: dict) -> str:
+    imageid = cluster_imageid(config)
+    return f"{sample_id}_{slugify(imageid)}" if imageid is not None else sample_id
+
+
 def dense_matrix(x) -> np.ndarray:
     return x.toarray() if sparse.issparse(x) else np.asarray(x)
 
@@ -165,6 +187,7 @@ def run_level0(config: dict, status_path: Path) -> dict:
     output_dir.mkdir(parents=True, exist_ok=True)
     update_status(status_path, "running", "Loading AnnData", stage="load")
     source = ad.read_h5ad(config["adata_path"])
+    source = subset_for_clustering(source, config)
     missing = sorted(set(config["markers"]) - set(source.var_names))
     if missing:
         raise ValueError(f"Clustering markers missing from AnnData: {missing}")
@@ -179,7 +202,8 @@ def run_level0(config: dict, status_path: Path) -> dict:
     update_status(status_path, "running", "Running PCA, neighbors, UMAP, and Leiden", stage="cluster")
     clustered = se.cluster_cells(work, clustering_config(config))
 
-    stem = output_dir / f"{sample_id}_level0"
+    scoped_id = scoped_sample_id(sample_id, config)
+    stem = output_dir / f"{scoped_id}_level0"
     clustered_path = Path(f"{stem}_clustered.h5ad")
     summary_path = Path(f"{stem}_cluster_summary.csv")
     umap_path = Path(f"{stem}_umap.png")
@@ -188,8 +212,13 @@ def run_level0(config: dict, status_path: Path) -> dict:
     clustered.write_h5ad(clustered_path)
     summary = cluster_summary(clustered)
     summary.to_csv(summary_path, index=False)
-    save_umap(clustered, umap_path, title=f"{sample_id} Level-0 clusters")
-    save_heatmap(clustered, heatmap_path, title=f"{sample_id} Level-0 marker profile", scaled=scale)
+    save_umap(clustered, umap_path, title=f"{scoped_id} Level-0 clusters")
+    save_heatmap(
+        clustered,
+        heatmap_path,
+        title=f"{scoped_id} Level-0 marker profile",
+        scaled=scale,
+    )
     outputs = {
         "clustered_h5ad": str(clustered_path),
         "summary_csv": str(summary_path),
@@ -197,6 +226,7 @@ def run_level0(config: dict, status_path: Path) -> dict:
         "heatmap_png": str(heatmap_path),
         "n_cells": int(clustered.n_obs),
         "n_clusters": int(clustered.obs["leiden"].nunique()),
+        "cluster_imageid": cluster_imageid(config),
     }
     update_status(status_path, "complete", "Level-0 clustering complete", stage="complete", outputs=outputs)
     return outputs
@@ -232,6 +262,7 @@ def run_refinement(config: dict, status_path: Path) -> dict:
     output_dir = Path(config["output_dir"])
     update_status(status_path, "running", "Loading source and Level-0 annotations", stage="load")
     source = ad.read_h5ad(config["adata_path"])
+    source = subset_for_clustering(source, config)
     level0 = ad.read_h5ad(config["level0_h5ad"])
     source = attach_level0_annotations(source, level0, Path(config["level0_mapping_path"]))
     scaled_source = None
@@ -257,18 +288,19 @@ def run_refinement(config: dict, status_path: Path) -> dict:
             raise ValueError(f"No cells found for refinement annotation {annotation!r}")
         clustered = se.cluster_cells(subset, clustering_config(refinement))
         slug = slugify(annotation)
-        stem = output_dir / f"{sample_id}_refine_{slug}"
+        scoped_id = scoped_sample_id(sample_id, config)
+        stem = output_dir / f"{scoped_id}_refine_{slug}"
         clustered_path = Path(f"{stem}_clustered.h5ad")
         summary_path = Path(f"{stem}_cluster_summary.csv")
         umap_path = Path(f"{stem}_umap.png")
         heatmap_path = Path(f"{stem}_heatmap.png")
         clustered.write_h5ad(clustered_path)
         cluster_summary(clustered).to_csv(summary_path, index=False)
-        save_umap(clustered, umap_path, title=f"{sample_id}: refine {annotation}")
+        save_umap(clustered, umap_path, title=f"{scoped_id}: refine {annotation}")
         save_heatmap(
             clustered,
             heatmap_path,
-            title=f"{sample_id}: {annotation} marker profile",
+            title=f"{scoped_id}: {annotation} marker profile",
             scaled=scale,
         )
         outputs[annotation] = {
@@ -288,6 +320,7 @@ def run_export(config: dict, status_path: Path) -> dict:
     output_dir = Path(config["output_dir"])
     update_status(status_path, "running", "Loading source and reviewed mappings", stage="load")
     source = ad.read_h5ad(config["adata_path"])
+    source = subset_for_clustering(source, config)
     level0 = ad.read_h5ad(config["level0_h5ad"])
     source = attach_level0_annotations(source, level0, Path(config["level0_mapping_path"]))
     source.obs["annotation_level2"] = source.obs["annotation"].astype("object")
@@ -310,14 +343,16 @@ def run_export(config: dict, status_path: Path) -> dict:
             raise ValueError(f"Refinement mapping incomplete for {refinement['parent']}: {missing}")
         source.obs.loc[clustered.obs_names, "annotation_level2"] = annotation.astype(object)
 
-    annotation_path = output_dir / f"{sample_id}_phenotyping_annotations.csv"
-    phenotyped_path = output_dir / f"{sample_id}_phenotyped.h5ad"
-    manifest_path = output_dir / f"{sample_id}_clustering_manifest.json"
+    scoped_id = scoped_sample_id(sample_id, config)
+    annotation_path = output_dir / f"{scoped_id}_phenotyping_annotations.csv"
+    phenotyped_path = output_dir / f"{scoped_id}_phenotyped.h5ad"
+    manifest_path = output_dir / f"{scoped_id}_clustering_manifest.json"
     update_status(status_path, "running", "Writing final full-marker AnnData", stage="write")
     source.obs[["leiden_level0", "annotation", "annotation_level2"]].to_csv(annotation_path)
     source.write_h5ad(phenotyped_path)
     manifest = {
         "sample_id": sample_id,
+        "cluster_imageid": cluster_imageid(config),
         "created_at": now(),
         "source_adata": str(config["adata_path"]),
         "source_image": str(config["image_path"]),

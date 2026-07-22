@@ -68,6 +68,13 @@ or original-image overlay review. Calculations still use the complete AnnData;
 only image overlays are restricted to the selected FOV. Multi-FOV spatial QC is
 faceted by `imageid` so cores with local coordinate systems are not stacked.
 
+The clustering page also provides a **Clustering scope** control. **All FOVs
+jointly** produces one shared embedding and annotation system. **Selected FOV
+only** subsets the AnnData before normalization, PCA, neighbor graph, Leiden,
+refinement, and export. FOV-specific artifacts include the FOV in every
+filename and the exported H5AD contains only that FOV, so joint and per-FOV
+analyses can coexist without overwriting one another.
+
 ## Templates
 
 The package includes an HCC Phenocycler gating strategy and immune phenotype

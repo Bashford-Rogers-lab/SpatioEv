@@ -86,6 +86,12 @@ def sample_metadata(adata_path: str, image_path: str) -> dict[str, object]:
             adata.obs["imageid"].dropna().astype(str).unique().tolist(),
             key=natural_key,
         )
+        imageid_counts = {
+            str(imageid): int(count)
+            for imageid, count in adata.obs["imageid"].astype(str).value_counts().items()
+        }
+    else:
+        imageid_counts = {}
     metadata = {
         "cells": int(adata.n_obs),
         "markers": [str(marker) for marker in adata.var_names],
@@ -99,6 +105,7 @@ def sample_metadata(adata_path: str, image_path: str) -> dict[str, object]:
     metadata["missing_image_channels"] = sorted(set(metadata["markers"]) - set(channels))
     metadata["has_coordinates"] = {"X_centroid", "Y_centroid"}.issubset(metadata["obs_columns"])
     metadata["imageids"] = imageids
+    metadata["imageid_counts"] = imageid_counts
     metadata["default_image_path"] = str(resolved_image)
     return metadata
 
@@ -375,12 +382,33 @@ def main() -> None:
     review_image = Path(metadata["default_image_path"])
     if metadata["imageids"]:
         review_imageid = st.selectbox(
-            "FOV used for image review",
+            "FOV selected for clustering or image review",
             metadata["imageids"],
             key=f"cluster_review_imageid_{sample_id}",
         )
         review_image = resolve_image(loaded_paths["image"], review_imageid)
         st.caption(f"Image review uses {review_imageid}: {review_image}")
+
+    scope_options = ["All FOVs jointly"]
+    if metadata["imageids"]:
+        scope_options.append("Selected FOV only")
+    cluster_scope = st.segmented_control(
+        "Clustering scope",
+        scope_options,
+        default="All FOVs jointly",
+        key=f"cluster_scope_{sample_id}",
+    )
+    cluster_imageid = review_imageid if cluster_scope == "Selected FOV only" else None
+    scope_suffix = f"_{cluster_imageid}" if cluster_imageid is not None else ""
+    scoped_id = f"{sample_id}{scope_suffix}"
+    if cluster_imageid is None:
+        st.caption(f"Clustering all {metadata['cells']:,} cells jointly.")
+    else:
+        scoped_cells = metadata["imageid_counts"].get(cluster_imageid, 0)
+        st.caption(
+            f"Clustering only {cluster_imageid}: {scoped_cells:,} cells. "
+            "Normalization, PCA, neighbors, UMAP, Leiden, refinement, and export remain FOV-specific."
+        )
 
     st.subheader("2. Level-0 clustering")
     recommended_markers, recommended_resolution = recommended_defaults(sample_id, metadata["markers"])
@@ -410,9 +438,9 @@ def main() -> None:
     with q4:
         scale = st.toggle("Z-score markers", value=True)
 
-    level0_config_path = output_dir / f"{sample_id}_level0_config.json"
-    level0_status_path = output_dir / f"{sample_id}_level0_status.json"
-    level0_log_path = output_dir / f"{sample_id}_level0_worker.log"
+    level0_config_path = output_dir / f"{scoped_id}_level0_config.json"
+    level0_status_path = output_dir / f"{scoped_id}_level0_status.json"
+    level0_log_path = output_dir / f"{scoped_id}_level0_worker.log"
     run_disabled = len(selected_markers) < 3
     if st.button("Run Level-0 clustering", type="primary", disabled=run_disabled, icon=":material/hub:"):
         config = {
@@ -425,6 +453,7 @@ def main() -> None:
             "n_neighbors": int(n_neighbors),
             "n_pcs": int(n_pcs),
             "scale": bool(scale),
+            "cluster_imageid": cluster_imageid,
         }
         write_json(level0_config_path, config)
         pid = start_worker("level0", level0_config_path, level0_status_path, level0_log_path)
@@ -448,18 +477,18 @@ def main() -> None:
             level0_outputs["clustered_h5ad"],
             review_image,
             output_dir,
-            f"{sample_id}_level0",
+            f"{scoped_id}_level0",
             review_imageid,
         )
         st.success(f"Napari launched (process {pid}). Log: {log_path}")
 
     st.subheader("3. Assign broad cluster labels")
     st.caption("Use UMAP, the marker heatmap, and napari spatial context together. Mixed labels can be selected for later refinement.")
-    level0_mapping_path = output_dir / f"{sample_id}_level0_annotation_mapping.csv"
+    level0_mapping_path = output_dir / f"{scoped_id}_level0_annotation_mapping.csv"
     level0_summary = pd.read_csv(level0_outputs["summary_csv"], dtype={"cluster": str})
     level0_editor = mapping_editor(
         level0_summary,
-        key_prefix=f"{sample_id}_level0",
+        key_prefix=f"{scoped_id}_level0",
         options=LEVEL0_LABELS,
         existing_path=level0_mapping_path,
     )
@@ -491,11 +520,11 @@ def main() -> None:
                     "Refinement markers",
                     options=metadata["markers"],
                     default=selected_markers,
-                    key=f"refine_markers_{sample_id}_{parent}",
+                    key=f"refine_markers_{scoped_id}_{parent}",
                 )
             with r2:
                 parent_resolution = st.number_input(
-                    "Resolution", 0.1, 2.0, 0.8, 0.1, key=f"refine_resolution_{sample_id}_{parent}"
+                    "Resolution", 0.1, 2.0, 0.8, 0.1, key=f"refine_resolution_{scoped_id}_{parent}"
                 )
             refinements.append(
                 {
@@ -508,9 +537,9 @@ def main() -> None:
                 }
             )
 
-    refinement_config_path = output_dir / f"{sample_id}_refinement_config.json"
-    refinement_status_path = output_dir / f"{sample_id}_refinement_status.json"
-    refinement_log_path = output_dir / f"{sample_id}_refinement_worker.log"
+    refinement_config_path = output_dir / f"{scoped_id}_refinement_config.json"
+    refinement_status_path = output_dir / f"{scoped_id}_refinement_status.json"
+    refinement_log_path = output_dir / f"{scoped_id}_refinement_worker.log"
     if refine_parents and st.button("Run selected refinements", type="primary", icon=":material/account_tree:"):
         config = {
             "sample_id": sample_id,
@@ -520,6 +549,7 @@ def main() -> None:
             "level0_h5ad": str(level0_outputs["clustered_h5ad"]),
             "level0_mapping_path": str(level0_mapping_path),
             "refinements": refinements,
+            "cluster_imageid": cluster_imageid,
         }
         write_json(refinement_config_path, config)
         pid = start_worker("refine", refinement_config_path, refinement_status_path, refinement_log_path)
@@ -546,20 +576,20 @@ def main() -> None:
             st.image(result["umap_png"], caption=f"{parent} UMAP", width="stretch")
         with x2:
             st.image(result["heatmap_png"], caption=f"{parent} marker heatmap", width="stretch")
-        if st.button(f"Launch napari: {parent}", key=f"napari_refine_{sample_id}_{parent}"):
+        if st.button(f"Launch napari: {parent}", key=f"napari_refine_{scoped_id}_{parent}"):
             pid, log_path = launch_napari(
                 Path(result["clustered_h5ad"]),
                 review_image,
                 output_dir,
-                f"{sample_id}_refine_{parent}",
+                f"{scoped_id}_refine_{parent}",
                 review_imageid,
             )
             st.success(f"Napari launched (process {pid}). Log: {log_path}")
-        mapping_path = output_dir / f"{sample_id}_refine_{parent}_annotation_mapping.csv"
+        mapping_path = output_dir / f"{scoped_id}_refine_{parent}_annotation_mapping.csv"
         summary = pd.read_csv(result["summary_csv"], dtype={"cluster": str})
         editor = mapping_editor(
             summary,
-            key_prefix=f"{sample_id}_refine_{parent}",
+            key_prefix=f"{scoped_id}_refine_{parent}",
             options=FINAL_LABELS,
             existing_path=mapping_path,
         )
@@ -571,7 +601,7 @@ def main() -> None:
         if st.button(
             f"Save {parent} annotations",
             disabled=bool(missing),
-            key=f"save_refine_{sample_id}_{parent}",
+            key=f"save_refine_{scoped_id}_{parent}",
         ):
             mapping.to_csv(mapping_path, index=False)
             st.success(f"Saved: {mapping_path}")
@@ -587,9 +617,9 @@ def main() -> None:
             )
 
     st.subheader("5. Merge and export")
-    export_config_path = output_dir / f"{sample_id}_export_config.json"
-    export_status_path = output_dir / f"{sample_id}_export_status.json"
-    export_log_path = output_dir / f"{sample_id}_export_worker.log"
+    export_config_path = output_dir / f"{scoped_id}_export_config.json"
+    export_status_path = output_dir / f"{scoped_id}_export_status.json"
+    export_log_path = output_dir / f"{scoped_id}_export_worker.log"
     export_disabled = bool(refine_parents) and not all_refinement_mappings_ready
     if st.button("Export broad phenotyping", type="primary", disabled=export_disabled, icon=":material/save:"):
         level0_config = read_json(level0_config_path)
@@ -602,6 +632,7 @@ def main() -> None:
             "level0_mapping_path": str(level0_mapping_path),
             "level0_config": level0_config,
             "refinements": reviewed_refinements,
+            "cluster_imageid": cluster_imageid,
         }
         write_json(export_config_path, config)
         pid = start_worker("export", export_config_path, export_status_path, export_log_path)
