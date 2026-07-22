@@ -111,7 +111,13 @@ def start_worker(config: dict, output_dir: Path) -> tuple[int, Path, Path]:
     return process.pid, status_path, log_path
 
 
-def launch_napari(adata_path: str, image_path: str, label: str, output_dir: Path) -> tuple[int, Path]:
+def launch_napari(
+    adata_path: str,
+    image_path: str,
+    label: str,
+    output_dir: Path,
+    imageid: str | None = None,
+) -> tuple[int, Path]:
     log_path = output_dir / "scimap_napari_review.log"
     command = module_command(
         "spatioev.workflows.clustering_review",
@@ -122,6 +128,8 @@ def launch_napari(adata_path: str, image_path: str, label: str, output_dir: Path
         "--label",
         label,
     )
+    if imageid is not None:
+        command.extend(["--imageid", imageid])
     with log_path.open("ab") as log:
         process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
     return process.pid, log_path
@@ -157,7 +165,11 @@ def render_status(status_path: Path, log_path: Path, image_path: str, output_dir
     button_column, _ = st.columns([0.25, 0.75])
     if button_column.button("Open napari review", icon=":material/open_in_new:", width="stretch"):
         pid, napari_log = launch_napari(
-            outputs["subset_h5ad"], image_path, outputs["phenotype_label"], output_dir
+            outputs["subset_h5ad"],
+            outputs.get("review_image_path", image_path),
+            outputs["phenotype_label"],
+            output_dir,
+            outputs.get("review_imageid"),
         )
         st.toast(f"Napari started (PID {pid})")
         st.caption(f"Napari log: {napari_log}")
@@ -199,7 +211,7 @@ def main() -> None:
         left, right = st.columns(2)
         left.text_input("Gated full-marker H5AD", key="scimap_gated_h5ad")
         right.text_input("Broad annotation CSV", key="scimap_annotations")
-        left.text_input("Source OME-TIFF", key="scimap_image")
+        left.text_input("Source OME-TIFF or FOV image folder", key="scimap_image")
         right.text_input("Reviewed SCIMAP gate CSV", key="scimap_gates")
         left.text_input("Phenotype workflow CSV", key="scimap_workflow")
         right.text_input("Output folder", key="scimap_output")
@@ -222,6 +234,14 @@ def main() -> None:
         metric1.metric("Cells", f"{report['n_cells']:,}")
         metric2.metric("Markers", report["n_markers"])
         metric3.metric("Workflow phenotypes", report["workflow"]["workflow_rows"])
+        review_imageid = st.selectbox(
+            "FOV used for original-image overlays and napari review",
+            report["imageids"],
+            index=report["imageids"].index(report["default_review_imageid"]),
+        )
+        st.caption(
+            f"The SCIMAP model uses all selected cells; image review uses {review_imageid}."
+        )
 
         st.subheader("Population selection")
         candidate_columns = list(report["candidate_columns"])
@@ -290,6 +310,7 @@ def main() -> None:
                     "make_image_overlays": bool(make_image_overlays),
                     "overlay_crop_size": int(overlay_crop_size),
                     "overlay_n_crops": int(overlay_n_crops),
+                    "review_imageid": review_imageid,
                 }
                 output_dir = Path(config["output_dir"]).expanduser().resolve()
                 try:

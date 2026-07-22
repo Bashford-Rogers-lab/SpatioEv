@@ -4,7 +4,9 @@ from __future__ import annotations
 
 __all__ = [
     "cellsam",
+    "cellsam_tma",
     "clustering",
+    "image_collection",
     "marker_gating",
     "scimap_phenotyping",
 ]

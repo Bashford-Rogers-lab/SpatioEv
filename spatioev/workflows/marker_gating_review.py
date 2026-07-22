@@ -120,13 +120,13 @@ def slider_to_gate(value: int, low: float, high: float) -> float:
 class PyramidImage:
     """Keep one OME-TIFF and its lazy pyramid stores open for napari."""
 
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, fallback_markers: list[str] | None = None):
         self.path = path
         self.tif = tifffile.TiffFile(path)
         self.series = self.tif.series[0]
         if "C" not in self.series.axes or not self.series.axes.endswith("YX"):
             raise ValueError(f"Expected a CYX-compatible image, found axes={self.series.axes!r}")
-        self.channels = mgq.canonical_channel_names(path)
+        self.channels = mgq.canonical_channel_names(path, fallback_markers)
         self.stores = []
         self.levels = []
         for level in self.series.levels:
@@ -224,6 +224,7 @@ class MarkerGatingController:
         gate_table_path: Path,
         output_dir: Path,
         layer: str | None,
+        imageid: str | None = None,
     ):
         from qtpy.QtCore import QTimer
 
@@ -244,7 +245,9 @@ class MarkerGatingController:
                 self.conditions[column] = np.nan
         self.gates = pd.read_csv(gate_table_path)
         self.gates = self.gates.loc[self.gates["marker"].isin(self.adata.var_names)].copy()
-        self.gates = self.gates.loc[self.gates["marker"].ne("HOECHST2")].reset_index(drop=True)
+        nuclear_markers = {"HOECHST", "HOECHST2", "DAPI", "DNA_1"}
+        gate_markers = self.gates["marker"].astype(str).str.upper()
+        self.gates = self.gates.loc[~gate_markers.isin(nuclear_markers)].reset_index(drop=True)
         if self.gates.empty:
             raise ValueError("Gate table has no markers matching the AnnData matrix")
 
@@ -273,9 +276,18 @@ class MarkerGatingController:
         missing_coordinates = required_coordinates - set(self.adata.obs.columns)
         if missing_coordinates:
             raise ValueError(f"AnnData is missing spatial coordinates: {sorted(missing_coordinates)}")
-        self.coordinates = self.adata.obs[["Y_centroid", "X_centroid"]].to_numpy(dtype=float)
+        self.display_mask = np.ones(self.adata.n_obs, dtype=bool)
+        if imageid is not None:
+            if "imageid" not in self.adata.obs:
+                raise KeyError("AnnData has no 'imageid' column for FOV-specific review")
+            self.display_mask = self.adata.obs["imageid"].astype(str).eq(str(imageid)).to_numpy()
+            if not self.display_mask.any():
+                raise ValueError(f"No cells have imageid={imageid!r}")
+        self.coordinates = self.adata.obs.loc[
+            self.display_mask, ["Y_centroid", "X_centroid"]
+        ].to_numpy(dtype=float)
 
-        self.pyramid = PyramidImage(image_path)
+        self.pyramid = PyramidImage(image_path, list(self.adata.var_names.astype(str)))
         self.channel_index = {marker: i for i, marker in enumerate(self.pyramid.channels)}
         missing_channels = sorted(set(self.reviews) - set(self.channel_index))
         if missing_channels:
@@ -547,7 +559,7 @@ class MarkerGatingController:
     def update_overlay(self) -> None:
         review = self.reviews[self.active_marker]
         positive = self.log_values[self.active_marker] >= review.current_gate
-        self.positive_layer.data = self.coordinates[positive]
+        self.positive_layer.data = self.coordinates[positive[self.display_mask]]
         self.positive_layer.name = f"{self.active_marker}+ cells ({positive.mean():.1%})"
 
     def _draw_histogram(self, marker: str) -> None:
@@ -801,6 +813,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--gate-table", type=Path)
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--layer", default=None, help="AnnData layer; use 'raw' for adata.raw")
+    parser.add_argument("--imageid", default=None, help="Only display cells from this image/FOV")
     parser.add_argument(
         "--validate-only",
         action="store_true",
@@ -828,8 +841,14 @@ def validate_inputs(args, paths: dict[str, Path]) -> dict[str, object]:
     adata = ad.read_h5ad(paths["adata_path"], backed="r")
     conditions = mgq.read_marker_conditions(paths["condition_path"])
     gates = pd.read_csv(paths["gate_table_path"])
-    channels = mgq.canonical_channel_names(paths["image_path"])
-    markers = [marker for marker in gates["marker"].astype(str) if marker != "HOECHST2"]
+    adata_markers = [str(marker) for marker in adata.var_names]
+    channels = mgq.canonical_channel_names(paths["image_path"], adata_markers)
+    nuclear_markers = {"HOECHST", "HOECHST2", "DAPI", "DNA_1"}
+    markers = [
+        marker
+        for marker in gates["marker"].astype(str)
+        if marker.upper() not in nuclear_markers
+    ]
     summary = {
         "sample_id": args.sample_id,
         "cells": int(adata.n_obs),
@@ -860,6 +879,7 @@ def main() -> None:
         viewer,
         sample_id=args.sample_id,
         layer=args.layer,
+        imageid=args.imageid,
         **paths,
     )
     viewer.window.add_dock_widget(controller.panel, name="Marker gate review", area="right")

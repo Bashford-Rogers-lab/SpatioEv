@@ -24,7 +24,8 @@ ignored for GitHub upload; see [Data Policy](docs/data_policy.md).
 - Cell-ECM neighborhood summaries and collagen/fiber interaction modules.
 - Xenium-compatible annotation, niche, DAPI, and pseudotime support.
 - A staged interface for CellSAM-to-AnnData conversion, broad clustering,
-  marker autogating, and SCIMAP subset phenotyping.
+  marker autogating, and SCIMAP subset phenotyping, including multi-FOV TMA
+  projects split across multiple ARK working directories.
 
 The WGCNA-like workflow from earlier manuscript drafts is not part of the
 current public package API yet.

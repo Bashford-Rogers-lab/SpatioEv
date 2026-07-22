@@ -21,6 +21,7 @@ import pandas as pd
 import streamlit as st
 
 from spatioev.apps._common import default_project_root, module_command
+from spatioev.workflows.image_collection import natural_key, resolve_image
 from spatioev.workflows import marker_gating as mgq
 
 
@@ -79,6 +80,12 @@ def standard_paths(sample_id: str, project_root: Path) -> dict[str, Path]:
 @st.cache_data(show_spinner=False)
 def sample_metadata(adata_path: str, image_path: str) -> dict[str, object]:
     adata = ad.read_h5ad(adata_path, backed="r")
+    imageids = []
+    if "imageid" in adata.obs:
+        imageids = sorted(
+            adata.obs["imageid"].dropna().astype(str).unique().tolist(),
+            key=natural_key,
+        )
     metadata = {
         "cells": int(adata.n_obs),
         "markers": [str(marker) for marker in adata.var_names],
@@ -86,10 +93,13 @@ def sample_metadata(adata_path: str, image_path: str) -> dict[str, object]:
         "layers": list(adata.layers.keys()),
     }
     adata.file.close()
-    channels = mgq.canonical_channel_names(Path(image_path))
+    resolved_image = resolve_image(Path(image_path), imageids[0] if imageids else None)
+    channels = mgq.canonical_channel_names(resolved_image, metadata["markers"])
     metadata["image_channels"] = channels
     metadata["missing_image_channels"] = sorted(set(metadata["markers"]) - set(channels))
     metadata["has_coordinates"] = {"X_centroid", "Y_centroid"}.issubset(metadata["obs_columns"])
+    metadata["imageids"] = imageids
+    metadata["default_image_path"] = str(resolved_image)
     return metadata
 
 
@@ -140,7 +150,13 @@ def start_worker(action: str, config_path: Path, status_path: Path, log_path: Pa
     return process.pid
 
 
-def launch_napari(adata_path: Path, image_path: Path, output_dir: Path, name: str) -> tuple[int, Path]:
+def launch_napari(
+    adata_path: Path,
+    image_path: Path,
+    output_dir: Path,
+    name: str,
+    imageid: str | None = None,
+) -> tuple[int, Path]:
     log_path = output_dir / f"{name}_napari.log"
     command = module_command(
         "spatioev.workflows.clustering_review",
@@ -151,6 +167,8 @@ def launch_napari(adata_path: Path, image_path: Path, output_dir: Path, name: st
         "--label",
         "leiden",
     )
+    if imageid is not None:
+        command.extend(["--imageid", imageid])
     with log_path.open("ab") as log:
         process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
     return process.pid, log_path
@@ -304,7 +322,7 @@ def main() -> None:
         adata_text = st.text_input("AnnData (.h5ad)", key="cluster_adata_input")
         output_text = st.text_input("Workflow output directory", key="cluster_output_input")
     with p2:
-        image_text = st.text_input("OME-TIFF image", key="cluster_image_input")
+        image_text = st.text_input("OME-TIFF image or FOV image folder", key="cluster_image_input")
 
     adata_path = Path(adata_text).expanduser()
     image_path = Path(image_text).expanduser()
@@ -353,6 +371,16 @@ def main() -> None:
     m2.metric("Markers", len(metadata["markers"]))
     m3.metric("Image channels", len(metadata["image_channels"]))
     m4.metric("Missing channels", len(metadata["missing_image_channels"]))
+    review_imageid = None
+    review_image = Path(metadata["default_image_path"])
+    if metadata["imageids"]:
+        review_imageid = st.selectbox(
+            "FOV used for image review",
+            metadata["imageids"],
+            key=f"cluster_review_imageid_{sample_id}",
+        )
+        review_image = resolve_image(loaded_paths["image"], review_imageid)
+        st.caption(f"Image review uses {review_imageid}: {review_image}")
 
     st.subheader("2. Level-0 clustering")
     recommended_markers, recommended_resolution = recommended_defaults(sample_id, metadata["markers"])
@@ -417,7 +445,11 @@ def main() -> None:
         st.image(str(level0_outputs["heatmap_png"]), caption="Cluster marker heatmap", width="stretch")
     if st.button("Launch Level-0 napari review", icon=":material/open_in_new:"):
         pid, log_path = launch_napari(
-            level0_outputs["clustered_h5ad"], loaded_paths["image"], output_dir, f"{sample_id}_level0"
+            level0_outputs["clustered_h5ad"],
+            review_image,
+            output_dir,
+            f"{sample_id}_level0",
+            review_imageid,
         )
         st.success(f"Napari launched (process {pid}). Log: {log_path}")
 
@@ -516,7 +548,11 @@ def main() -> None:
             st.image(result["heatmap_png"], caption=f"{parent} marker heatmap", width="stretch")
         if st.button(f"Launch napari: {parent}", key=f"napari_refine_{sample_id}_{parent}"):
             pid, log_path = launch_napari(
-                Path(result["clustered_h5ad"]), loaded_paths["image"], output_dir, f"{sample_id}_refine_{parent}"
+                Path(result["clustered_h5ad"]),
+                review_image,
+                output_dir,
+                f"{sample_id}_refine_{parent}",
+                review_imageid,
             )
             st.success(f"Napari launched (process {pid}). Log: {log_path}")
         mapping_path = output_dir / f"{sample_id}_refine_{parent}_annotation_mapping.csv"

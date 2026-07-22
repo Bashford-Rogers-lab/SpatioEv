@@ -47,6 +47,25 @@ also be supplied with the `SPATIOEV_PROJECT_ROOT` environment variable.
    SCIMAP phenotype workflow. It writes subset and optional full-tissue H5ADs,
    tables, publication-ready heatmaps, spatial plots, and image overlays.
 
+## TMA and multi-FOV datasets
+
+Choose **Multi-FOV / TMA** on the Prepare AnnData page when one specimen has
+multiple `ark_wdir*` batches and one OME-TIFF per FOV. The importer:
+
+- discovers complete ARK cell-table pairs across batches;
+- reads channel order from a marker CSV when dearrayed OME channels are unnamed;
+- combines paired `whole_cell` and `nuclear` rows into one cell observation;
+- creates unique cell IDs from dataset, FOV, and segmentation label;
+- sets `obs["imageid"]` to the FOV value for per-image SCIMAP rescaling;
+- stores `obs["dataset_id"]` for the slide-level identity; and
+- stores an FOV-to-file table in `uns["image_manifest"]`.
+
+The clustering, marker-gating, and subset-phenotyping pages accept either one
+OME-TIFF or a folder of FOV OME-TIFFs. For a TMA, choose the FOV used for napari
+or original-image overlay review. Calculations still use the complete AnnData;
+only image overlays are restricted to the selected FOV. Multi-FOV spatial QC is
+faceted by `imageid` so cores with local coordinate systems are not stacked.
+
 ## Templates
 
 The package includes an HCC Phenocycler gating strategy and immune phenotype
@@ -74,6 +93,7 @@ launched as modules, for example:
 
 ```bash
 python -m spatioev.workflows.cellsam --help
+python -m spatioev.workflows.cellsam_tma --help
 python -m spatioev.workflows.marker_gating --help
 python -m spatioev.workflows.marker_gating_review --help
 ```

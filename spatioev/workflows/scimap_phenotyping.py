@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 import tempfile
@@ -28,6 +29,7 @@ import tifffile
 import zarr
 
 from spatioev.workflows import marker_gating as mgq
+from spatioev.workflows.image_collection import natural_key, resolve_image
 
 
 ALLOWED_RULES = {"pos", "neg", "allpos", "allneg", "anypos", "anyneg"}
@@ -174,6 +176,15 @@ def inspect_inputs(config: dict) -> dict:
     if "imageid" not in obs:
         raise KeyError("Gated AnnData must contain an 'imageid' observation column for SCIMAP")
     x_column, y_column = coordinate_columns(obs)
+    imageids = sorted(
+        obs["imageid"].dropna().astype(str).unique().tolist(), key=natural_key
+    )
+    if not imageids:
+        raise ValueError("AnnData 'imageid' column contains no usable image IDs")
+    review_imageid = str(config.get("review_imageid") or imageids[0])
+    if review_imageid not in imageids:
+        raise ValueError(f"Review image ID {review_imageid!r} is absent from AnnData")
+    review_image = resolve_image(required["image_path"], review_imageid)
 
     workflow, gates, workflow_summary = validate_workflow(
         required["workflow_csv"], required["gate_csv"], markers
@@ -213,7 +224,10 @@ def inspect_inputs(config: dict) -> dict:
         "workflow": workflow_summary,
         "workflow_preview": workflow.fillna("").astype(str).to_dict(orient="records"),
         "gate_markers": gates["markers"].tolist(),
-        "image_channels": mgq.canonical_channel_names(required["image_path"]),
+        "imageids": imageids,
+        "default_review_imageid": review_imageid,
+        "review_image_path": str(review_image),
+        "image_channels": mgq.canonical_channel_names(review_image, markers),
         "coordinate_columns": {"x": x_column, "y": y_column},
     }
 
@@ -253,26 +267,57 @@ def save_spatial_scatter(
     cmap = plt.get_cmap("tab20", max(1, len(categories)))
     colors = {category: cmap(index) for index, category in enumerate(categories)}
     colors["Other/rare"] = (0.65, 0.67, 0.70, 1)
-    fig, axis = plt.subplots(figsize=(11, 8.5), dpi=170)
-    for category in categories:
-        mask = labels.eq(category).to_numpy()
-        axis.scatter(
-            adata.obs.loc[mask, x_column],
-            adata.obs.loc[mask, y_column],
-            s=0.7,
-            alpha=0.65,
-            linewidths=0,
-            color=colors[category],
-            label=f"{category} ({mask.sum():,})",
-            rasterized=True,
+    imageids = [None]
+    if "imageid" in adata.obs and adata.obs["imageid"].nunique() > 1:
+        imageids = sorted(
+            adata.obs["imageid"].dropna().astype(str).unique().tolist(),
+            key=natural_key,
         )
-    axis.invert_yaxis()
-    axis.set_aspect("equal")
-    axis.set_xlabel(x_column)
-    axis.set_ylabel(y_column)
-    axis.set_title(title)
-    axis.legend(loc="upper left", bbox_to_anchor=(1.01, 1), frameon=False, markerscale=6, fontsize=7)
-    axis.spines[["top", "right"]].set_visible(False)
+    ncols = min(4, len(imageids))
+    nrows = math.ceil(len(imageids) / ncols)
+    fig, axes = plt.subplots(
+        nrows,
+        ncols,
+        figsize=(4.2 * ncols + 2.0, 4.0 * nrows),
+        dpi=170,
+        squeeze=False,
+    )
+    for axis, imageid in zip(axes.ravel(), imageids):
+        image_mask = np.ones(adata.n_obs, dtype=bool)
+        if imageid is not None:
+            image_mask = adata.obs["imageid"].astype(str).eq(imageid).to_numpy()
+        for category in categories:
+            mask = image_mask & labels.eq(category).to_numpy()
+            axis.scatter(
+                adata.obs.loc[mask, x_column],
+                adata.obs.loc[mask, y_column],
+                s=0.7,
+                alpha=0.65,
+                linewidths=0,
+                color=colors[category],
+                label=f"{category} ({labels.eq(category).sum():,})",
+                rasterized=True,
+            )
+        axis.invert_yaxis()
+        axis.set_aspect("equal")
+        axis.set_xlabel(x_column)
+        axis.set_ylabel(y_column)
+        axis.set_title(str(imageid) if imageid is not None else title)
+        axis.spines[["top", "right"]].set_visible(False)
+    for axis in axes.ravel()[len(imageids) :]:
+        axis.axis("off")
+    handles, legend_labels = axes.ravel()[0].get_legend_handles_labels()
+    fig.legend(
+        handles,
+        legend_labels,
+        loc="upper left",
+        bbox_to_anchor=(0.995, 0.98),
+        frameon=False,
+        markerscale=6,
+        fontsize=7,
+    )
+    if len(imageids) > 1:
+        fig.suptitle(title, fontweight="bold")
     fig.tight_layout()
     fig.savefig(output_path, bbox_inches="tight")
     plt.close(fig)
@@ -365,15 +410,26 @@ def save_image_overlays(
     n_crops: int,
 ) -> list[Path]:
     x_column, y_column = coordinate_columns(adata.obs)
-    windows, _ = mgq.choose_crop_windows(image_path, crop_size=crop_size, n_crops=n_crops)
+    marker_names = list(adata.var_names.astype(str))
+    windows, _ = mgq.choose_crop_windows(
+        image_path,
+        crop_size=crop_size,
+        n_crops=n_crops,
+        channel_markers=marker_names,
+    )
     labels = plotting_labels(adata.obs[phenotype_label], min_cells)
     categories = labels.value_counts().index.tolist()
     cmap = plt.get_cmap("tab20", max(1, len(categories)))
     colors = {category: cmap(index) for index, category in enumerate(categories)}
     colors["Other/rare"] = (0.75, 0.75, 0.75, 1)
-    channel_names = mgq.canonical_channel_names(image_path)
+    channel_names = mgq.canonical_channel_names(image_path, marker_names)
     nuclear_index = next(
-        (index for index, marker in enumerate(channel_names) if "HOECHST" in marker.upper() or marker.upper() == "DAPI"),
+        (
+            index
+            for index, marker in enumerate(channel_names)
+            if "HOECHST" in marker.upper()
+            or marker.upper() in {"DAPI", "DNA_1"}
+        ),
         0,
     )
     paths: list[Path] = []
@@ -550,6 +606,7 @@ def run_workflow(config: dict, status_path: Path) -> dict:
         "phenotype_workflow": str(Path(config["workflow_csv"]).resolve()),
         "phenotype_gate": float(config.get("phenotype_gate", 0.5)),
         "pheno_threshold_abs": int(config.get("pheno_threshold_abs", 10)),
+        "review_imageid": str(config.get("review_imageid") or ""),
     }
     rescaled.write_h5ad(subset_h5ad, compression="gzip")
 
@@ -578,12 +635,20 @@ def run_workflow(config: dict, status_path: Path) -> dict:
     save_spatial_scatter(full, final_label, full_spatial, f"{sample_id} broad tissue plus {subset_name} phenotypes", max(100, min_cells))
 
     overlay_paths: list[Path] = []
+    imageids = sorted(
+        rescaled.obs["imageid"].dropna().astype(str).unique().tolist(),
+        key=natural_key,
+    )
+    review_imageid = str(config.get("review_imageid") or imageids[0])
+    if review_imageid not in imageids:
+        raise ValueError(f"Review image ID {review_imageid!r} is absent from the selected subset")
+    review_image = resolve_image(Path(config["image_path"]), review_imageid)
     if bool(config.get("make_image_overlays", True)):
         update_status(status_path, "running", "Generating original-image phenotype overlays", stage="overlay", progress=0.88)
         overlay_paths = save_image_overlays(
-            rescaled,
+            rescaled[rescaled.obs["imageid"].astype(str).eq(review_imageid)].copy(),
             phenotype_label,
-            Path(config["image_path"]),
+            review_image,
             output_dir,
             stem,
             min_cells,
@@ -613,6 +678,8 @@ def run_workflow(config: dict, status_path: Path) -> dict:
         "subset_spatial_png": str(subset_spatial),
         "full_spatial_png": str(full_spatial),
         "image_overlay_paths": [str(path) for path in overlay_paths],
+        "review_imageid": review_imageid,
+        "review_image_path": str(review_image),
         "workflow": workflow_summary,
         "scimap_version": str(getattr(sm, "__version__", "unknown")),
     }

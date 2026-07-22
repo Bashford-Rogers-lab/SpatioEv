@@ -21,6 +21,7 @@ import streamlit as st
 
 from spatioev.apps._common import default_project_root, module_command, resource_path
 from spatioev.workflows import marker_gating as mgq
+from spatioev.workflows.image_collection import natural_key, resolve_image
 
 
 PROJECT_ROOT_DEFAULT = default_project_root()
@@ -95,9 +96,19 @@ def sample_metadata(adata_path: str, image_path: str) -> dict[str, object]:
     markers = [str(marker) for marker in adata.var_names]
     cells = int(adata.n_obs)
     layers = list(adata.layers.keys())
+    imageids = []
+    if "imageid" in adata.obs:
+        imageids = sorted(
+            adata.obs["imageid"].dropna().astype(str).unique().tolist(),
+            key=natural_key,
+        )
     adata.file.close()
-    channels = mgq.canonical_channel_names(Path(image_path))
-    review_markers = [marker for marker in markers if marker != "HOECHST2"]
+    resolved_image = resolve_image(Path(image_path), imageids[0] if imageids else None)
+    channels = mgq.canonical_channel_names(resolved_image, markers)
+    nuclear_markers = {"HOECHST", "HOECHST2", "DAPI", "DNA_1"}
+    review_markers = [
+        marker for marker in markers if marker.upper() not in nuclear_markers
+    ]
     return {
         "cells": cells,
         "markers": markers,
@@ -105,6 +116,8 @@ def sample_metadata(adata_path: str, image_path: str) -> dict[str, object]:
         "layers": layers,
         "channels": channels,
         "missing_in_image": sorted(set(review_markers) - set(channels)),
+        "imageids": imageids,
+        "default_image_path": str(resolved_image),
     }
 
 
@@ -304,20 +317,27 @@ def generate_spatial_qc(
     selected_path: Path,
     output_dir: Path,
     layer: str | None,
+    imageid: str | None = None,
 ) -> dict[str, Path]:
     conditions = mgq.read_marker_conditions(condition_path)
     selected = pd.read_csv(selected_path)
     adata = mgq.load_adata(adata_path)
     gated = mgq.apply_selected_gates(adata, selected, layer=layer)
+    if imageid is not None:
+        gated = gated[gated.obs["imageid"].astype(str).eq(str(imageid))].copy()
     grayscale, overlay = mgq.save_image_overviews(
         image_path,
         conditions,
         output_dir,
         sample_id=sample_id,
+        channel_markers=list(adata.var_names.astype(str)),
     )
-    windows, _ = mgq.choose_crop_windows(image_path)
+    channel_markers = list(adata.var_names.astype(str))
+    windows, _ = mgq.choose_crop_windows(image_path, channel_markers=channel_markers)
     crop_boxes = output_dir / f"{sample_id}_selected_crop_boxes_web.png"
-    mgq.save_crop_box_overview(image_path, windows, crop_boxes)
+    mgq.save_crop_box_overview(
+        image_path, windows, crop_boxes, channel_markers=channel_markers
+    )
     overlay_paths = mgq.save_gate_spatial_overlays(
         gated,
         selected,
@@ -347,6 +367,7 @@ def launch_napari(
     gate_table: Path,
     output_dir: Path,
     layer: str | None,
+    imageid: str | None = None,
 ) -> tuple[int, Path]:
     command = module_command(
         "spatioev.workflows.marker_gating_review",
@@ -367,6 +388,8 @@ def launch_napari(
     )
     if layer:
         command.extend(["--layer", layer])
+    if imageid is not None:
+        command.extend(["--imageid", imageid])
     log_path = output_dir / f"{sample_id}_napari_gate_review.log"
     with log_path.open("ab") as log:
         process = subprocess.Popen(
@@ -470,7 +493,7 @@ def main() -> None:
         condition_text = st.text_input("Existing condition CSV", key="condition_input")
         output_text = st.text_input("Output directory", key="output_input")
     with paths_b:
-        image_text = st.text_input("OME-TIFF image", key="image_input")
+        image_text = st.text_input("OME-TIFF image or FOV image folder", key="image_input")
         strategy_text = st.text_input("Gating strategy profile", key="strategy_input")
         layer_choice = st.text_input(
             "Expression layer",
@@ -542,6 +565,19 @@ def main() -> None:
     metric_b.metric("Markers to gate", len(metadata["review_markers"]))
     metric_c.metric("Image channels", len(metadata["channels"]))
     metric_d.metric("Missing channels", len(metadata["missing_in_image"]))
+    loaded_paths = {
+        key: Path(value) for key, value in st.session_state.loaded_paths.items()
+    }
+    review_imageid = None
+    review_image = Path(metadata["default_image_path"])
+    if metadata["imageids"]:
+        review_imageid = st.selectbox(
+            "FOV used for image QC and gate review",
+            metadata["imageids"],
+            key=f"gating_review_imageid_{st.session_state.loaded_sample_id}",
+        )
+        review_image = resolve_image(loaded_paths["image"], review_imageid)
+        st.caption(f"Image review uses {review_imageid}: {review_image}")
 
     st.subheader("2. Marker staining questionnaire")
     initialized_rows = int(
@@ -804,11 +840,12 @@ def main() -> None:
                 spatial_outputs = generate_spatial_qc(
                     sample_id=st.session_state.loaded_sample_id,
                     adata_path=loaded_paths["adata"],
-                    image_path=loaded_paths["image"],
+                    image_path=review_image,
                     condition_path=outputs["conditions"],
                     selected_path=outputs["selected"],
                     output_dir=loaded_paths["output"],
                     layer=layer_choice.strip() or None,
+                    imageid=review_imageid,
                 )
                 st.session_state.spatial_qc_outputs = {
                     key: str(value) for key, value in spatial_outputs.items()
@@ -851,11 +888,12 @@ def main() -> None:
                 sample_id=st.session_state.loaded_sample_id,
                 project_root=Path(st.session_state.loaded_project_root),
                 adata_path=loaded_paths["adata"],
-                image_path=loaded_paths["image"],
+                image_path=review_image,
                 condition_path=outputs["conditions"],
                 gate_table=outputs["selected"],
                 output_dir=loaded_paths["output"],
                 layer=layer_choice.strip() or None,
+                imageid=review_imageid,
             )
             st.success(f"Napari review launched (process {pid}). Log: {log_path}")
         except Exception as exc:

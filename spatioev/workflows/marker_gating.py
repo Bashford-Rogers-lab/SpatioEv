@@ -14,7 +14,6 @@ import os
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from xml.etree import ElementTree as ET
 
 import anndata as ad
 
@@ -27,6 +26,8 @@ import pandas as pd
 import tifffile
 import zarr
 from sklearn.mixture import GaussianMixture
+
+from spatioev.workflows.image_collection import channel_names
 
 try:
     from skimage.filters import threshold_otsu
@@ -762,14 +763,41 @@ def write_scimap_manual_gates(selected_gates: pd.DataFrame, out_path: Path) -> N
     scimap_gates.to_csv(out_path, index=False)
 
 
-def canonical_channel_names(image_path: Path) -> list[str]:
-    with tifffile.TiffFile(image_path) as tif:
-        if not tif.ome_metadata:
-            return [f"C{i}" for i in range(tif.series[0].shape[0])]
-        root = ET.fromstring(tif.ome_metadata)
-        ns = {"ome": "http://www.openmicroscopy.org/Schemas/OME/2016-06"}
-        channels = [c.attrib.get("Name", f"C{i}") for i, c in enumerate(root.findall(".//ome:Channel", ns))]
-    return [CHANNEL_ALIASES.get(c, c) for c in channels]
+def canonical_channel_names(
+    image_path: Path, fallback_markers: list[str] | None = None
+) -> list[str]:
+    channels = channel_names(image_path, fallback=fallback_markers)
+    return [CHANNEL_ALIASES.get(channel, channel) for channel in channels]
+
+
+def nuclear_channel(channel_names: list[str]) -> str:
+    for preferred in ["HOECHST2", "DNA_1", "DAPI"]:
+        if preferred in channel_names:
+            return preferred
+    return channel_names[0]
+
+
+def read_overview_array(
+    tif: tifffile.TiffFile,
+    *,
+    level_index: int = -1,
+    max_dimension: int = 1100,
+) -> tuple[np.ndarray, float, float]:
+    """Read a bounded CYX overview without loading a flat full-resolution stack."""
+    level = tif.series[0].levels[level_index]
+    _, level_y, level_x = level.shape
+    stride = max(1, math.ceil(max(level_y, level_x) / max_dimension))
+    store = level.aszarr()
+    try:
+        root = zarr.open(store, mode="r")
+        array = root["0"] if isinstance(root, zarr.hierarchy.Group) else root
+        overview = np.asarray(array[:, ::stride, ::stride])
+    finally:
+        close = getattr(store, "close", None)
+        if close is not None:
+            close()
+    _, full_y, full_x = tif.series[0].shape
+    return overview, full_y / overview.shape[-2], full_x / overview.shape[-1]
 
 
 def normalize_image(x: np.ndarray, lo_pct: float = 1, hi_pct: float = 99.8, gamma: float = 0.8) -> np.ndarray:
@@ -791,19 +819,17 @@ def save_image_overviews(
     *,
     sample_id: str,
     overview_level: int = -1,
+    channel_markers: list[str] | None = None,
 ) -> tuple[Path, Path]:
     output_dir.mkdir(parents=True, exist_ok=True)
     with tifffile.TiffFile(image_path) as tif:
-        channel_names = canonical_channel_names(image_path)
-        idx = {marker: i for i, marker in enumerate(channel_names)}
-        level = tif.series[0].levels[overview_level]
-        arr = level.asarray()
-
-    if "HOECHST2" not in idx:
-        raise ValueError("Could not find HOECHST2 channel for image overview")
+        channels = canonical_channel_names(image_path, channel_markers)
+        idx = {marker: i for i, marker in enumerate(channels)}
+        arr, _, _ = read_overview_array(tif, level_index=overview_level)
 
     markers = [m for m in marker_conditions["marker"].tolist() if m in idx]
-    hoechst = normalize_image(arr[idx["HOECHST2"]], 0.5, 99.7, 0.8)
+    nuclear = nuclear_channel(channels)
+    hoechst = normalize_image(arr[idx[nuclear]], 0.5, 99.7, 0.8)
     cond = marker_conditions.set_index("marker")
     ncols = 7
     nrows = math.ceil(len(markers) / ncols)
@@ -856,21 +882,17 @@ def choose_crop_windows(
     *,
     crop_size: int = 1536,
     n_crops: int = 3,
+    channel_markers: list[str] | None = None,
 ) -> tuple[list[tuple[int, int]], Path | None]:
     with tifffile.TiffFile(image_path) as tif:
-        channel_names = canonical_channel_names(image_path)
-        idx = {marker: i for i, marker in enumerate(channel_names)}
-        low = tif.series[0].levels[-1].asarray()
-        full_shape = tif.series[0].shape
+        channels = canonical_channel_names(image_path, channel_markers)
+        idx = {marker: i for i, marker in enumerate(channels)}
+        low, sy, sx = read_overview_array(tif)
 
-    if "HOECHST2" not in idx:
-        raise ValueError("Could not find HOECHST2 channel for crop selection")
-
-    hoechst_low = normalize_image(low[idx["HOECHST2"]], 1, 99.5, 1.0)
-    _, full_y, full_x = full_shape
+    hoechst_low = normalize_image(low[idx[nuclear_channel(channels)]], 1, 99.5, 1.0)
     low_y, low_x = hoechst_low.shape
-    sy = full_y / low_y
-    sx = full_x / low_x
+    full_y = round(low_y * sy)
+    full_x = round(low_x * sx)
     low_win = max(12, int(crop_size / sy / 2))
     bounds = np.linspace(20, max(21, low_y - 20), n_crops + 1, dtype=int)
     windows: list[tuple[int, int]] = []
@@ -898,17 +920,14 @@ def save_crop_box_overview(
     output_path: Path,
     *,
     crop_size: int = 1536,
+    channel_markers: list[str] | None = None,
 ) -> Path:
     with tifffile.TiffFile(image_path) as tif:
-        channel_names = canonical_channel_names(image_path)
-        idx = {marker: i for i, marker in enumerate(channel_names)}
-        low = tif.series[0].levels[-1].asarray()
-        _, full_y, full_x = tif.series[0].shape
+        channels = canonical_channel_names(image_path, channel_markers)
+        idx = {marker: i for i, marker in enumerate(channels)}
+        low, sy, sx = read_overview_array(tif)
 
-    hoechst_low = normalize_image(low[idx["HOECHST2"]], 1, 99.5, 0.8)
-    low_y, low_x = hoechst_low.shape
-    sy = full_y / low_y
-    sx = full_x / low_x
+    hoechst_low = normalize_image(low[idx[nuclear_channel(channels)]], 1, 99.5, 0.8)
 
     fig, ax = plt.subplots(figsize=(7, 7), dpi=180)
     ax.imshow(hoechst_low, cmap="gray")
@@ -941,18 +960,19 @@ def save_review_marker_crops(
     sample_id: str,
     windows: list[tuple[int, int]],
     crop_size: int = 1536,
+    channel_markers: list[str] | None = None,
 ) -> list[Path]:
     output_dir.mkdir(parents=True, exist_ok=True)
     paths: list[Path] = []
     with tifffile.TiffFile(image_path) as tif:
-        channel_names = canonical_channel_names(image_path)
-        idx = {marker: i for i, marker in enumerate(channel_names)}
+        channels = canonical_channel_names(image_path, channel_markers)
+        idx = {marker: i for i, marker in enumerate(channels)}
         rootz = zarr.open(tif.series[0].levels[0].aszarr(), mode="r")
         z = rootz["0"] if isinstance(rootz, zarr.hierarchy.Group) else rootz
 
         markers = [m for m in review_markers if m in idx]
         for crop_i, (fy, fx) in enumerate(windows, start=1):
-            hoechst = z[idx["HOECHST2"], fy : fy + crop_size, fx : fx + crop_size]
+            hoechst = z[idx[nuclear_channel(channels)], fy : fy + crop_size, fx : fx + crop_size]
             hoechst_n = normalize_image(hoechst, 0.5, 99.7, 0.8)
             ncols = 5
             nrows = math.ceil(len(markers) / ncols)
@@ -1080,8 +1100,9 @@ def save_gate_spatial_overlays(
     output_dir.mkdir(parents=True, exist_ok=True)
     paths: list[Path] = []
     obs = gated_adata.obs
-    channel_names = canonical_channel_names(image_path)
+    channel_names = canonical_channel_names(image_path, list(gated_adata.var_names.astype(str)))
     idx = {marker: i for i, marker in enumerate(channel_names)}
+    nuclear = nuclear_channel(channel_names)
     markers = [m for m in review_markers if m in idx and f"{prefix}_{m}_positive" in obs.columns]
 
     with tifffile.TiffFile(image_path) as tif:
@@ -1094,7 +1115,7 @@ def save_gate_spatial_overlays(
             axes = np.ravel(axes)
             for ax, marker in zip(axes, markers):
                 marker_img = z[idx[marker], fy : fy + crop_size, fx : fx + crop_size]
-                hoechst = z[idx["HOECHST2"], fy : fy + crop_size, fx : fx + crop_size]
+                hoechst = z[idx[nuclear], fy : fy + crop_size, fx : fx + crop_size]
                 marker_n = normalize_image(marker_img, 1, 99.85, 0.75)
                 hoechst_n = normalize_image(hoechst, 0.5, 99.7, 0.8)
                 rgb = np.zeros((*marker_n.shape, 3), dtype=float)

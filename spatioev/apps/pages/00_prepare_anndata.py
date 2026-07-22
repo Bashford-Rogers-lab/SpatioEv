@@ -21,6 +21,7 @@ from spatioev.workflows.cellsam import (
     preflight,
     write_json,
 )
+from spatioev.workflows.cellsam_tma import TMAConversionPlan, inspect_tma
 
 
 EXAMPLE_ROOT = default_project_root()
@@ -91,6 +92,52 @@ def start_conversion(plan: ConversionPlan, status_path: Path, log_path: Path) ->
     return process.pid
 
 
+def start_tma_conversion(
+    plan: TMAConversionPlan, status_path: Path, log_path: Path
+) -> int:
+    status_path.unlink(missing_ok=True)
+    write_json(
+        status_path,
+        {
+            "state": "queued",
+            "stage": "queued",
+            "message": "Starting multi-FOV TMA conversion worker",
+            "progress": 0.01,
+            "updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        },
+    )
+    command = module_command(
+        "spatioev.workflows.cellsam_tma",
+        "--project-root",
+        str(plan.project_root),
+        "--image-dir",
+        str(plan.image_dir),
+        "--marker-manifest",
+        str(plan.marker_manifest),
+        "--dataset-id",
+        plan.dataset_id,
+        "--output",
+        str(plan.output_path),
+        "--layer-name",
+        plan.layer_name,
+        "--mask-type",
+        plan.mask_type,
+        "--status",
+        str(status_path),
+    )
+    if not plan.make_qc:
+        command.append("--no-qc")
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    with log_path.open("ab") as log:
+        process = subprocess.Popen(
+            command,
+            stdout=log,
+            stderr=subprocess.STDOUT,
+            start_new_session=True,
+        )
+    return process.pid
+
+
 def render_status(status_path: Path, log_path: Path) -> None:
     status = read_json(status_path)
     if status is None:
@@ -133,6 +180,122 @@ def render_status(status_path: Path, log_path: Path) -> None:
     st.rerun()
 
 
+def render_tma() -> None:
+    st.subheader("Multi-FOV / TMA setup")
+    default_image_dir = EXAMPLE_ROOT / "dearray"
+    default_manifest = default_image_dir / f"{EXAMPLE_ROOT.name}_markers.csv"
+    with st.container(border=True):
+        left, right = st.columns(2)
+        project_text = left.text_input(
+            "TMA project folder", value=str(EXAMPLE_ROOT), key="tma_project_root"
+        )
+        image_text = right.text_input(
+            "FOV OME-TIFF folder",
+            value=str(default_image_dir),
+            key="tma_image_dir",
+        )
+        left, right = st.columns(2)
+        manifest_text = left.text_input(
+            "Marker order CSV",
+            value=str(default_manifest),
+            key="tma_marker_manifest",
+        )
+        dataset_id = right.text_input(
+            "Dataset ID", value=EXAMPLE_ROOT.name, key="tma_dataset_id"
+        )
+        left, middle, right = st.columns(3)
+        output_text = left.text_input(
+            "Output H5AD",
+            value=str(EXAMPLE_ROOT / "data" / f"{EXAMPLE_ROOT.name}_adata.h5ad"),
+            key="tma_output_h5ad",
+        )
+        layer_name = middle.text_input(
+            "Secondary layer name", value="size_normalized", key="tma_layer_name"
+        )
+        mask_type = right.text_input(
+            "Cell mask type", value="whole_cell", key="tma_mask_type"
+        )
+        make_qc = st.checkbox("Generate conversion QC", value=True, key="tma_make_qc")
+
+    plan = TMAConversionPlan(
+        project_root=Path(project_text).expanduser(),
+        image_dir=Path(image_text).expanduser(),
+        marker_manifest=Path(manifest_text).expanduser(),
+        dataset_id=dataset_id,
+        output_path=Path(output_text).expanduser(),
+        layer_name=layer_name,
+        mask_type=mask_type,
+        make_qc=make_qc,
+    )
+    inspect_column, build_column, _ = st.columns([0.18, 0.22, 0.60])
+    if inspect_column.button("Inspect TMA", icon=":material/search:", width="stretch"):
+        try:
+            with st.spinner("Discovering ARK batches, FOVs, images, and marker order"):
+                st.session_state["tma_preflight"] = inspect_tma(plan)
+                st.session_state["tma_preflight_signature"] = repr(plan)
+        except Exception as error:
+            st.session_state.pop("tma_preflight", None)
+            st.error(str(error))
+
+    if build_column.button(
+        "Build TMA AnnData",
+        type="primary",
+        icon=":material/play_arrow:",
+        width="stretch",
+    ):
+        try:
+            report = inspect_tma(plan)
+            output_path = Path(plan.output_path).expanduser().resolve()
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            status_path = output_path.with_suffix(".conversion_status.json")
+            log_path = output_path.with_suffix(".conversion.log")
+            pid = start_tma_conversion(plan, status_path, log_path)
+            st.session_state["tma_status_path"] = str(status_path)
+            st.session_state["tma_log_path"] = str(log_path)
+            st.session_state["tma_preflight"] = report
+            st.session_state["tma_preflight_signature"] = repr(plan)
+            st.toast(f"TMA conversion worker started (PID {pid})")
+            st.rerun()
+        except Exception as error:
+            st.error(str(error))
+
+    report = st.session_state.get("tma_preflight")
+    if report and st.session_state.get("tma_preflight_signature") == repr(plan):
+        st.subheader("TMA input check")
+        metrics = st.columns(4)
+        metrics[0].metric("ARK batches", report["n_batches"])
+        metrics[1].metric("FOVs", report["n_fovs"])
+        metrics[2].metric("Cells", f"{report['n_cells']:,}")
+        metrics[3].metric("Markers", report["n_markers"])
+        batch_tab, image_tab, marker_tab = st.tabs(
+            ["ARK batches", "FOV images", "Marker order"]
+        )
+        with batch_tab:
+            st.dataframe(report["batches"], hide_index=True, width="stretch")
+        with image_tab:
+            st.dataframe(
+                report["image_manifest"], hide_index=True, width="stretch", height=420
+            )
+        with marker_tab:
+            st.dataframe(
+                pd.DataFrame(
+                    {
+                        "channel": range(1, len(report["marker_order"]) + 1),
+                        "marker": report["marker_order"],
+                    }
+                ),
+                hide_index=True,
+                width="stretch",
+                height=420,
+            )
+
+    status_text = st.session_state.get("tma_status_path")
+    log_text = st.session_state.get("tma_log_path")
+    if status_text and log_text:
+        st.subheader("TMA conversion")
+        render_status(Path(status_text), Path(log_text))
+
+
 def main() -> None:
     st.set_page_config(
         page_title="CellSAM to AnnData",
@@ -140,6 +303,14 @@ def main() -> None:
         layout="wide",
     )
     st.title("CellSAM quantification to AnnData")
+    mode = st.segmented_control(
+        "Dataset layout",
+        ["Single image", "Multi-FOV / TMA"],
+        default="Single image",
+    )
+    if mode == "Multi-FOV / TMA":
+        render_tma()
+        return
 
     with st.container(border=True):
         left, right = st.columns([1, 1])
