@@ -61,7 +61,7 @@ scanpy = [
     "leidenalg>=0.10",
 ]
 viewer = [
-    "scimap[napari]>=2.0",
+    "scimap[napari]>=2.3,<2.4",
 ]
 ui = [
     "dask[array]>=2023.11,<2024.0",
@@ -72,7 +72,16 @@ ui = [
     "zarr==2.10.3",
 ]
 apps = [
-    "spatioev[scanpy,ui,viewer]",
+    "dask[array]>=2023.11,<2024.0",
+    "igraph>=0.10",
+    "leidenalg>=0.10",
+    "numcodecs<0.16",
+    "numpy>=1.23,<2",
+    "scanpy>=1.10",
+    "scimap[napari]>=2.3,<2.4",
+    "streamlit>=1.40",
+    "tifffile>=2023.7",
+    "zarr==2.10.3",
 ]
 spatialdata = [
     "spatialdata>=0.2",
