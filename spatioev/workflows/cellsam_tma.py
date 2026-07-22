@@ -30,6 +30,8 @@ class TMAConversionPlan:
     marker_manifest: Path
     dataset_id: str
     output_path: Path
+    primary_filename: str = "cell_table_arcsinh_transformed.csv"
+    secondary_filename: str = "cell_table_size_normalized.csv"
     layer_name: str = "size_normalized"
     mask_type: str = "whole_cell"
     make_qc: bool = True
@@ -38,7 +40,18 @@ class TMAConversionPlan:
 StatusCallback = Callable[[str, str, float], None]
 
 
-def discover_table_pairs(project_root: Path) -> list[dict[str, Path | str]]:
+def _table_path(table_dir: Path, filename: str) -> Path:
+    relative = Path(str(filename).strip())
+    if not relative.name or relative.is_absolute() or ".." in relative.parts:
+        raise ValueError(f"Table source must be a relative filename: {filename!r}")
+    return table_dir / relative
+
+
+def discover_table_pairs(
+    project_root: Path,
+    primary_filename: str = "cell_table_arcsinh_transformed.csv",
+    secondary_filename: str = "cell_table_size_normalized.csv",
+) -> list[dict[str, Path | str]]:
     root = Path(project_root).expanduser().resolve()
     pairs = []
     for ark_dir in sorted(
@@ -50,8 +63,8 @@ def discover_table_pairs(project_root: Path) -> list[dict[str, Path | str]]:
         key=lambda path: natural_key(path.name),
     ):
         table_dir = ark_dir / "segmentation" / "cell_table"
-        primary = table_dir / "cell_table_arcsinh_transformed.csv"
-        secondary = table_dir / "cell_table_size_normalized.csv"
+        primary = _table_path(table_dir, primary_filename)
+        secondary = _table_path(table_dir, secondary_filename)
         if primary.exists() and secondary.exists():
             pairs.append(
                 {
@@ -63,7 +76,8 @@ def discover_table_pairs(project_root: Path) -> list[dict[str, Path | str]]:
             )
     if not pairs:
         raise FileNotFoundError(
-            f"No complete ark_wdir*/segmentation/cell_table pairs found under {root}"
+            "No complete ark_wdir*/segmentation/cell_table pairs found under "
+            f"{root} using {primary_filename!r} and {secondary_filename!r}"
         )
     return pairs
 
@@ -95,7 +109,9 @@ def _header(path: Path) -> list[str]:
 def inspect_tma(plan: TMAConversionPlan) -> dict:
     if not plan.dataset_id.strip():
         raise ValueError("Dataset ID cannot be empty")
-    pairs = discover_table_pairs(plan.project_root)
+    pairs = discover_table_pairs(
+        plan.project_root, plan.primary_filename, plan.secondary_filename
+    )
     markers = read_marker_manifest(plan.marker_manifest)
     marker_order = markers["marker_name"].tolist()
     images = image_files(plan.image_dir)
@@ -176,6 +192,8 @@ def inspect_tma(plan: TMAConversionPlan) -> dict:
         "image_dir": str(Path(plan.image_dir).expanduser().resolve()),
         "output_path": str(Path(plan.output_path).expanduser().resolve()),
         "mask_type": plan.mask_type,
+        "primary_filename": plan.primary_filename,
+        "secondary_filename": plan.secondary_filename,
         "batches": batch_rows,
         "image_manifest": image_manifest,
     }
@@ -253,7 +271,9 @@ def build_tma_anndata(
 
     update("inspect", "Validating ARK batches, marker order, and FOV images", 0.04)
     report = inspect_tma(plan)
-    pairs = discover_table_pairs(plan.project_root)
+    pairs = discover_table_pairs(
+        plan.project_root, plan.primary_filename, plan.secondary_filename
+    )
     marker_order = report["marker_order"]
     primary_parts = []
     secondary_parts = []
@@ -346,6 +366,8 @@ def build_tma_anndata(
         "source_ark_wdirs": [str(pair["batch"]) for pair in pairs],
         "mask_type": plan.mask_type,
         "layer_name": plan.layer_name,
+        "primary_filename": plan.primary_filename,
+        "secondary_filename": plan.secondary_filename,
     }
     adata.uns["cellsam_conversion"] = {
         "created_at": now(),
@@ -394,6 +416,12 @@ def parser() -> argparse.ArgumentParser:
     cli.add_argument("--marker-manifest", type=Path, required=True)
     cli.add_argument("--dataset-id", required=True)
     cli.add_argument("--output", type=Path, required=True)
+    cli.add_argument(
+        "--primary-filename", default="cell_table_arcsinh_transformed.csv"
+    )
+    cli.add_argument(
+        "--secondary-filename", default="cell_table_size_normalized.csv"
+    )
     cli.add_argument("--layer-name", default="size_normalized")
     cli.add_argument("--mask-type", default="whole_cell")
     cli.add_argument("--no-qc", action="store_true")
@@ -410,6 +438,8 @@ def main() -> None:
         marker_manifest=args.marker_manifest,
         dataset_id=args.dataset_id,
         output_path=args.output,
+        primary_filename=args.primary_filename,
+        secondary_filename=args.secondary_filename,
         layer_name=args.layer_name,
         mask_type=args.mask_type,
         make_qc=not args.no_qc,

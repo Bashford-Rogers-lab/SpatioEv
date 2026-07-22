@@ -118,6 +118,10 @@ def start_tma_conversion(
         plan.dataset_id,
         "--output",
         str(plan.output_path),
+        "--primary-filename",
+        plan.primary_filename,
+        "--secondary-filename",
+        plan.secondary_filename,
         "--layer-name",
         plan.layer_name,
         "--mask-type",
@@ -216,6 +220,21 @@ def render_tma() -> None:
             "Cell mask type", value="whole_cell", key="tma_mask_type"
         )
         make_qc = st.checkbox("Generate conversion QC", value=True, key="tma_make_qc")
+        with st.expander("Table assignment"):
+            primary_filename = st.text_input(
+                "adata.X source file",
+                value="cell_table_arcsinh_transformed.csv",
+                key="tma_primary_filename",
+            )
+            secondary_filename = st.text_input(
+                "Layer source file",
+                value="cell_table_size_normalized.csv",
+                key="tma_secondary_filename",
+            )
+            st.caption(
+                "These filenames are resolved inside every discovered "
+                "ark_wdir*/segmentation/cell_table folder."
+            )
 
     plan = TMAConversionPlan(
         project_root=Path(project_text).expanduser(),
@@ -223,6 +242,8 @@ def render_tma() -> None:
         marker_manifest=Path(manifest_text).expanduser(),
         dataset_id=dataset_id,
         output_path=Path(output_text).expanduser(),
+        primary_filename=primary_filename,
+        secondary_filename=secondary_filename,
         layer_name=layer_name,
         mask_type=mask_type,
         make_qc=make_qc,

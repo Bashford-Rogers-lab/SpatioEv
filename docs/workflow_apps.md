@@ -53,6 +53,8 @@ Choose **Multi-FOV / TMA** on the Prepare AnnData page when one specimen has
 multiple `ark_wdir*` batches and one OME-TIFF per FOV. The importer:
 
 - discovers complete ARK cell-table pairs across batches;
+- lets users assign the CSV used for `adata.X` and the CSV used for the named
+  layer, applying those filenames to every discovered ARK batch;
 - reads channel order from a marker CSV when dearrayed OME channels are unnamed;
 - combines paired `whole_cell` and `nuclear` rows into one cell observation;
 - creates unique cell IDs from dataset, FOV, and segmentation label;

@@ -10,7 +10,14 @@ from spatioev.workflows.cellsam_tma import (
 )
 
 
-def _write_batch(root, batch, fov, offset):
+def _write_batch(
+    root,
+    batch,
+    fov,
+    offset,
+    primary_filename="cell_table_arcsinh_transformed.csv",
+    secondary_filename="cell_table_size_normalized.csv",
+):
     table_dir = root / batch / "segmentation" / "cell_table"
     table_dir.mkdir(parents=True)
     frame = pd.DataFrame(
@@ -26,15 +33,31 @@ def _write_batch(root, batch, fov, offset):
             "mask_type": ["whole_cell", "nuclear", "whole_cell", "nuclear"],
         }
     )
-    frame.to_csv(table_dir / "cell_table_arcsinh_transformed.csv", index=False)
+    frame.to_csv(table_dir / primary_filename, index=False)
     normalized = frame.copy()
     normalized[["M1", "M2"]] += 100
-    normalized.to_csv(table_dir / "cell_table_size_normalized.csv", index=False)
+    normalized.to_csv(table_dir / secondary_filename, index=False)
 
 
 def test_build_tma_anndata_discovers_batches_and_maps_fovs(tmp_path):
-    _write_batch(tmp_path, "ark_wdir_1", "fov1", 0)
-    _write_batch(tmp_path, "ark_wdir_2", "fov2", 20)
+    primary_filename = "transformed.csv"
+    secondary_filename = "normalized.csv"
+    _write_batch(
+        tmp_path,
+        "ark_wdir_1",
+        "fov1",
+        0,
+        primary_filename,
+        secondary_filename,
+    )
+    _write_batch(
+        tmp_path,
+        "ark_wdir_2",
+        "fov2",
+        20,
+        primary_filename,
+        secondary_filename,
+    )
     image_dir = tmp_path / "dearray"
     image_dir.mkdir()
     for fov in [1, 2]:
@@ -56,6 +79,8 @@ def test_build_tma_anndata_discovers_batches_and_maps_fovs(tmp_path):
         marker_manifest=marker_manifest,
         dataset_id="TMA1",
         output_path=output_path,
+        primary_filename=primary_filename,
+        secondary_filename=secondary_filename,
         make_qc=False,
     )
 
@@ -64,6 +89,8 @@ def test_build_tma_anndata_discovers_batches_and_maps_fovs(tmp_path):
     assert report["n_fovs"] == 2
     assert report["n_cells"] == 4
     assert report["marker_order"] == ["M1", "M2"]
+    assert report["primary_filename"] == primary_filename
+    assert report["secondary_filename"] == secondary_filename
 
     build_tma_anndata(plan)
     result = ad.read_h5ad(output_path)
