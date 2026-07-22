@@ -29,9 +29,14 @@ also be supplied with the `SPATIOEV_PROJECT_ROOT` environment variable.
 ## Workflow order
 
 1. **Prepare AnnData** converts the two CellSAM expression tables into one H5AD.
-   It removes the duplicate `cell_size` field, preserves observation metadata,
-   orders markers from the OME-TIFF channel metadata, places the second matrix
-   in a named layer, and writes `uns["all_markers"]`.
+   OME-TIFF channels define the marker matrix and its order; unmatched table
+   columns are preserved as observation metadata regardless of their CSV
+   position. An editable schema review supports marker, cell-ID, coordinate,
+   FOV/group, metadata, and ignored roles plus manual marker-to-channel
+   assignments. The converter removes `cell_size` only when it duplicates an
+   area field, normalizes common centroid aliases to `X_centroid` and
+   `Y_centroid`, writes `obsm["spatial"]`, places the second matrix in a named
+   layer, and writes `uns["all_markers"]`.
 2. **Broad clustering** performs unsupervised clustering, supports spatial
    Napari review, and exports broad tissue-population annotations.
 3. **Marker autogating** combines a marker-condition questionnaire with
@@ -58,6 +63,11 @@ configuration JSON, status JSON, and log next to their outputs. Napari review
 writes reviewed gate tables separately from calculated gates. Keep these files
 with the final H5AD to preserve both the automated starting point and manual
 decisions.
+
+The AnnData conversion schema is also written beside the H5AD as
+`*.conversion_schema.json`. This records every reviewed column role and manual
+marker-to-channel assignment, allowing the same interpretation to be audited
+or reused when CSV column order changes.
 
 The workflow engines are importable from `spatioev.workflows` and can also be
 launched as modules, for example:
