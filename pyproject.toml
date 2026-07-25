@@ -62,6 +62,7 @@ scanpy = [
 ]
 viewer = [
     "scimap[napari]>=2.3,<2.4",
+    "setuptools>=68,<82",
 ]
 ui = [
     "dask[array]>=2023.11,<2024.0",
@@ -79,6 +80,7 @@ apps = [
     "numpy>=1.23,<2",
     "scanpy>=1.10",
     "scimap[napari]>=2.3,<2.4",
+    "setuptools>=68,<82",
     "streamlit>=1.40",
     "tifffile>=2023.7",
     "zarr==2.10.3",

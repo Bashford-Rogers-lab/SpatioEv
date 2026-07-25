@@ -22,6 +22,16 @@ The default address is `http://localhost:8501`. Use another port when needed:
 spatioev ui --project-root /path/to/project --port 8510
 ```
 
+If SCIMAP or Napari fails with `No module named 'pkg_resources'`, the
+environment has setuptools 82 or newer while `mpl-scatter-density` still uses
+that removed compatibility module. Repair an existing environment and refresh
+the editable installation with:
+
+```bash
+python -m pip install "setuptools>=68,<82"
+python -m pip install -e ".[apps]"
+```
+
 The project root is only a starting location for the file selectors. Every
 input and output path can be changed in its workflow page. The same default can
 also be supplied with the `SPATIOEV_PROJECT_ROOT` environment variable.

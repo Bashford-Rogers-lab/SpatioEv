@@ -1,8 +1,12 @@
+import builtins
 import tomllib
 from pathlib import Path
 
+import pytest
+
 from spatioev.apps._common import module_command, resource_path
 from spatioev.cli import build_parser, launch_ui
+from spatioev.pl.spatial import _require_image_viewer_dependencies
 
 
 def test_packaged_templates_exist():
@@ -19,14 +23,34 @@ def test_ui_dependencies_follow_scimap_compatibility_ranges():
     assert "numpy>=1.23,<2" in ui_dependencies
     assert "zarr==2.10.3" in ui_dependencies
     app_dependencies = metadata["project"]["optional-dependencies"]["apps"]
+    viewer_dependencies = metadata["project"]["optional-dependencies"]["viewer"]
     assert not any(dependency.startswith("spatioev[") for dependency in app_dependencies)
     assert "scimap[napari]>=2.3,<2.4" in app_dependencies
+    assert "setuptools>=68,<82" in app_dependencies
+    assert "setuptools>=68,<82" in viewer_dependencies
     assert set(ui_dependencies).issubset(app_dependencies)
 
 
 def test_module_command_uses_current_interpreter():
     command = module_command("spatioev.workflows.cellsam", "--help")
     assert command[1:] == ["-m", "spatioev.workflows.cellsam", "--help"]
+
+
+def test_image_viewer_reports_removed_pkg_resources(monkeypatch):
+    original_import = builtins.__import__
+
+    def fake_import(name, *args, **kwargs):
+        if name == "napari":
+            return object()
+        if name == "scimap":
+            raise ModuleNotFoundError(
+                "No module named 'pkg_resources'", name="pkg_resources"
+            )
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", fake_import)
+    with pytest.raises(ImportError, match="setuptools<82"):
+        _require_image_viewer_dependencies()
 
 
 def test_ui_cli_defaults_to_launch_directory(tmp_path, monkeypatch):

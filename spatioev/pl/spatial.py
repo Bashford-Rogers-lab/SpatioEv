@@ -308,6 +308,18 @@ def _require_image_viewer_dependencies():
     try:
         import napari
         import scimap as sm
+    except ModuleNotFoundError as exc:  # pragma: no cover - optional runtime
+        if exc.name == "pkg_resources":
+            raise ImportError(
+                "SCIMAP's image-viewer dependency mpl-scatter-density requires "
+                "the legacy pkg_resources module. Install a compatible runtime "
+                "with `python -m pip install 'setuptools<82'`."
+            ) from exc
+        raise ImportError(
+            "inspect_clusters requires optional image viewer dependencies. "
+            "Install SpatioEv with `pip install -e '.[viewer]'` or install "
+            "`scimap[napari]`."
+        ) from exc
     except Exception as exc:  # pragma: no cover - depends on optional runtime
         raise ImportError(
             "inspect_clusters requires optional image viewer dependencies. "
