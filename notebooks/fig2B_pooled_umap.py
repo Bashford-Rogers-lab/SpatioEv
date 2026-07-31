@@ -123,11 +123,15 @@ def make_figure():
     ax_cont = fig.add_subplot(gs[0, 1])
     ax_cbar = fig.add_subplot(gs[0, 2])
 
-    # Shuffle for even overlap
+    # Shuffle for even overlap within each group
     df_s = df.sample(frac=1, random_state=42)
 
     # ── Left: disease group ───────────────────────────────────────────────────
-    for disease, sub in df_s.groupby("disease_group", observed=True):
+    # Plot Normal last so it sits on top of PDAC and is not obscured
+    groups = df_s["disease_group"].unique().tolist()
+    groups_ordered = sorted(groups, key=lambda d: 0 if "Normal" not in d else 1)
+    for disease in groups_ordered:
+        sub = df_s[df_s["disease_group"] == disease]
         c = DISEASE_PALETTE.get(disease, "#888")
         ax_dis.scatter(sub["UMAP1"], sub["UMAP2"], c=c,
                        s=0.4, alpha=0.55, linewidths=0, rasterized=True, zorder=2)

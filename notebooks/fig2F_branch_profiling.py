@@ -1,15 +1,15 @@
 """
 Figure 2F — Branch profiling: module heatmap + branch-transition dotplot
 =========================================================================
-Two-panel row (170 mm wide):
-  Left  (~78 mm): Heatmap — rows = major branches, cols = PDAC modules.
-                  Values = mean module z-score; right strip = disease fraction.
-  Right (~88 mm): Transition dotplot — branch × time-bin transitions.
-                  Dot size ∝ |Δ z-score|, colour = direction (RdBu_r, red=↑).
-                  Data from all_branch_time_transition_feature_deltas.csv
-                  (filtered to dataset == "multiplexed imaging").
+Two-panel column (90 mm wide):
+  Top   : Heatmap — rows = major branches, cols = PDAC modules.
+           Values = mean module z-score; right strip = disease fraction.
+  Bottom: Transition dotplot — branch × time-bin transitions.
+           Dot size ∝ |Δ z-score|, colour = direction (RdBu_r, red=↑).
+           Data from all_branch_time_transition_feature_deltas.csv
+           (filtered to dataset == "multiplexed imaging").
 
-Width: 170 mm  Height: 56 mm
+Width: 90 mm  Height: 130 mm
 
 Run:
     python notebooks/fig2F_branch_profiling.py
@@ -127,33 +127,36 @@ def make_figure():
     has_dotplot = td is not None and len(td) > 0
 
     # ── Layout ────────────────────────────────────────────────────────────────
-    fig_w = 170 * MM2IN
-    fig_h = 56  * MM2IN
+    fig_w = 90  * MM2IN
+    fig_h = 110 * MM2IN   # shorter — top panel is 2/3 original height
 
     fig = plt.figure(figsize=(fig_w, fig_h), facecolor="white")
 
     if has_dotplot:
         gs_outer = mgridspec.GridSpec(
-            1, 2, width_ratios=[0.88, 1.0],
-            left=0.17, right=0.99, top=0.90, bottom=0.22,
-            wspace=0.42,
+            2, 1, height_ratios=[0.67, 1.2],
+            left=0.30, right=0.97, top=0.97, bottom=0.10,
+            hspace=0.50,
         )
-        # Left: heatmap + disease strip + cbar
-        gs_left = mgridspec.GridSpecFromSubplotSpec(
+        # Top: heatmap + disease strip + cbar — narrowed to 2/3 of available width
+        top_bbox      = gs_outer[0].get_position(fig)
+        top_right_2_3 = top_bbox.x0 + (top_bbox.x1 - top_bbox.x0) * (2 / 3)
+        gs_left = mgridspec.GridSpec(
             1, 3,
-            subplot_spec=gs_outer[0, 0],
+            left=top_bbox.x0, right=top_right_2_3,
+            bottom=top_bbox.y0, top=top_bbox.y1,
             width_ratios=[len(avail_mod) * 0.7, len(bd_pivot.columns) * 1.2, 0.30],
             wspace=0.14,
         )
         ax_hm   = fig.add_subplot(gs_left[0, 0])
         ax_dis  = fig.add_subplot(gs_left[0, 1])
         ax_cbar = fig.add_subplot(gs_left[0, 2])
-        ax_dot  = fig.add_subplot(gs_outer[0, 1])
+        ax_dot  = fig.add_subplot(gs_outer[1])
     else:
         gs_left = mgridspec.GridSpec(
             1, 3,
             width_ratios=[len(avail_mod) * 0.7, len(bd_pivot.columns) * 1.2, 0.25],
-            left=0.20, right=0.97, top=0.90, bottom=0.22,
+            left=0.30, right=0.97, top=0.97, bottom=0.55,
             wspace=0.14,
         )
         ax_hm   = fig.add_subplot(gs_left[0, 0])

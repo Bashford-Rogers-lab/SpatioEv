@@ -1,14 +1,11 @@
 """
-Figure 2E — Branch structure: UMAP by branch + tree overlay + composition bar
-==============================================================================
+Figure 2E — Branch structure: UMAP by branch + pseudotime
+==========================================================
 Two-panel row:
-  Left  (~100 mm): UMAP coloured by major branch, with Prim's MST tree skeleton
-                   drawn over node UMAP means — matches Figure 1F style.
-                   White node dots, equal aspect, no tick labels.
-  Right (~66 mm):  Stacked horizontal bar chart showing disease-group composition
-                   per branch.
+  Left  : UMAP coloured by major branch, with Prim's MST tree skeleton.
+  Right : UMAP coloured by quantile-normalised pseudotime (viridis).
 
-Width: 170 mm  Height: 52 mm
+Width: ~113 mm  Height: ~35 mm  (2/3 of original 170×52 mm)
 
 Run:
     python notebooks/fig2E_branch_structure.py
@@ -122,18 +119,17 @@ def make_figure():
         )
 
     # ── Layout ────────────────────────────────────────────────────────────────
-    fig_w = 170 * MM2IN
-    fig_h = 52  * MM2IN
+    fig_w = round(170 * 2 / 3) * MM2IN   # ~113 mm
+    fig_h = round(52  * 2 / 3) * MM2IN   # ~35 mm
 
     fig = plt.figure(figsize=(fig_w, fig_h), facecolor="white")
     gs  = mgridspec.GridSpec(
-        1, 3, width_ratios=[1.3, 1.3, 0.9],
-        left=0.02, right=0.99, top=0.93, bottom=0.06,
+        1, 2, width_ratios=[1, 1],
+        left=0.02, right=0.99, top=0.90, bottom=0.14,
         wspace=0.10,
     )
     ax_umap = fig.add_subplot(gs[0, 0])
     ax_pt   = fig.add_subplot(gs[0, 1])
-    ax_bar  = fig.add_subplot(gs[0, 2])
 
     # ── UMAP coloured by branch ───────────────────────────────────────────────
     # Background: unassigned in light gray
@@ -217,49 +213,6 @@ def make_figure():
     cb.set_ticklabels(["Early", "Mid", "Late"], fontsize=4.2)
     cb.ax.tick_params(length=1.5, pad=1)
     cb.outline.set_linewidth(0.4)
-
-    # ── Branch × disease composition bar ─────────────────────────────────────
-    bd = (
-        df[df["major_branch"].isin(branch_order)]
-        .groupby(["major_branch", "disease_group"], observed=True)
-        .size().rename("n").reset_index()
-    )
-    bd["frac"] = bd["n"] / bd.groupby("major_branch", observed=True)["n"].transform("sum")
-    bd_piv = (
-        bd.pivot(index="major_branch", columns="disease_group", values="frac")
-        .reindex(branch_order).fillna(0)
-    )
-
-    disease_order = [d for d in DISEASE_PALETTE if d in bd_piv.columns]
-    left_arr = np.zeros(len(branch_order))
-    for dis in disease_order:
-        vals = bd_piv.get(dis, pd.Series(0, index=branch_order)).reindex(branch_order).fillna(0).values
-        ax_bar.barh(range(len(branch_order)), vals, left=left_arr,
-                    color=DISEASE_PALETTE[dis], height=0.65, linewidth=0)
-        left_arr += vals
-
-    ax_bar.set_xlim(0, 1)
-    ax_bar.set_ylim(-0.5, len(branch_order) - 0.5)
-    ax_bar.set_yticks(range(len(branch_order)))
-    ylabels = [f"{bio_names.get(b, b)}\n({b})" for b in branch_order]
-    ax_bar.set_yticklabels(ylabels, fontsize=4.2)
-    ax_bar.yaxis.set_tick_params(length=0, pad=2)
-    ax_bar.set_xticks([0, 0.5, 1])
-    ax_bar.set_xticklabels(["0", "0.5", "1"], fontsize=4.5)
-    ax_bar.set_xlabel("Fraction of niches", fontsize=5, labelpad=1)
-    ax_bar.set_title("Disease composition per branch", fontsize=5.5, pad=2)
-    ax_bar.invert_yaxis()
-    for sp in ax_bar.spines.values():
-        sp.set_linewidth(0.4)
-    ax_bar.spines["top"].set_visible(False)
-    ax_bar.spines["right"].set_visible(False)
-
-    dhandles = [mpatches.Patch(facecolor=DISEASE_PALETTE[d],
-                               label=d.replace("NormalPancreas", "Normal"))
-                for d in disease_order if d in DISEASE_PALETTE]
-    ax_bar.legend(handles=dhandles, fontsize=4.5, loc="lower right",
-                  frameon=False, handlelength=0.8, handleheight=0.7,
-                  borderpad=0.2, labelspacing=0.2)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_pdf = OUT_DIR / "fig2E_branch_structure.pdf"

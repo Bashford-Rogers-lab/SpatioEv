@@ -13,11 +13,17 @@ Optional extras:
 ```bash
 pip install -e ".[scanpy]"       # clustering and Scanpy plotting
 pip install -e ".[viewer]"       # scimap/Napari interactive viewers
+pip install -e ".[apps]"         # complete staged workflow interface
 pip install -e ".[spatialdata]"  # SpatialData and Squidpy workflows
 pip install -e ".[trajectory]"   # UMAP and ElPiGraph trajectory notebooks
 pip install -e ".[docs]"         # MkDocs documentation site
 pip install -e ".[dev]"          # tests and developer tools
 ```
+
+The `apps` extra follows the NumPy, Dask, Zarr, and numcodecs compatibility
+ranges required by SCIMAP 2.3.x. Create the environment with Python 3.11 for
+the most predictable combination of Streamlit, Scanpy, SCIMAP, and Napari
+dependencies.
 
 The repository `environments.yml` plus `requirements-spatioev_env.txt` recreate
 a pinned working environment that includes scimap/Napari, SpatialData, and
@@ -38,4 +44,10 @@ import spatioev as sv
 
 print(sv.__version__)
 print(sv.tl.morans_i)
+```
+
+Launch the interface after installing the `apps` extra:
+
+```bash
+spatioev ui --project-root /path/to/project
 ```

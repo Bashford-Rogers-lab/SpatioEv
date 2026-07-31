@@ -23,6 +23,9 @@ ignored for GitHub upload; see [Data Policy](docs/data_policy.md).
   pseudotime trend tables.
 - Cell-ECM neighborhood summaries and collagen/fiber interaction modules.
 - Xenium-compatible annotation, niche, DAPI, and pseudotime support.
+- A staged interface for CellSAM-to-AnnData conversion, broad clustering,
+  marker autogating, and SCIMAP subset phenotyping, including multi-FOV TMA
+  projects split across multiple ARK working directories.
 
 The WGCNA-like workflow from earlier manuscript drafts is not part of the
 current public package API yet.
@@ -42,6 +45,7 @@ Optional extras:
 ```bash
 pip install -e ".[scanpy]"       # clustering and Scanpy plotting
 pip install -e ".[viewer]"       # scimap/Napari interactive viewers
+pip install -e ".[apps]"         # all four interactive analysis workflows
 pip install -e ".[spatialdata]"  # SpatialData and Squidpy workflows
 pip install -e ".[trajectory]"   # UMAP and ElPiGraph trajectory notebooks
 pip install -e ".[dev]"          # tests and developer tools
@@ -71,6 +75,16 @@ SpatioEv uses lazy imports at the top level, so `import spatioev` does not load
 Scanpy, scimap, Napari, or other heavy optional packages until the relevant
 function is called.
 
+Launch the complete image-analysis workflow with:
+
+```bash
+spatioev ui --project-root /path/to/project
+```
+
+The interface opens at `http://localhost:8501` by default. See the
+[interactive workflow guide](docs/workflow_apps.md) for stage inputs, outputs,
+templates, and reproducibility notes.
+
 ## Public API Style
 
 SpatioEv now provides Scimap-inspired public namespaces:
@@ -97,6 +111,8 @@ organization. New user-facing code should use the public namespaces above.
 
 ```text
 spatioev/       Python package source
+spatioev/apps/  Four-stage Streamlit interface
+spatioev/workflows/ Reusable workflow engines and Napari review tools
 tests/          Reproducible smoke and example-data tests
 tutorials/      Clean tutorial notebooks
 docs/           Data policy, testing notes, and release checklist

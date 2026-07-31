@@ -38,6 +38,7 @@ nav:
   - Home: index.md
   - Installation: install.md
   - Quick Start: quickstart.md
+  - Interactive Workflows: workflow_apps.md
   - Tutorials:
       - Overview: tutorials/index.md
       - Mastering Spatial Evolution Analysis: tutorials/md/spatial_evolution_spatioev.md

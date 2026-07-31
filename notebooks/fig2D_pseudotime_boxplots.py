@@ -1,7 +1,7 @@
 """
 Figure 2D — Pseudotime distribution by disease group and by sample
 ==================================================================
-Two boxplots side by side:
+Two violin plots side by side:
   Left:  pooled_pseudotime_q by disease group (Normal vs PDAC)
   Right: pooled_pseudotime_q by sample, ordered Normal → PDAC
 
@@ -70,16 +70,13 @@ def make_figure():
     colors  = [DISEASE_PALETTE.get(g, "#888") for g in groups]
     xlabels = [g.replace("NormalPancreas", "Normal\npancreas") for g in groups]
 
-    bp = ax.boxplot(
-        data, positions=range(len(groups)), widths=0.42,
-        patch_artist=True,
-        medianprops=dict(color="white", linewidth=1.2),
-        whiskerprops=dict(linewidth=0.6),
-        capprops=dict(linewidth=0.6),
-        flierprops=dict(marker=".", markersize=1.0, alpha=0.25, markeredgewidth=0),
+    vp = ax.violinplot(
+        data, positions=range(len(groups)), widths=0.55,
+        showmedians=True, showextrema=False,
     )
-    for patch, c in zip(bp["boxes"], colors):
-        patch.set(facecolor=c, alpha=0.75, linewidth=0.6)
+    for body, c in zip(vp["bodies"], colors):
+        body.set(facecolor=c, alpha=0.75, linewidth=0.5)
+    vp["cmedians"].set(color="white", linewidth=1.2)
 
     if len(data) == 2 and all(len(d) > 0 for d in data):
         _, p = mannwhitneyu(data[0], data[1], alternative="two-sided")
@@ -101,16 +98,13 @@ def make_figure():
     scolors = [SAMPLE_PALETTE.get(s, "#888") for s in sorder]
     slabels = [SAMPLE_LABELS.get(s, s) for s in sorder]
 
-    bp2 = ax.boxplot(
-        sdata, positions=range(len(sorder)), widths=0.42,
-        patch_artist=True,
-        medianprops=dict(color="white", linewidth=1.2),
-        whiskerprops=dict(linewidth=0.6),
-        capprops=dict(linewidth=0.6),
-        flierprops=dict(marker=".", markersize=1.0, alpha=0.25, markeredgewidth=0),
+    vp2 = ax.violinplot(
+        sdata, positions=range(len(sorder)), widths=0.55,
+        showmedians=True, showextrema=False,
     )
-    for patch, c in zip(bp2["boxes"], scolors):
-        patch.set(facecolor=c, alpha=0.75, linewidth=0.6)
+    for body, c in zip(vp2["bodies"], scolors):
+        body.set(facecolor=c, alpha=0.75, linewidth=0.5)
+    vp2["cmedians"].set(color="white", linewidth=1.2)
 
     valid_sdata = [d for d in sdata if len(d) > 0]
     if len(valid_sdata) >= 2:
