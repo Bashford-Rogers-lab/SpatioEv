@@ -21,9 +21,8 @@ import pandas as pd
 import streamlit as st
 
 from spatioev.apps._common import default_project_root, module_command
-from spatioev.workflows.image_collection import natural_key, resolve_image
 from spatioev.workflows import marker_gating as mgq
-
+from spatioev.workflows.image_collection import natural_key, resolve_image
 
 PROJECT_ROOT_DEFAULT = default_project_root()
 AUTO_REFRESH_SECONDS = 2.0

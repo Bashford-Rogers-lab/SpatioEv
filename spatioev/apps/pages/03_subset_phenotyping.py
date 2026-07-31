@@ -15,7 +15,6 @@ import streamlit as st
 from spatioev.apps._common import default_project_root, module_command, resource_path
 from spatioev.workflows.scimap_phenotyping import inspect_inputs, write_json
 
-
 AUTO_REFRESH_SECONDS = 2.0
 
 

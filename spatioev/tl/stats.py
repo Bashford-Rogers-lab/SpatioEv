@@ -42,13 +42,18 @@ patterns, stromal remodeling, and cellular ecosystem structure.
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    import anndata as ad
+
 
 import numpy as np
 import pandas as pd
-
-from sklearn.neighbors import BallTree, kneighbors_graph
-from .preprocessing import compute_convex_hull_area
 from scipy.spatial import ConvexHull
+from sklearn.neighbors import BallTree, kneighbors_graph
+
+from .preprocessing import compute_convex_hull_area
 
 
 def _random_points_in_hull(coords, n_points):

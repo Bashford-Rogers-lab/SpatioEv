@@ -4,9 +4,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
-
 from scipy.spatial import ConvexHull
-from scipy.spatial.distance import cdist
 
 if TYPE_CHECKING:
     import anndata as ad

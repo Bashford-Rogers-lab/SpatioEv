@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import types
-
 import numpy as np
 import pandas as pd
 
@@ -22,19 +20,19 @@ from spatioev.tl import (
     assign_pseudotime_bins,
     assign_tiles,
     build_feature_matrix,
-    compute_general_density,
     compute_epithelial_centered_interaction_dynamics,
+    compute_general_density,
+    compute_local_density_all_cells,
     compute_phenotype_density,
     compute_radius_density,
-    compute_local_density_all_cells,
     cross_morans_i,
     cross_ripley_local_counts,
     cross_ripleys_k_by_phenotype,
     morans_i,
     phenotype_density_correlation,
     phenotype_interaction_density,
-    run_scimap_prior_knowledge_phenotyping,
     ripleys_k_by_phenotype,
+    run_scimap_prior_knowledge_phenotyping,
     summarize_epithelial_interaction_dynamics,
     summarize_target_features_around_source_cells,
 )
@@ -105,12 +103,12 @@ def test_scimap_prior_knowledge_wrapper_uses_rescale_then_phenotype(toy_adata, m
         adata.obs[label] = "mock_phenotype"
         return adata
 
-    fake_scimap = types.SimpleNamespace(
-        pp=types.SimpleNamespace(rescale=fake_rescale),
-        tl=types.SimpleNamespace(phenotype_cells=fake_phenotype_cells),
-        pl=types.SimpleNamespace(),
-    )
-    monkeypatch.setitem(__import__("sys").modules, "scimap", fake_scimap)
+    # The wrappers import from the vendored copy (spatioev._vendor.scimap),
+    # not from an installed scimap, so patch there.
+    import spatioev._vendor.scimap as vendored
+
+    monkeypatch.setattr(vendored, "rescale", fake_rescale)
+    monkeypatch.setattr(vendored, "phenotype_cells", fake_phenotype_cells)
 
     manual_gates = pd.DataFrame({"markers": ["CD8"], "img1": [1.0]})
     phenotype = pd.DataFrame({"parent": ["all"], "phenotype": ["mock"], "CD8": ["pos"]})

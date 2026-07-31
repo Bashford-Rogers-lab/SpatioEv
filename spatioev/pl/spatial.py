@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    import anndata as ad
+    import pandas as pd
+
 # ============================================================
 # Section 1: Cluster heatmap  (from archive/visualization/heatmap.py)
 # ============================================================
@@ -178,13 +184,14 @@ def spatial_scatter_plot(
         The figure object when *saveDir* is ``None``; ``None`` when the figure
         has been saved and closed.
     """
-    import os
     import math
+    import os
+
+    import anndata as ad
+    import matplotlib.patches as mpatches
+    import matplotlib.pyplot as plt
     import numpy as np
     import pandas as pd
-    import matplotlib.pyplot as plt
-    import matplotlib.patches as mpatches
-    import anndata as ad
 
     if isinstance(adata, str):
         adata = ad.read_h5ad(adata)
@@ -395,8 +402,8 @@ def inspect_clusters(
 # ============================================================
 
 import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
+import seaborn as sns
 
 
 def plot_spatial_feature(

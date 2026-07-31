@@ -24,37 +24,43 @@ intra-neighborhood heterogeneity
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    import anndata as ad
+
 import os
 import re
+
 import numpy as np
 import pandas as pd
-
 from sklearn.cluster import DBSCAN
+
 try:
     from sklearn.cluster import HDBSCAN as SklearnHDBSCAN
 except ImportError:  # pragma: no cover - depends on sklearn version
     SklearnHDBSCAN = None
-from sklearn.neighbors import NearestNeighbors
-from scipy.sparse import coo_matrix
-from scipy.sparse.csgraph import connected_components
+import networkx as nx
 from scipy.ndimage import (
-    gaussian_filter,
-    binary_fill_holes,
     binary_closing,
     binary_dilation,
+    binary_fill_holes,
+    gaussian_filter,
     generate_binary_structure,
+)
+from scipy.ndimage import (
     find_objects as ndi_find_objects,
+)
+from scipy.ndimage import (
     label as ndi_label,
 )
-from skimage.measure import find_contours
-from skimage.io import imread
-from skimage.morphology import disk
-
-import networkx as nx
-from scipy.sparse import csr_matrix, triu
-from scipy.sparse.csgraph import minimum_spanning_tree
+from scipy.sparse import coo_matrix, csr_matrix, triu
+from scipy.sparse.csgraph import connected_components, minimum_spanning_tree
 from scipy.spatial import ConvexHull
 from scipy.stats import spearmanr
+from skimage.io import imread
+from skimage.morphology import disk
+from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 from tqdm.auto import tqdm
 

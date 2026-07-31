@@ -60,30 +60,26 @@ scanpy = [
     "igraph>=0.10",
     "leidenalg>=0.10",
 ]
-viewer = [
+# Interactive Napari gating. This is the ONLY remaining scimap dependency:
+# the two algorithmic functions SpatioEv uses (rescale, phenotype_cells) are
+# vendored under spatioev/_vendor/scimap and need no scimap install.
+# Installing this pulls scimap's own constraint set, including zarr==2.10.3.
+gating = [
     "scimap[napari]>=2.3,<2.4",
     "setuptools>=68,<82",
+]
+# Backwards-compatible alias for the pre-0.2 name.
+viewer = [
+    "spatioev[gating]",
 ]
 ui = [
-    "dask[array]>=2023.11,<2024.0",
-    "numcodecs<0.16",
-    "numpy>=1.23,<2",
+    "dask[array]>=2024.1",
     "streamlit>=1.40",
     "tifffile>=2023.7",
-    "zarr==2.10.3",
+    "zarr>=2.16,<3",
 ]
 apps = [
-    "dask[array]>=2023.11,<2024.0",
-    "igraph>=0.10",
-    "leidenalg>=0.10",
-    "numcodecs<0.16",
-    "numpy>=1.23,<2",
-    "scanpy>=1.10",
-    "scimap[napari]>=2.3,<2.4",
-    "setuptools>=68,<82",
-    "streamlit>=1.40",
-    "tifffile>=2023.7",
-    "zarr==2.10.3",
+    "spatioev[scanpy,ui]",
 ]
 spatialdata = [
     "spatialdata>=0.2",
@@ -135,6 +131,8 @@ addopts = "-ra"
 [tool.ruff]
 line-length = 88
 target-version = "py310"
+# Vendored third-party code is kept byte-identical to upstream where possible.
+extend-exclude = ["spatioev/_vendor", "paper"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

@@ -10,10 +10,10 @@ import os
 import re
 import tempfile
 import traceback
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Callable
 from xml.etree import ElementTree as ET
 
 os.environ.setdefault(
@@ -26,7 +26,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import tifffile
-
 
 CHANNEL_ALIASES = {
     "EPCAM": "EpCAM",

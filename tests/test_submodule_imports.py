@@ -6,8 +6,8 @@ namespace facade (sv.tl.X, sv.pp.X, sv.pl.X, sv.xe.X).
 from __future__ import annotations
 
 import importlib
-import pytest
 
+import pytest
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -175,31 +175,39 @@ def test_xe_facade_resolves_key_functions():
 # ---------------------------------------------------------------------------
 
 def test_direct_submodule_import_stats():
-    from spatioev.tl.stats import morans_i, ripleys_k_by_phenotype, cross_ripleys_k
+    from spatioev.tl.stats import cross_ripleys_k, morans_i, ripleys_k_by_phenotype
     assert callable(morans_i)
     assert callable(ripleys_k_by_phenotype)
     assert callable(cross_ripleys_k)
 
 
 def test_direct_submodule_import_density():
-    from spatioev.tl.density import assign_tiles, compute_general_density
-    from spatioev.tl.density import phenotype_interaction_density
+    from spatioev.tl.density import (
+        assign_tiles,
+        compute_general_density,
+        phenotype_interaction_density,
+    )
     assert callable(assign_tiles)
     assert callable(compute_general_density)
     assert callable(phenotype_interaction_density)
 
 
 def test_direct_submodule_import_niche():
-    from spatioev.tl.niche import build_cell_graph, build_niche_boundaries
-    from spatioev.tl.niche import build_niche_feature_table
+    from spatioev.tl.niche import (
+        build_cell_graph,
+        build_niche_boundaries,
+        build_niche_feature_table,
+    )
     assert callable(build_cell_graph)
     assert callable(build_niche_boundaries)
     assert callable(build_niche_feature_table)
 
 
 def test_direct_submodule_import_pseudotime():
-    from spatioev.tl.pseudotime import prepare_pseudotime_feature_matrix
-    from spatioev.tl.pseudotime import assign_pseudotime_bins
+    from spatioev.tl.pseudotime import (
+        assign_pseudotime_bins,
+        prepare_pseudotime_feature_matrix,
+    )
     assert callable(prepare_pseudotime_feature_matrix)
     assert callable(assign_pseudotime_bins)
 
@@ -211,8 +219,8 @@ def test_direct_submodule_import_ecm():
 
 
 def test_direct_submodule_import_pp():
-    from spatioev.pp.qc import run_segmentation_qc, generate_qc_summary
-    from spatioev.pp.normalize import zscore_normalize, add_obs_from_var
+    from spatioev.pp.normalize import add_obs_from_var, zscore_normalize
+    from spatioev.pp.qc import generate_qc_summary, run_segmentation_qc
     from spatioev.pp.spatial_prep import validate_spatial_coordinates
     assert callable(run_segmentation_qc)
     assert callable(generate_qc_summary)
@@ -233,7 +241,7 @@ def test_direct_submodule_import_xe():
 # ---------------------------------------------------------------------------
 
 def test_config_dataclasses():
-    from spatioev.config import QCConfig, ClusteringConfig
+    from spatioev.config import ClusteringConfig, QCConfig
     cfg = QCConfig(pixel_size=0.5)
     assert cfg.pixel_size == 0.5
     assert cfg.min_area_um2 == 10

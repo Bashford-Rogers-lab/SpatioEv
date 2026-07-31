@@ -13,11 +13,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
-
 from scipy.stats import gaussian_kde
 
 if TYPE_CHECKING:
@@ -513,12 +512,7 @@ Computes per-cell local density using k-nearest-neighbor distances,
 supporting both within-phenotype and global-population analyses.
 """
 
-import numpy as np
-import pandas as pd
 from sklearn.neighbors import BallTree
-import matplotlib.pyplot as plt
-import seaborn as sns
-
 
 # ------------------------------------------------------------
 # Local density by phenotype
@@ -791,8 +785,6 @@ Computes per-cell local density as the number of neighbors within a fixed
 radius divided by the area of the corresponding circle.
 """
 
-import numpy as np
-from sklearn.neighbors import BallTree
 
 
 def compute_radius_density(
@@ -876,9 +868,6 @@ Provides radius-based phenotype interaction density computation and
 visualization functions for source-to-target cell proximity analysis.
 """
 
-import numpy as np
-from sklearn.neighbors import BallTree
-import matplotlib.pyplot as plt
 
 
 def phenotype_interaction_density(
@@ -1056,7 +1045,6 @@ def plot_interaction_overlay(
     fig.tight_layout()
     return fig
 
-import seaborn as sns
 
 def plot_interaction_distribution(
     adata: ad.AnnData,

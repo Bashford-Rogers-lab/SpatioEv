@@ -8,7 +8,6 @@ from xml.etree import ElementTree as ET
 
 import tifffile
 
-
 OME_PATTERNS = ("*.ome.tif", "*.ome.tiff", "*.tif", "*.tiff")
 
 

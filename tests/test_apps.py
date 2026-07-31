@@ -1,8 +1,8 @@
 import builtins
-import tomllib
 from pathlib import Path
 
 import pytest
+import tomllib
 
 from spatioev.apps._common import module_command, resource_path
 from spatioev.cli import build_parser, launch_ui
@@ -14,21 +14,41 @@ def test_packaged_templates_exist():
     assert resource_path("hcc_immune_phenotype_workflow_example.csv").is_file()
 
 
-def test_ui_dependencies_follow_scimap_compatibility_ranges():
+def _extras() -> dict[str, list[str]]:
     pyproject = Path(__file__).resolve().parents[1] / "pyproject.toml"
     metadata = tomllib.loads(pyproject.read_text(encoding="utf-8"))
-    ui_dependencies = metadata["project"]["optional-dependencies"]["ui"]
-    assert "dask[array]>=2023.11,<2024.0" in ui_dependencies
-    assert "numcodecs<0.16" in ui_dependencies
-    assert "numpy>=1.23,<2" in ui_dependencies
-    assert "zarr==2.10.3" in ui_dependencies
-    app_dependencies = metadata["project"]["optional-dependencies"]["apps"]
-    viewer_dependencies = metadata["project"]["optional-dependencies"]["viewer"]
-    assert not any(dependency.startswith("spatioev[") for dependency in app_dependencies)
-    assert "scimap[napari]>=2.3,<2.4" in app_dependencies
-    assert "setuptools>=68,<82" in app_dependencies
-    assert "setuptools>=68,<82" in viewer_dependencies
-    assert set(ui_dependencies).issubset(app_dependencies)
+    return metadata["project"]["optional-dependencies"]
+
+
+def test_ui_extra_is_not_constrained_by_scimap():
+    """The UI stack must not inherit scimap's pins.
+
+    scimap pins zarr==2.10.3 and an old dask, which previously leaked into the
+    ``ui``/``apps`` extras and contradicted the documented working environment.
+    The algorithmic scimap functions are now vendored, so the UI stack is free.
+    """
+    ui = _extras()["ui"]
+    joined = " ".join(ui)
+    assert "zarr==2.10.3" not in joined
+    assert "scimap" not in joined
+    assert not any(dep.startswith("numpy") for dep in ui), (
+        "ui must not re-pin numpy; it inherits the core numpy>=1.23 bound"
+    )
+
+
+def test_apps_extra_composes_rather_than_duplicating():
+    extras = _extras()
+    assert extras["apps"] == ["spatioev[scanpy,ui]"]
+    # scimap is reachable only through the dedicated gating extra.
+    assert "scimap" not in " ".join(extras["apps"])
+
+
+def test_gating_extra_owns_the_scimap_dependency():
+    extras = _extras()
+    assert "scimap[napari]>=2.3,<2.4" in extras["gating"]
+    assert "setuptools>=68,<82" in extras["gating"]
+    # 'viewer' is retained as a backwards-compatible alias.
+    assert extras["viewer"] == ["spatioev[gating]"]
 
 
 def test_module_command_uses_current_interpreter():

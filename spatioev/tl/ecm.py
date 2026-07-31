@@ -23,11 +23,15 @@ This table can be reused across all ECM spatial statistics.
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    import anndata as ad
+
 
 import numpy as np
 import pandas as pd
 from sklearn.neighbors import BallTree
-
 
 # ------------------------------------------------
 # Radius-based adjacency map
@@ -222,11 +226,9 @@ Spatial analyses implemented
 """
 
 
-import numpy as np
-import pandas as pd
 
-from sklearn.neighbors import BallTree, kneighbors_graph
 from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import kneighbors_graph
 
 from .preprocessing import compute_convex_hull_area
 
@@ -1954,7 +1956,6 @@ def cell_fiber_alignment(
 # ============================================================
 
 import networkx as nx
-import numpy as np
 from networkx.algorithms import bipartite
 
 try:
@@ -2263,8 +2264,6 @@ neighborhoods.
 
 import re
 
-import numpy as np
-import pandas as pd
 from sklearn.cluster import DBSCAN, KMeans
 from sklearn.neighbors import KDTree
 from sklearn.preprocessing import StandardScaler

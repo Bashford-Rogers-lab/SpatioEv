@@ -23,7 +23,6 @@ from spatioev.apps._common import default_project_root, module_command, resource
 from spatioev.workflows import marker_gating as mgq
 from spatioev.workflows.image_collection import natural_key, resolve_image
 
-
 PROJECT_ROOT_DEFAULT = default_project_root()
 REQUIRED_CONDITION_COLUMNS = [
     "staining_condition",

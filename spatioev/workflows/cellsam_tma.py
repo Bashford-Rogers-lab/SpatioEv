@@ -6,9 +6,9 @@ from __future__ import annotations
 import argparse
 import json
 import traceback
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
 
 import anndata as ad
 import numpy as np

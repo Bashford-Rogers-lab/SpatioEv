@@ -23,7 +23,6 @@ from spatioev.workflows.cellsam import (
 )
 from spatioev.workflows.cellsam_tma import TMAConversionPlan, inspect_tma
 
-
 EXAMPLE_ROOT = default_project_root()
 EXAMPLE_TABLE_DIR = EXAMPLE_ROOT / "cell_table"
 EXAMPLE_IMAGE = EXAMPLE_ROOT / "sample.ome.tif"

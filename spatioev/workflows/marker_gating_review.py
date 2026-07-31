@@ -30,7 +30,6 @@ import zarr
 
 from spatioev.workflows import marker_gating as mgq
 
-
 STAINING_OPTIONS = [
     "clear_specific",
     "diffuse_background",
@@ -160,7 +159,14 @@ class MarkerRow:
 
     def __init__(self, marker: str, parent, on_select, on_change, on_accept):
         from qtpy.QtCore import Qt
-        from qtpy.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QSlider, QVBoxLayout
+        from qtpy.QtWidgets import (
+            QFrame,
+            QHBoxLayout,
+            QLabel,
+            QPushButton,
+            QSlider,
+            QVBoxLayout,
+        )
 
         self.marker = marker
         self.frame = QFrame(parent)
@@ -349,7 +355,6 @@ class MarkerGatingController:
     def _build_panel(self):
         from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
         from matplotlib.figure import Figure
-        from qtpy.QtCore import Qt
         from qtpy.QtWidgets import (
             QCheckBox,
             QComboBox,

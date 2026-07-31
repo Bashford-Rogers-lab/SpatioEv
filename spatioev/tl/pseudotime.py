@@ -19,8 +19,13 @@ notebook or script and pass the resulting coordinates/tree into these helpers.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    import anndata as ad
+
 from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass
 
 import networkx as nx
 import numpy as np
@@ -905,7 +910,6 @@ def summarize_epithelial_interaction_dynamics(
 
 """Trend summaries for spatial pseudotime analyses."""
 
-from collections.abc import Sequence
 
 from scipy.stats import mannwhitneyu, spearmanr
 
