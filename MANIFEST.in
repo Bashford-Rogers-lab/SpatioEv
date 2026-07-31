@@ -6,6 +6,8 @@ include pyproject.toml
 
 recursive-include spatioev *.py
 recursive-include spatioev/resources *.csv
+# Upstream licence for vendored third-party code (MIT requires it to ship).
+include spatioev/_vendor/scimap/LICENSE
 
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]

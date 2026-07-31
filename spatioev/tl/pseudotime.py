@@ -21,6 +21,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from scipy.stats import mannwhitneyu, spearmanr
+
+from .stats import cross_ripley_local_counts
+
 if TYPE_CHECKING:  # pragma: no cover
     import anndata as ad
 
@@ -561,7 +565,6 @@ functions in ``spatial_stats.py`` rather than introducing a second interaction
 framework.
 """
 
-from .stats import cross_ripley_local_counts
 
 
 def _resolve_radius(radius=None, radius_um=None, pixel_size_um=None):
@@ -911,7 +914,6 @@ def summarize_epithelial_interaction_dynamics(
 """Trend summaries for spatial pseudotime analyses."""
 
 
-from scipy.stats import mannwhitneyu, spearmanr
 
 
 def benjamini_hochberg(p_values: np.ndarray) -> pd.Series:

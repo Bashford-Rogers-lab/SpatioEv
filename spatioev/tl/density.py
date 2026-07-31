@@ -18,6 +18,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from scipy.stats import gaussian_kde
+from sklearn.neighbors import BallTree
 
 if TYPE_CHECKING:
     import anndata as ad
@@ -512,7 +513,6 @@ Computes per-cell local density using k-nearest-neighbor distances,
 supporting both within-phenotype and global-population analyses.
 """
 
-from sklearn.neighbors import BallTree
 
 # ------------------------------------------------------------
 # Local density by phenotype

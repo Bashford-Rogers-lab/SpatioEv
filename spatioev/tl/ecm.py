@@ -23,7 +23,17 @@ This table can be reused across all ECM spatial statistics.
 """
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING
+
+import networkx as nx
+from networkx.algorithms import bipartite
+from sklearn.cluster import DBSCAN, KMeans
+from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KDTree, kneighbors_graph
+from sklearn.preprocessing import StandardScaler
+
+from .preprocessing import compute_convex_hull_area
 
 if TYPE_CHECKING:  # pragma: no cover
     import anndata as ad
@@ -227,10 +237,7 @@ Spatial analyses implemented
 
 
 
-from sklearn.linear_model import LinearRegression
-from sklearn.neighbors import kneighbors_graph
 
-from .preprocessing import compute_convex_hull_area
 
 
 # ============================================================
@@ -1955,8 +1962,6 @@ def cell_fiber_alignment(
 # Section 3: ECM bipartite graph  (from archive/spatial/spatial_ecm_graph.py)
 # ============================================================
 
-import networkx as nx
-from networkx.algorithms import bipartite
 
 try:
     import community as community_louvain
@@ -2262,11 +2267,7 @@ nearby ECM fibers, then clusters those local profiles into spatial
 neighborhoods.
 """
 
-import re
 
-from sklearn.cluster import DBSCAN, KMeans
-from sklearn.neighbors import KDTree
-from sklearn.preprocessing import StandardScaler
 
 
 def _safe_label(value):

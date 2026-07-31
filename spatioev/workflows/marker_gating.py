@@ -646,7 +646,10 @@ def choose_gate(row: pd.Series, x_values: np.ndarray | None = None) -> tuple[str
 
     if method == "upper_tail_gmm_q90_or_robust_q99_mad3":
         q90_frac = float(row.get("upper_tail_q90_pos_frac", np.nan))
-        robust_frac = float(row.get("robust_q99_mad3_pos_frac", np.nan))
+        # NOTE: computed but not consulted by the branch below. Either the
+        # selection rule should also test robust_frac, or this can go.
+        # Left as-is because changing gate selection is a scientific decision.
+        robust_frac = float(row.get("robust_q99_mad3_pos_frac", np.nan))  # noqa: F841
         if np.isfinite(q90_frac) and q90_frac <= 0.08:
             return "upper_tail_gmm_q90", float(row["upper_tail_q90_gate"]), "diffuse/broad marker; q90 upper-tail fraction was plausible"
         return "robust_q99_mad3", float(row["robust_q99_mad3_gate"]), "diffuse/broad marker; conservative robust tail selected"

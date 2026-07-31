@@ -49,6 +49,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4",
+    "pytest-cov>=4.1",
     "ruff>=0.4",
     "black>=24.0",
     "nbmake>=1.5",
@@ -123,6 +124,8 @@ exclude = [
 
 [tool.setuptools.package-data]
 "spatioev.resources" = ["*.csv"]
+# MIT requires the copyright notice to ship with any redistribution.
+"spatioev._vendor.scimap" = ["LICENSE"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -136,4 +139,20 @@ extend-exclude = ["spatioev/_vendor", "paper"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
-ignore = ["E501"]
+ignore = [
+    "E501",  # line length; formatting is black's job
+    # The rules below are deliberately not enforced: fixing them would change
+    # runtime semantics in numerical code, which needs a scientific review
+    # rather than an automated rewrite.
+    "B905",  # zip() without strict=; adding it makes length mismatches raise
+    "B007",  # unused loop control variable
+    "E741",  # ambiguous variable name (l/I/O are conventional in this domain)
+    "E731",  # lambda assignment
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Batch entry points and Streamlit pages must configure the environment
+# (MPLCONFIGDIR, NUMBA_CACHE_DIR, matplotlib backend) before heavy imports.
+"spatioev/workflows/*.py" = ["E402"]
+"spatioev/apps/*.py" = ["E402"]
+"spatioev/apps/pages/*.py" = ["E402"]

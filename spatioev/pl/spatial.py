@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
 if TYPE_CHECKING:  # pragma: no cover
     import anndata as ad
     import pandas as pd
@@ -401,9 +405,6 @@ def inspect_clusters(
 # Section 5: Spatial feature plots  (from archive/spatial/visualization.py)
 # ============================================================
 
-import matplotlib.pyplot as plt
-import numpy as np
-import seaborn as sns
 
 
 def plot_spatial_feature(

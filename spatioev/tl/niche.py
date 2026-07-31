@@ -2995,7 +2995,6 @@ def _get_n_hop_external_layers(adjacency_full, niche_idx, max_hops=1):
     Hop 2 contains previously unseen external neighbors adjacent to hop-1 nodes,
     and so on. Niche nodes themselves are never returned.
     """
-    n_total = adjacency_full.shape[0]
     niche_idx = np.asarray(niche_idx, dtype=int)
 
     if len(niche_idx) == 0 or max_hops < 1:
@@ -3051,9 +3050,6 @@ def _summarize_graph_surroundings(
         return out
 
     niche_set = set(niche_idx.tolist())
-    niche_pos = {node: i for i, node in enumerate(niche_idx.tolist())}
-    niche_adj = adjacency_full[niche_idx][:, niche_idx].tocsr()
-    niche_degree = np.asarray(niche_adj.sum(axis=1)).ravel().astype(float)
 
     boundary_local = []
     external_degree = np.zeros(len(niche_idx), dtype=float)
