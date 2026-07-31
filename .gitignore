@@ -22,7 +22,6 @@ env/
 
 # Jupyter
 .ipynb_checkpoints/
-notebooks/results/
 tutorials/results/
 ~$*.docx
 
@@ -70,7 +69,7 @@ Supplementary\ Table*.txt
 Supplementary\ Table*.csv
 
 # Notebooks — public API validation cache (generated)
-notebooks/public_api_validation/
+paper/notebooks/public_api_validation/
 
 # Conda environments
 *.conda

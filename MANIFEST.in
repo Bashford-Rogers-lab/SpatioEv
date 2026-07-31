@@ -1,10 +1,23 @@
 include README.md
 include LICENSE
+include CHANGELOG.md
+include CITATION.cff
 include pyproject.toml
+
 recursive-include spatioev *.py
+recursive-include spatioev/resources *.csv
+
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
+recursive-exclude * .DS_Store
+
+# Local analysis data and paper material are never distributed.
 recursive-exclude data *
 recursive-exclude background *
-recursive-exclude notebooks/results *
 recursive-exclude results *
+recursive-exclude outputs *
+recursive-exclude paper *
+recursive-exclude tools *
+recursive-exclude scripts *
+prune paper
+prune tools

@@ -115,6 +115,9 @@ Issues = "https://github.com/Bashford-Rogers-lab/SpatioEv/issues"
 include = ["spatioev*"]
 exclude = [
     "tests*",
+    "paper*",
+    "tools*",
+    "scripts*",
     "notebooks*",
     "tutorials*",
     "docs*",
