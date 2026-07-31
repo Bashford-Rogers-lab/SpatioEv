@@ -53,7 +53,16 @@ import pandas as pd
 from scipy.spatial import ConvexHull
 from sklearn.neighbors import BallTree, kneighbors_graph
 
+from .._core.neighbors import (
+    knn_weights,
+    morans_i_batch,
+    morans_i_from_weights,
+)
 from .preprocessing import compute_convex_hull_area
+
+# Permutation simulations are evaluated in blocks to bound peak memory:
+# the (n, block) value matrix is the only large temporary.
+_PERMUTATION_BLOCK = 128
 
 
 def _random_points_in_hull(coords, n_points):
@@ -1427,7 +1436,13 @@ def ripley_spatial_scales(curve_df: pd.DataFrame) -> pd.DataFrame:
 # 6. MORAN'S I (GLOBAL SPATIAL AUTOCORRELATION)
 # ============================================================
 
-def morans_i(coords: np.ndarray, values: np.ndarray, k: int=8) -> float:
+def morans_i(
+    coords: np.ndarray,
+    values: np.ndarray,
+    k: int = 8,
+    *,
+    W=None,
+) -> float:
     """Compute the global Moran's I spatial autocorrelation statistic.
 
     Moran's I measures whether similar feature values cluster spatially
@@ -1479,32 +1494,16 @@ def morans_i(coords: np.ndarray, values: np.ndarray, k: int=8) -> float:
     if n < 3:
         return np.nan
 
-    k_eff = _resolve_k(n, k)
+    if W is None:
+        k_eff = _resolve_k(n, k)
 
-    if k_eff is None:
-        return np.nan
+        if k_eff is None:
+            return np.nan
 
-    # build spatial neighbor graph
-    W = kneighbors_graph(
-        coords,
-        k_eff,
-        mode="connectivity",
-        include_self=False,
-    )
+        # build spatial neighbor graph
+        W = knn_weights(coords, k_eff)
 
-    x = values - values.mean()
-
-    denom = np.sum(x ** 2)
-
-    if denom == 0:
-        return np.nan
-
-    Wx = W @ x
-    numerator = np.dot(x, Wx)
-
-    I = (n / W.sum()) * (numerator / denom)
-
-    return I
+    return morans_i_from_weights(W, values)
 
 
 def morans_i_permutation_test(coords: np.ndarray, values: np.ndarray, k: int=8, n_sim: int=999, random_state: int=None) -> dict:
@@ -1531,16 +1530,38 @@ def morans_i_permutation_test(coords: np.ndarray, values: np.ndarray, k: int=8, 
         }
 
     rng = np.random.default_rng(random_state)
+    n = len(values)
+
+    # The coordinates are identical across permutations, so the spatial weight
+    # matrix is built once and reused; only the values are shuffled. The
+    # statistics are then evaluated in blocks with a single sparse product per
+    # block instead of one graph build plus one product per simulation.
+    k_eff = _resolve_k(n, k)
+    if k_eff is None:
+        return {
+            "observed": observed,
+            "p_value": np.nan,
+            "null_mean": np.nan,
+            "null_std": np.nan,
+            "z_score": np.nan,
+            "n_sim": 0,
+        }
+
+    W = knn_weights(coords, k_eff)
+
     sims = []
+    remaining = n_sim
+    while remaining > 0:
+        block = min(_PERMUTATION_BLOCK, remaining)
+        # (n, block) matrix of independently permuted value vectors
+        V = np.empty((n, block), dtype=float)
+        for j in range(block):
+            V[:, j] = rng.permutation(values)
+        stats_block = morans_i_batch(W, V)
+        sims.append(stats_block[np.isfinite(stats_block)])
+        remaining -= block
 
-    for i in range(n_sim):
-        sim_values = rng.permutation(values)
-        sim_stat = morans_i(coords, sim_values, k=k)
-
-        if np.isfinite(sim_stat):
-            sims.append(sim_stat)
-
-    sims = np.asarray(sims, dtype=float)
+    sims = np.concatenate(sims) if sims else np.empty(0, dtype=float)
 
     if len(sims) == 0:
         raise ValueError("All permutation simulations returned invalid statistics.")
