@@ -227,7 +227,8 @@ import pandas as pd
 
 from sklearn.neighbors import BallTree, kneighbors_graph
 from sklearn.linear_model import LinearRegression
-from scipy.spatial import ConvexHull
+
+from .preprocessing import compute_convex_hull_area
 
 
 # ============================================================
@@ -338,19 +339,6 @@ def _resolve_k(n_obs, k):
         return None
 
     return min(k, n_obs - 1)
-
-
-def compute_convex_hull_area(coords: np.ndarray) -> float:
-    """
-    Compute area of convex hull.
-    """
-    coords = _clean_coords(coords)
-
-    if len(coords) < 3:
-        return np.nan
-
-    hull = ConvexHull(coords)
-    return hull.volume  # in 2D, volume = area
 
 
 def _cross_ripleys_curve_from_links(

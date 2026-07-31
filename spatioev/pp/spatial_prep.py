@@ -63,7 +63,11 @@ def compute_convex_hull(coords: np.ndarray) -> ConvexHull | None:
     -------
     hull : scipy.spatial.ConvexHull or None
     """
-    coords = np.asarray(coords)
+    coords = np.asarray(coords, dtype=float)
+    if coords.ndim != 2 or coords.shape[1] != 2:
+        raise ValueError("Coordinates must be an Nx2 array.")
+    # Drop non-finite rows; scipy's Qhull raises on NaN/inf input.
+    coords = coords[np.isfinite(coords).all(axis=1)]
     if coords.shape[0] < 3:
         return None
     return ConvexHull(coords)
