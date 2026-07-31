@@ -9,8 +9,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-BANKSY_NOTEBOOK = ROOT / "notebooks" / "09_xenium_banksy_pseudotime_integration.ipynb"
-SPATIALCELLCHAT_NOTEBOOK = ROOT / "notebooks" / "10_xenium_spatialcellchat_pseudotime_integration.ipynb"
+BANKSY_NOTEBOOK = ROOT  / "paper" / "notebooks" / "09_xenium_banksy_pseudotime_integration.ipynb"
+SPATIALCELLCHAT_NOTEBOOK = ROOT  / "paper" / "notebooks" / "10_xenium_spatialcellchat_pseudotime_integration.ipynb"
 
 
 def md(text: str) -> dict:
@@ -76,7 +76,7 @@ banksy_cells = [
         ROOT = Path("/Users/shihongwu/SpatioEv")
         DATA_DIR = ROOT / "data" / "xenium_pancreas_10x"
         BANKSY_DIR = DATA_DIR / "banksy"
-        FIG_DIR = ROOT / "notebooks" / "results" / "xenium_banksy_pseudotime"
+        FIG_DIR = ROOT  / "paper" / "notebooks" / "results" / "xenium_banksy_pseudotime"
 
         BANKSY_PYTHON = Path("/Users/shihongwu/anaconda3/envs/pybanksy/bin/python")
         SPATIOEV_PYTHON = Path("/Users/shihongwu/anaconda3/envs/spatioev_env/bin/python")
@@ -414,7 +414,7 @@ spatialcellchat_cells = [
         ROOT = Path("/Users/shihongwu/SpatioEv")
         DATA_DIR = ROOT / "data" / "xenium_pancreas_10x"
         SPATIALCELLCHAT_DIR = DATA_DIR / "spatialcellchat"
-        FIG_DIR = ROOT / "notebooks" / "results" / "xenium_spatialcellchat_pseudotime"
+        FIG_DIR = ROOT  / "paper" / "notebooks" / "results" / "xenium_spatialcellchat_pseudotime"
 
         SPATIOEV_PYTHON = Path("/Users/shihongwu/anaconda3/envs/spatioev_env/bin/python")
         RSCRIPT = "Rscript"

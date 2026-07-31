@@ -115,7 +115,7 @@ def load_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFram
     panin = pd.read_pickle(base / "pooled_pathology_with_panin_validation_scores.pkl")
     trends = pd.read_csv(
         ROOT
-        / "notebooks"
+         / "paper" / "notebooks"
         / "results"
         / "trajectory_microenvironment_interactions"
         / "tables"

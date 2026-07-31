@@ -10,7 +10,7 @@ import nbformat as nbf
 
 SAMPLE_ID = "ST_TMAG_E1_31"
 PROJECT_DIR = Path("/Volumes/Shihong_3/ST_TMAG_E1_31")
-NOTEBOOK_PATH = PROJECT_DIR / "notebooks" / f"02_{SAMPLE_ID}_spatial_tubule_territories_and_neighborhoods.ipynb"
+NOTEBOOK_PATH = PROJECT_DIR  / "paper" / "notebooks" / f"02_{SAMPLE_ID}_spatial_tubule_territories_and_neighborhoods.ipynb"
 
 
 def md(text: str) -> nbf.NotebookNode:

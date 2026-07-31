@@ -24,7 +24,7 @@ from skimage.segmentation import find_boundaries
 # ── Configuration ─────────────────────────────────────────────────────────────
 ROOT = Path("/Users/shihongwu/SpatioEv")
 DATA_DIR = ROOT / "data" / "exp_2"
-RESULT_DIR = ROOT / "notebooks" / "results" / "pseudotime_exp2"
+RESULT_DIR = ROOT  / "paper" / "notebooks" / "results" / "pseudotime_exp2"
 
 ADATA_PATH       = DATA_DIR / "34434_1_adata.h5ad"
 ANNOTATION_PATH  = DATA_DIR / "34434_1_annotation.csv"

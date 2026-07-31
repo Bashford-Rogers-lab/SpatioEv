@@ -18,7 +18,7 @@ import nbformat as nbf
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT_DIR = ROOT / "notebooks" / "public_api_validation"
+OUT_DIR = ROOT  / "paper" / "notebooks" / "public_api_validation"
 
 
 HISTORICAL_NOTEBOOKS = {

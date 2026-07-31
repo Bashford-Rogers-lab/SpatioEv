@@ -9,7 +9,7 @@ import nbformat as nbf
 
 
 ROOT = Path(__file__).resolve().parents[1]
-NOTEBOOK_DIR = ROOT / "notebooks"
+NOTEBOOK_DIR = ROOT  / "paper" / "notebooks"
 
 
 def md(text: str) -> nbf.NotebookNode:

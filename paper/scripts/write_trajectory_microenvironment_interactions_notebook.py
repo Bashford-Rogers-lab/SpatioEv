@@ -4,7 +4,7 @@ import nbformat as nbf
 
 
 ROOT = Path("/Users/shihongwu/SpatioEv")
-NOTEBOOK = ROOT / "notebooks" / "08_trajectory_microenvironment_interactions.ipynb"
+NOTEBOOK = ROOT  / "paper" / "notebooks" / "08_trajectory_microenvironment_interactions.ipynb"
 
 
 def md(text):
@@ -69,7 +69,7 @@ plt.rcParams.update({
 sns.set_style("white")
 
 ROOT = Path("/Users/shihongwu/SpatioEv")
-OUTPUT_DIR = ROOT / "notebooks" / "results" / "trajectory_microenvironment_interactions"
+OUTPUT_DIR = ROOT  / "paper" / "notebooks" / "results" / "trajectory_microenvironment_interactions"
 FIG_DIR = OUTPUT_DIR / "figures"
 TABLE_DIR = OUTPUT_DIR / "tables"
 for d in [OUTPUT_DIR, FIG_DIR, TABLE_DIR]:

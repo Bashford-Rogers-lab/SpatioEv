@@ -167,14 +167,14 @@ def load_multiplexed() -> dict[str, pd.DataFrame]:
     exp2 = exp2.merge(exp2_features[feature_cols], on=[COMPONENT_KEY, "image_id"], how="left")
     interactions = pd.read_pickle(
         ROOT
-        / "notebooks"
+         / "paper" / "notebooks"
         / "results"
         / "trajectory_microenvironment_interactions"
         / "multiplexed_epithelial_niche_local_colocalization.pkl"
     )
     trends = pd.read_csv(
         ROOT
-        / "notebooks"
+         / "paper" / "notebooks"
         / "results"
         / "trajectory_microenvironment_interactions"
         / "tables"
@@ -182,7 +182,7 @@ def load_multiplexed() -> dict[str, pd.DataFrame]:
     )
     interaction_trends = pd.read_csv(
         ROOT
-        / "notebooks"
+         / "paper" / "notebooks"
         / "results"
         / "trajectory_microenvironment_interactions"
         / "tables"
@@ -212,7 +212,7 @@ def load_xenium() -> dict[str, pd.DataFrame]:
     branch_biology = pd.read_csv(ROOT / "data" / "xenium_pancreas_10x" / "pseudotime" / "xenium_branch_biology_summary.csv")
     micro = pd.read_csv(
         ROOT
-        / "notebooks"
+         / "paper" / "notebooks"
         / "results"
         / "trajectory_microenvironment_interactions"
         / "tables"
@@ -220,7 +220,7 @@ def load_xenium() -> dict[str, pd.DataFrame]:
     )
     lr = pd.read_csv(
         ROOT
-        / "notebooks"
+         / "paper" / "notebooks"
         / "results"
         / "trajectory_microenvironment_interactions"
         / "tables"

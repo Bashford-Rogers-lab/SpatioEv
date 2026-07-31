@@ -9,7 +9,7 @@ import nbformat as nbf
 
 
 ROOT = Path("/Users/shihongwu/SpatioEv")
-OUT_NOTEBOOK = ROOT / "notebooks" / "06_dev_graph_pseudotime_v2_combined_exp_2_3_4_5.ipynb"
+OUT_NOTEBOOK = ROOT  / "paper" / "notebooks" / "06_dev_graph_pseudotime_v2_combined_exp_2_3_4_5.ipynb"
 
 
 def md(text: str):

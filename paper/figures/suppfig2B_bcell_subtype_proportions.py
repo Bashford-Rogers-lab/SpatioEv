@@ -26,7 +26,7 @@ from scipy.stats import spearmanr
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 ROOT       = Path("/Users/shihongwu/SpatioEv")
-RESULT_DIR = ROOT / "notebooks" / "results" / "pseudotime_exp2"
+RESULT_DIR = ROOT  / "paper" / "notebooks" / "results" / "pseudotime_exp2"
 
 TIERB_CSV = RESULT_DIR / "surround_context_tier_b.csv"
 

@@ -80,7 +80,7 @@ def project_paths(project_dir: Path = PROJECT_DIR) -> dict[str, Path]:
     return {
         "data": project_dir / "data",
         "figures": project_dir / "figures",
-        "notebooks": project_dir / "notebooks",
+        "notebooks": project_dir  / "paper" / "notebooks",
         "background": project_dir / "background",
         "dearray": project_dir / "dearray",
         "qc_segmentation": project_dir / "qc" / "segmentation_qc",
@@ -91,7 +91,7 @@ def project_paths(project_dir: Path = PROJECT_DIR) -> dict[str, Path]:
         "phenotyping_figures": project_dir / "phenotyping" / "manual_gating" / "figures",
         "phenotyping_tables": project_dir / "phenotyping" / "manual_gating" / "tables",
         "phenotyping_adata": project_dir / "phenotyping" / "manual_gating" / "adata",
-        "legacy_notebooks": project_dir / "notebooks" / "legacy",
+        "legacy_notebooks": project_dir  / "paper" / "notebooks" / "legacy",
     }
 
 

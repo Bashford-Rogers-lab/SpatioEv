@@ -161,7 +161,7 @@ def load_stats() -> dict:
     xen_feature_blocks = pd.read_csv(ROOT / "manuscript" / "analysis_tables" / "supplementary_table_xenium_feature_blocks.csv")
     micro = pd.read_csv(
         ROOT
-        / "notebooks"
+         / "paper" / "notebooks"
         / "results"
         / "trajectory_microenvironment_interactions"
         / "tables"
@@ -169,7 +169,7 @@ def load_stats() -> dict:
     )
     interactions = pd.read_csv(
         ROOT
-        / "notebooks"
+         / "paper" / "notebooks"
         / "results"
         / "trajectory_microenvironment_interactions"
         / "tables"
@@ -177,7 +177,7 @@ def load_stats() -> dict:
     )
     xen_micro = pd.read_csv(
         ROOT
-        / "notebooks"
+         / "paper" / "notebooks"
         / "results"
         / "trajectory_microenvironment_interactions"
         / "tables"

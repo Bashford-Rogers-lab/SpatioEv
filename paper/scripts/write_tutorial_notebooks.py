@@ -1098,7 +1098,7 @@ def notebook_06() -> list[nbf.NotebookNode]:
         code(
             """
             paths = {
-                "multiplexed_changes": ROOT / "notebooks" / "results" / "trajectory_microenvironment_interactions" / "tables" / "top_trajectory_microenvironment_changes.csv",
+                "multiplexed_changes": ROOT  / "paper" / "notebooks" / "results" / "trajectory_microenvironment_interactions" / "tables" / "top_trajectory_microenvironment_changes.csv",
                 "xenium_branch_biology": ROOT / "data" / "xenium_pancreas_10x" / "pseudotime" / "xenium_branch_biology_summary.csv",
                 "analysis_summary": ROOT / "manuscript" / "analysis_summary.json",
             }

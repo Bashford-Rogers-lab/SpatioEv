@@ -54,7 +54,7 @@ NF_PATH  = DATA_XE / "pooled_xenium_niche_feature_df.pkl"
 CC_PATH  = DATA_XE / "spatialcellchat" / "lr_interaction_summary.csv"
 SPATIAL_META = DATA_XE / "spatialcellchat" / "pdac_pancreas_v1_cell_meta.csv"
 
-OUT_DIR = BASE / "notebooks" / "results" / "fig3"
+OUT_DIR = BASE  / "paper" / "notebooks" / "results" / "fig3"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 KEY = "xenium_ductal_epithelium_component"

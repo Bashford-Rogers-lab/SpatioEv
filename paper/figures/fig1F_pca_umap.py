@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 # ── Paths ─────────────────────────────────────────────────────────────────────
 ROOT       = Path("/Users/shihongwu/SpatioEv")
-RESULT_DIR = ROOT / "notebooks" / "results" / "pseudotime_exp2"
+RESULT_DIR = ROOT  / "paper" / "notebooks" / "results" / "pseudotime_exp2"
 
 PCA_CSV = RESULT_DIR / "pca_explained_variance.csv"
 PT_CSV  = RESULT_DIR / "niche_pseudotime_results.csv"

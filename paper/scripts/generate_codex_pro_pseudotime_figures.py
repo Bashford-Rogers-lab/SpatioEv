@@ -143,7 +143,7 @@ def load_data() -> dict[str, pd.DataFrame]:
     ann = pd.read_csv(ROOT / "data" / "exp_2" / "34434_1_annotation.csv", usecols=["Tier_A", "Tier_B"])
     interactions = pd.read_pickle(
         ROOT
-        / "notebooks"
+         / "paper" / "notebooks"
         / "results"
         / "trajectory_microenvironment_interactions"
         / "multiplexed_epithelial_niche_local_colocalization.pkl"
@@ -151,7 +151,7 @@ def load_data() -> dict[str, pd.DataFrame]:
     micro = with_fdr(
         pd.read_csv(
             ROOT
-            / "notebooks"
+             / "paper" / "notebooks"
             / "results"
             / "trajectory_microenvironment_interactions"
             / "tables"
@@ -161,7 +161,7 @@ def load_data() -> dict[str, pd.DataFrame]:
     contact = with_fdr(
         pd.read_csv(
             ROOT
-            / "notebooks"
+             / "paper" / "notebooks"
             / "results"
             / "trajectory_microenvironment_interactions"
             / "tables"
@@ -170,7 +170,7 @@ def load_data() -> dict[str, pd.DataFrame]:
     )
     branch_time = pd.read_csv(
         ROOT
-        / "notebooks"
+         / "paper" / "notebooks"
         / "results"
         / "trajectory_microenvironment_interactions"
         / "tables"
@@ -185,7 +185,7 @@ def load_data() -> dict[str, pd.DataFrame]:
     xen_micro = with_fdr(
         pd.read_csv(
             ROOT
-            / "notebooks"
+             / "paper" / "notebooks"
             / "results"
             / "trajectory_microenvironment_interactions"
             / "tables"

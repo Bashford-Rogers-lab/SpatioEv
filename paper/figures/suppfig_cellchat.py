@@ -35,10 +35,10 @@ import matplotlib.ticker as mticker
 # ---- Paths ------------------------------------------------------------------
 ROOT     = Path(__file__).resolve().parents[1]   # SpatioEv/
 DATA_DIR = ROOT / "data" / "xenium_pancreas_10x" / "spatialcellchat"
-OUT_DIR  = ROOT / "notebooks" / "results" / "suppfig_cellchat"
+OUT_DIR  = ROOT  / "paper" / "notebooks" / "results" / "suppfig_cellchat"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-sys.path.insert(0, str(ROOT / "notebooks"))
+sys.path.insert(0, str(ROOT  / "paper" / "notebooks"))
 from fig2_shared_config import MM2IN, set_pub_rc
 set_pub_rc()
 

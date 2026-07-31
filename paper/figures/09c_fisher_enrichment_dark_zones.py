@@ -46,9 +46,13 @@ from statsmodels.stats.multitest import multipletests
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 _HERE = Path(__file__).resolve().parent
-PROJECT_ROOT = _HERE.parent if _HERE.name == "notebooks" else _HERE
+# Walk up to the repository root (the directory containing pyproject.toml).
+PROJECT_ROOT = next(
+    (p for p in (_HERE, *_HERE.parents) if (p / "pyproject.toml").is_file()),
+    _HERE,
+)
 
-RESULTS_DIR = PROJECT_ROOT / "notebooks" / "results" / "ra_oa_ecm_cell"
+RESULTS_DIR = PROJECT_ROOT  / "paper" / "notebooks" / "results" / "ra_oa_ecm_cell"
 DARK_DIR    = RESULTS_DIR / "chp_density_micro_holes_col6_dark_segmentation" / "outputs"
 APP_DIR     = RESULTS_DIR / "spatioev_module_paper_applications"
 FIGURES_DIR = APP_DIR / "figures"

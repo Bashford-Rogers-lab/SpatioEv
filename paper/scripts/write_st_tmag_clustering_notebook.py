@@ -10,7 +10,7 @@ import nbformat as nbf
 
 SAMPLE_ID = "ST_TMAG_E1_95"
 PROJECT_DIR = Path("/Volumes/Shihong_3/ST_TMAG_E1_95")
-NOTEBOOK_PATH = PROJECT_DIR / "notebooks" / f"01_{SAMPLE_ID}_clustering_based_phenotyping.ipynb"
+NOTEBOOK_PATH = PROJECT_DIR  / "paper" / "notebooks" / f"01_{SAMPLE_ID}_clustering_based_phenotyping.ipynb"
 SPATIOEV_REPO = Path("/Users/shihongwu/SpatioEv")
 
 

@@ -725,7 +725,7 @@ def figure_4_pseudotime(summary: dict) -> None:
 
 
 def figure_5_microenvironment(summary: dict) -> None:
-    base = ROOT / "notebooks" / "results" / "trajectory_microenvironment_interactions"
+    base = ROOT  / "paper" / "notebooks" / "results" / "trajectory_microenvironment_interactions"
     top_changes = pd.read_csv(base / "tables" / "top_trajectory_microenvironment_changes.csv")
     mux_state = pd.read_csv(base / "tables" / "multiplexed_branch_time_state_summary.csv")
     xen_state = pd.read_csv(base / "tables" / "xenium_branch_time_state_summary.csv")
@@ -869,7 +869,7 @@ def figure_5_microenvironment(summary: dict) -> None:
 
 
 def figure_6_ecm(summary: dict) -> None:
-    base = ROOT / "notebooks" / "results" / "ra_oa_ecm_cell"
+    base = ROOT  / "paper" / "notebooks" / "results" / "ra_oa_ecm_cell"
     density = pd.read_csv(base / "analysis_outputs" / "ra_oa_density_comparison.csv")
     distance = pd.read_csv(base / "analysis_outputs" / "ra_oa_distance_comparison.csv")
     cross = pd.read_csv(
@@ -1009,7 +1009,7 @@ def figure_7_xenium(summary: dict) -> None:
     banksy = pd.read_csv(xen_base / "banksy" / "xenium_banksy_branch_time_summary.csv")
     top_changes = pd.read_csv(
         ROOT
-        / "notebooks"
+         / "paper" / "notebooks"
         / "results"
         / "trajectory_microenvironment_interactions"
         / "tables"

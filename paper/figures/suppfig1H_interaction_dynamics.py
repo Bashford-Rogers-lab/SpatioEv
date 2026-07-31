@@ -34,7 +34,7 @@ import pandas as pd
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 ROOT       = Path("/Users/shihongwu/SpatioEv")
-RESULT_DIR = ROOT / "notebooks" / "results" / "pseudotime_exp2"
+RESULT_DIR = ROOT  / "paper" / "notebooks" / "results" / "pseudotime_exp2"
 
 TIER_A_CSV = RESULT_DIR / "tier_a_interaction_bins.csv"
 T_CELL_CSV = RESULT_DIR / "tier_b_t_cells_interaction_bins.csv"

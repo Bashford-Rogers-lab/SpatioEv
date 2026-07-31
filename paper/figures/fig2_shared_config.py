@@ -11,7 +11,7 @@ import pandas as pd
 
 ROOT      = Path("/Users/shihongwu/SpatioEv")
 CACHE_DIR = ROOT / "data" / "combined_exp_2_3_4_5"
-OUT_DIR   = ROOT / "notebooks" / "results" / "fig2"
+OUT_DIR   = ROOT  / "paper" / "notebooks" / "results" / "fig2"
 
 MM2IN = 1 / 25.4
 

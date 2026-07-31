@@ -54,11 +54,11 @@ import seaborn as sns
 import anndata as ad
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
-RESULTS_DIR  = ROOT / "notebooks" / "results" / "ra_oa_ecm_cell"
+RESULTS_DIR  = ROOT  / "paper" / "notebooks" / "results" / "ra_oa_ecm_cell"
 DARK_DIR     = RESULTS_DIR / "chp_density_micro_holes_col6_dark_segmentation"
 DARK_OUT     = DARK_DIR / "outputs"
 TABLES_DIR   = RESULTS_DIR / "spatioev_module_paper_applications" / "tables"
-OUT_DIR      = ROOT / "notebooks" / "results" / "suppfig11"
+OUT_DIR      = ROOT  / "paper" / "notebooks" / "results" / "suppfig11"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 MM2IN = 1 / 25.4

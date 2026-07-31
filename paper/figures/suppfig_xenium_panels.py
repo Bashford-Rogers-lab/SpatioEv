@@ -48,7 +48,7 @@ H_IN  = 8.86   # 225 mm
 BASE    = Path(__file__).parent.parent
 DATA_XE = BASE / "data" / "xenium_pancreas_10x"
 PT_PATH = DATA_XE / "pseudotime" / "xenium_pseudotime_result_df.pkl"
-OUT_DIR = BASE / "notebooks" / "results" / "suppfig_xenium"
+OUT_DIR = BASE  / "paper" / "notebooks" / "results" / "suppfig_xenium"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ── Palettes ──────────────────────────────────────────────────────────────────

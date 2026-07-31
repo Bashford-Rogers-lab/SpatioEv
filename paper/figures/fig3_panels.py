@@ -56,10 +56,10 @@ ROOT    = Path(__file__).resolve().parents[1]   # SpatioEv/
 DATA_XE = ROOT / "data" / "xenium_pancreas_10x"
 PT_PATH = DATA_XE / "pseudotime" / "xenium_pseudotime_result_df.pkl"
 NF_PATH = DATA_XE / "pooled_xenium_niche_feature_df.pkl"
-OUT_DIR = ROOT / "notebooks" / "results" / "fig3"
+OUT_DIR = ROOT  / "paper" / "notebooks" / "results" / "fig3"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-sys.path.insert(0, str(ROOT / "notebooks"))
+sys.path.insert(0, str(ROOT  / "paper" / "notebooks"))
 from fig2_shared_config import MM2IN, set_pub_rc, make_branch_palette
 set_pub_rc()
 

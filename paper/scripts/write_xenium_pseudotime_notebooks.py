@@ -20,7 +20,7 @@ import nbformat as nbf
 
 
 ROOT = Path("/Users/shihongwu/SpatioEv")
-NOTEBOOK_DIR = ROOT / "notebooks"
+NOTEBOOK_DIR = ROOT  / "paper" / "notebooks"
 DOCS_DIR = ROOT / "docs"
 
 
