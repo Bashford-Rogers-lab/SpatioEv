@@ -1,2 +1,0 @@
-"""Archived visualization implementation modules."""
-
