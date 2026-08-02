@@ -25,8 +25,9 @@ Figures : paper/figures/results/suppfig9/suppfig9_*.pdf (.png)
 Tables  : paper/figures/results/suppfig9/tables/*.csv
 
     suppfig9_BC_ripleys_k_multiscale.csv        self-clustering L(r)-r, all phenotypes x 5 radii
-    suppfig9_D_b_lineage_hotspot_summary.csv    B-lineage local-Ripley hotspot counts
-    suppfig9_D_ripley_local_counts.csv          per-cell local Ripley counts (all phenotypes)
+    suppfig9_BC_ripleys_k_mean_by_phenotype.csv mean L(r)-r per phenotype and radius
+    suppfig9_D_b_lineage_hotspot_summary.csv    hotspot counts per phenotype
+    suppfig9_D_ripley_local_summary.csv         local Ripley summary per phenotype
     suppfig9_E_cross_ripley_all_pairs.csv       all ordered phenotype pairs at 50 um
     suppfig9_F_cross_ripley_curve.csv           ductal <-> fibroblast curve, radius in um
     suppfig9_G_permutation_envelope.csv         ductal <-> T cell, with 2.5/97.5% envelope + significance
@@ -85,6 +86,10 @@ K_NEIGHBORS     = 8
 N_PERM          = 99              # cross-Ripley permutation envelope simulations
 N_PERM_MORAN    = 999             # cross-Moran's I permutation simulations
 FDR_ALPHA       = 0.05
+
+# Per-cell tables run to ~10^6 rows.  Off by default; the summary tables carry
+# everything the manuscript needs.
+EXPORT_PER_CELL_TABLES = False
 
 # Cross-Ripley curve radii.  Declared in µm and converted to pixels so the
 # reported range is unambiguous.  (Previously this was linspace(10, 800, 30)
@@ -497,9 +502,33 @@ def export_tables(results, adata):
         _save_table(summary, "suppfig9_BC_ripleys_k_mean_by_phenotype")
 
     # ── D: local Ripley / B-lineage hotspots ──────────────────────────────────
+    # The per-cell table has one row per cell (~10^6) — summarise by default and
+    # only write the full table when EXPORT_PER_CELL_TABLES is set.
     local_counts = results.get("local_counts")
     if local_counts is not None and not getattr(local_counts, "empty", True):
-        _save_table(local_counts, "suppfig9_D_ripley_local_counts")
+        agg_cols = [c for c in ["same_type_neighbor_count",
+                                "same_type_neighbor_excess",
+                                "same_type_neighbor_ratio"]
+                    if c in local_counts.columns]
+        summ = (local_counts.groupby("phenotype", observed=True)
+                .agg(n_cells=("phenotype", "size"),
+                     **{f"{c}_mean":   (c, "mean")   for c in agg_cols},
+                     **{f"{c}_median": (c, "median") for c in agg_cols})
+                .reset_index())
+        if "is_ripley_hotspot" in local_counts.columns:
+            hot = (local_counts.groupby("phenotype", observed=True)["is_ripley_hotspot"]
+                   .agg(n_hotspot="sum", fraction_hotspot="mean").reset_index())
+            summ = summ.merge(hot, on="phenotype", how="left")
+        summ["phenotype_label"] = summ["phenotype"].map(
+            lambda p: PHENOTYPE_LABELS.get(p, p))
+        summ["radius_um"] = RADIUS_UM
+        _save_table(summ, "suppfig9_D_ripley_local_summary")
+
+        if EXPORT_PER_CELL_TABLES:
+            _save_table(local_counts, "suppfig9_D_ripley_local_counts_percell")
+        else:
+            print("  [skip] per-cell local Ripley table "
+                  "(set EXPORT_PER_CELL_TABLES=True to write it)")
 
     hotspot_col = results.get("hotspot_col")
     if hotspot_col and hotspot_col in adata.obs.columns:
