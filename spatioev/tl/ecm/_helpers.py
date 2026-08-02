@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pandas as pd
 
+from ..._core.neighbors import cross_morans_i_from_weights, knn_weights
 from ..preprocessing import compute_convex_hull_area
 
 if TYPE_CHECKING:  # pragma: no cover
     pass
-from sklearn.neighbors import kneighbors_graph
 
 
 # ============================================================
@@ -275,6 +275,21 @@ def _map_cell_feature_to_fibers(
     )
 
 
+def _fiber_cross_moran_inputs(
+    fiber_df,
+    feature_fiber,
+    feature_cell,
+    fiber_x="X_centroid",
+    fiber_y="Y_centroid",
+):
+    """Extract the valid (coords, x, y) triple shared by the cross-Moran paths."""
+    valid = fiber_df[[fiber_x, fiber_y, feature_fiber, feature_cell]].dropna()
+    coords = fiber_df.loc[valid.index, [fiber_x, fiber_y]].to_numpy()
+    x = valid[feature_fiber].to_numpy(dtype=float)
+    y = valid[feature_cell].to_numpy(dtype=float)
+    return valid.index, coords, x, y
+
+
 def _compute_cross_morans_i_from_fiber_table(
     fiber_df,
     feature_fiber,
@@ -282,45 +297,34 @@ def _compute_cross_morans_i_from_fiber_table(
     k=8,
     fiber_x="X_centroid",
     fiber_y="Y_centroid",
+    W=None,
 ):
     """
     Compute global cross Moran's I from fiber-level features.
-    """
-    valid = fiber_df[[fiber_x, fiber_y, feature_fiber, feature_cell]].dropna()
 
-    coords = fiber_df.loc[valid.index, [fiber_x, fiber_y]].to_numpy()
-    x = valid[feature_fiber].to_numpy(dtype=float)
-    y = valid[feature_cell].to_numpy(dtype=float)
+    Parameters
+    ----------
+    W : scipy.sparse matrix, optional
+        Precomputed row-normalised spatial weight matrix over the *valid*
+        fibers. Supplying it avoids rebuilding the kNN graph, which is the
+        dominant cost when this is called repeatedly under permutation with
+        fixed fiber coordinates.
+    """
+    _, coords, x, y = _fiber_cross_moran_inputs(
+        fiber_df, feature_fiber, feature_cell, fiber_x, fiber_y
+    )
 
     n = len(x)
 
     if n < 3:
         return np.nan
 
-    k_eff = _resolve_k(n, k)
+    if W is None:
+        k_eff = _resolve_k(n, k)
 
-    if k_eff is None:
-        return np.nan
+        if k_eff is None:
+            return np.nan
 
-    W = kneighbors_graph(
-        coords,
-        k_eff,
-        mode="connectivity",
-        include_self=False,
-    ).toarray()
+        W = knn_weights(coords, k_eff, normalize=True)
 
-    row_sums = W.sum(axis=1, keepdims=True)
-    row_sums[row_sums == 0] = 1
-    W = W / row_sums
-
-    x = x - x.mean()
-    y = y - y.mean()
-
-    denom = np.sqrt(np.sum(x**2) * np.sum(y**2))
-
-    if denom == 0:
-        return np.nan
-
-    return (n / W.sum()) * (
-        np.sum(W * np.outer(x, y)) / denom
-    )
+    return cross_morans_i_from_weights(W, x, y)

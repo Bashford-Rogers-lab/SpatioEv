@@ -9,11 +9,12 @@ import pandas as pd
 
 if TYPE_CHECKING:  # pragma: no cover
     import anndata as ad
-from sklearn.neighbors import kneighbors_graph
 
+from ..._core.neighbors import knn_weights, morans_i_from_weights
 from ._helpers import (
     _compute_cross_morans_i_from_fiber_table,
     _ensure_list,
+    _fiber_cross_moran_inputs,
     _filter_cells,
     _label_suffix,
     _map_cell_feature_to_fibers,
@@ -134,27 +135,15 @@ def morans_i_fibers(
     # Spatial weights (kNN graph)
     # --------------------------------------------------
 
-    W = kneighbors_graph(coords, k_eff, mode="connectivity").toarray()
-
-    # NORMALIZATION FIX
-    row_sums = W.sum(axis=1, keepdims=True)
-    row_sums[row_sums == 0] = 1
-    W = W / row_sums
+    # Row-normalised kNN weights, kept sparse: the previous dense form
+    # allocated an n x n matrix here and a second one for np.outer below.
+    W = knn_weights(coords, k_eff, normalize=True)
 
     # --------------------------------------------------
     # Moran's I calculation
     # --------------------------------------------------
 
-    x = values - values.mean()
-
-    denom = np.sum(x**2)
-
-    if denom == 0:
-        return np.nan
-
-    return (len(x) / W.sum()) * (
-        np.sum(W * np.outer(x, x)) / denom
-    )
+    return morans_i_from_weights(W, values)
 
 
 # ============================================================
@@ -270,14 +259,8 @@ def local_morans_i_fibers(
     # Build spatial weights
     # --------------------------------------------------
 
-    W = kneighbors_graph(
-        coords,
-        k_eff,
-        mode="connectivity",
-        include_self=False
-    )
-
-    W = W.toarray()
+    # Binary connectivity, left sparse: only ``W @ x`` is needed below.
+    W = knn_weights(coords, k_eff)
 
     # --------------------------------------------------
     # Center feature values
@@ -431,7 +414,15 @@ def cross_morans_i_ecm_cells_permutation_test(
     cell_images = adata.obs[image_key].to_numpy()
     sims = []
 
-    for i in range(n_sim):
+    # The fiber coordinates are identical across permutations, so the spatial
+    # weight matrix depends only on which fibers survive the dropna(). That set
+    # is normally constant, so W is built once and reused; it is rebuilt only if
+    # a permutation happens to shift the valid set (possible when the cell
+    # feature itself contains NaNs).
+    cached_key = None
+    cached_W = None
+
+    for _ in range(n_sim):
         permuted = _permute_values_within_images(
             cell_values,
             cell_images,
@@ -450,11 +441,26 @@ def cross_morans_i_ecm_cells_permutation_test(
         fiber_local = fiber_df.copy()
         fiber_local["cell_local"] = fiber_local.index.map(fiber_cell)
 
+        valid_index, coords, _, _ = _fiber_cross_moran_inputs(
+            fiber_local, feature_fiber, "cell_local"
+        )
+        key = (len(valid_index), hash(tuple(valid_index)))
+
+        if key != cached_key:
+            k_eff = _resolve_k(len(valid_index), k)
+            cached_W = (
+                knn_weights(coords, k_eff, normalize=True)
+                if k_eff is not None and len(valid_index) >= 3
+                else None
+            )
+            cached_key = key
+
         sim_stat = _compute_cross_morans_i_from_fiber_table(
             fiber_local,
             feature_fiber,
             "cell_local",
             k=k,
+            W=cached_W,
         )
 
         if np.isfinite(sim_stat):
@@ -712,17 +718,8 @@ def local_cross_morans_i_ecm_cells(
     # Spatial weights
     # --------------------------------------------------
 
-    W = kneighbors_graph(
-        coords,
-        k_eff,
-        mode="connectivity",
-        include_self=False
-    ).toarray()
-
-    # row normalization
-    row_sums = W.sum(axis=1, keepdims=True)
-    row_sums[row_sums == 0] = 1
-    W = W / row_sums
+    # Row-normalised weights, kept sparse: only ``W @ y_c`` is needed below.
+    W = knn_weights(coords, k_eff, normalize=True)
 
     # --------------------------------------------------
     # Center variables

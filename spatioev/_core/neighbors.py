@@ -96,6 +96,73 @@ def morans_i_from_weights(W: sparse.spmatrix, values: np.ndarray) -> float:
     return (n / s0) * float(x @ (W @ x)) / denom
 
 
+def cross_morans_i_from_weights(
+    W: sparse.spmatrix,
+    x: np.ndarray,
+    y: np.ndarray,
+) -> float:
+    """Global cross Moran's I between two variables on one weight matrix.
+
+    ``I_xy = (n / S0) * (x' W y) / sqrt((x'x)(y'y))`` with ``x`` and ``y``
+    mean-centred.
+
+    Notes
+    -----
+    The bilinear form is evaluated as ``x @ (W @ y)``. Writing it as
+    ``(W * np.outer(x, y)).sum()`` is algebraically the same but materialises
+    two dense ``n x n`` matrices; at n = 10,000 that is ~1.6 GB of temporaries
+    per call. The sparse form is O(n*k).
+    """
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    n = x.size
+
+    xc = x - x.mean()
+    yc = y - y.mean()
+
+    denom = np.sqrt(float(xc @ xc) * float(yc @ yc))
+    if denom == 0:
+        return np.nan
+
+    s0 = float(W.sum())
+    if s0 == 0:
+        return np.nan
+
+    return (n / s0) * float(xc @ (W @ yc)) / denom
+
+
+def cross_morans_i_batch(
+    W: sparse.spmatrix,
+    x: np.ndarray,
+    y_matrix: np.ndarray,
+) -> np.ndarray:
+    """Cross Moran's I of a fixed ``x`` against many ``y`` columns.
+
+    Used by the permutation tests, where ``x`` and the coordinates are held
+    fixed while ``y`` is reshuffled.
+    """
+    x = np.asarray(x, dtype=float)
+    Y = np.asarray(y_matrix, dtype=float)
+    if Y.ndim == 1:
+        Y = Y[:, None]
+
+    n = x.size
+    xc = x - x.mean()
+    Yc = Y - Y.mean(axis=0, keepdims=True)
+
+    xx = float(xc @ xc)
+    yy = np.einsum("ij,ij->j", Yc, Yc)
+    numer = xc @ (W @ Yc)
+
+    s0 = float(W.sum())
+    out = np.full(Y.shape[1], np.nan, dtype=float)
+    denom = np.sqrt(xx * yy)
+    valid = (denom != 0) & np.isfinite(denom)
+    if s0 != 0 and xx != 0:
+        out[valid] = (n / s0) * numer[valid] / denom[valid]
+    return out
+
+
 def morans_i_batch(W: sparse.spmatrix, value_matrix: np.ndarray) -> np.ndarray:
     """Global Moran's I for many value vectors sharing one weight matrix.
 
