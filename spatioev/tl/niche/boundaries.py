@@ -1391,13 +1391,20 @@ def assign_cells_to_niche_regions(
     if mode not in {"distance_to_edge", "buffer"}:
         raise ValueError("mode must be either 'distance_to_edge' or 'buffer'")
 
-    _concave_hull, _LineString, _MultiPoint, Point, _box, _unary_union, _make_valid = _require_shapely()
+    _require_shapely()
+    # Shapely 2.x exposes vectorised predicates that operate on whole point
+    # arrays. Testing cells one at a time made this O(boundaries x cells) in
+    # Python; these run the same predicates in one native call per boundary.
+    import shapely
 
-    rows = []
+    frames = []
     obs = adata.obs.copy()
 
     valid_cells = obs[[image_key, x_key, y_key]].dropna().index
     obs = obs.loc[valid_cells]
+
+    # Group once rather than filtering the full table per boundary row.
+    by_image = {img: sub for img, sub in obs[[image_key, x_key, y_key]].groupby(image_key)}
 
     for _, row in boundary_df.iterrows():
         img = row[image_key]
@@ -1413,43 +1420,56 @@ def assign_cells_to_niche_regions(
             else:
                 width = 0.0
 
-        sub = obs.loc[obs[image_key] == img, [x_key, y_key]].copy()
-        if sub.empty:
+        sub = by_image.get(img)
+        if sub is None or sub.empty:
             continue
 
-        for cell_id, cell in sub.iterrows():
-            pt = Point(float(cell[x_key]), float(cell[y_key]))
+        points = shapely.points(
+            sub[x_key].to_numpy(dtype=float),
+            sub[y_key].to_numpy(dtype=float),
+        )
 
-            region = None
+        region = np.full(len(sub), None, dtype=object)
 
-            if mode == "distance_to_edge":
-                if geom.covers(pt):
-                    edge_distance = geom.boundary.distance(pt)
-                    if width > 0 and edge_distance <= width:
-                        region = "inner_border"
-                    else:
-                        region = "core"
-                elif expanded is not None and expanded.covers(pt):
-                    region = "outer_border"
-            else:
-                if shrunk is not None and shrunk.covers(pt):
-                    region = "core"
-                elif geom.covers(pt):
-                    region = "inner_border" if shrunk is not None else "component"
-                elif expanded is not None and expanded.covers(pt):
-                    region = "outer_border"
+        if mode == "distance_to_edge":
+            inside = shapely.covers(geom, points)
+            if inside.any():
+                edge_distance = shapely.distance(geom.boundary, points[inside])
+                inner = (width > 0) & (edge_distance <= width)
+                region[np.flatnonzero(inside)] = np.where(inner, "inner_border", "core")
+            if expanded is not None:
+                outer = ~inside & shapely.covers(expanded, points)
+                region[outer] = "outer_border"
+        else:
+            remaining = np.ones(len(sub), dtype=bool)
+            if shrunk is not None:
+                core = shapely.covers(shrunk, points)
+                region[core] = "core"
+                remaining &= ~core
+            inner = remaining & shapely.covers(geom, points)
+            region[inner] = "inner_border" if shrunk is not None else "component"
+            remaining &= ~inner
+            if expanded is not None:
+                outer = remaining & shapely.covers(expanded, points)
+                region[outer] = "outer_border"
 
-            if region is None:
-                continue
+        assigned = region != None  # noqa: E711 - element-wise, not an identity test
+        if not assigned.any():
+            continue
 
-            rows.append({
-                "cell_id": cell_id,
+        frames.append(
+            pd.DataFrame({
+                "cell_id": sub.index[assigned],
                 image_key: img,
                 component_key: component,
-                region_key: region,
+                region_key: region[assigned],
             })
+        )
 
-    return pd.DataFrame(rows)
+    if not frames:
+        return pd.DataFrame(columns=["cell_id", image_key, component_key, region_key])
+
+    return pd.concat(frames, ignore_index=True)
 
 
 def summarize_niche_composition(
