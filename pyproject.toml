@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "spatioev"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Spatial feature extraction and spatial evolution framework for multiplexed imaging and spatial transcriptomics."
 authors = [
     { name = "Shihong Wu" },
@@ -114,6 +114,10 @@ spatioev = "spatioev.cli:main"
 Homepage = "https://github.com/Bashford-Rogers-lab/SpatioEv"
 Repository = "https://github.com/Bashford-Rogers-lab/SpatioEv"
 Issues = "https://github.com/Bashford-Rogers-lab/SpatioEv/issues"
+
+[tool.setuptools.dynamic]
+# Single source of truth: spatioev/__init__.py
+version = { attr = "spatioev.__version__" }
 
 [tool.setuptools.packages.find]
 include = ["spatioev*"]
