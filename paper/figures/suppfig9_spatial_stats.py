@@ -41,7 +41,16 @@ Every number quoted for this figure in the manuscript must come from these table
 
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Resolve the repository root by walking up to the directory containing
+# pyproject.toml, so the script works from any working directory and survives
+# being relocated between notebooks/ and figures/.
+_HERE = Path(__file__).resolve().parent
+PROJECT_ROOT = next(
+    (p for p in (_HERE, *_HERE.parents) if (p / "pyproject.toml").is_file()),
+    _HERE,
+)
+sys.path.insert(0, str(PROJECT_ROOT))
 
 import numpy as np
 import pandas as pd
@@ -53,11 +62,13 @@ import seaborn as sns
 import spatioev as sv
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
-ROOT       = Path(__file__).parent.parent
+# NOTE: previously ROOT resolved to paper/ (not the repository root), so
+# DATA_PATH pointed at paper/data/... and the script could not find its inputs.
+ROOT       = PROJECT_ROOT
 DATA_PATH  = ROOT / "data" / "exp_2" / "34434_1_adata.h5ad"
 ANN_PATH   = ROOT / "data" / "exp_2" / "34434_1_annotation.csv"
 PIXEL_PATH = ROOT / "data" / "exp_2" / "pixel_features.csv"
-OUT_DIR    = Path(__file__).parent / "results" / "suppfig9"
+OUT_DIR    = ROOT / "paper" / "notebooks" / "results" / "suppfig9"
 TABLES_DIR = OUT_DIR / "tables"
 
 MM2IN = 1 / 25.4

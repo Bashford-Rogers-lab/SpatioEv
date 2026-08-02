@@ -2,11 +2,18 @@ import builtins
 from pathlib import Path
 
 import pytest
-import tomllib
 
 from spatioev.apps._common import module_command, resource_path
 from spatioev.cli import build_parser, launch_ui
 from spatioev.pl.spatial import _require_image_viewer_dependencies
+
+# tomllib is stdlib from 3.11; the package supports 3.10, where the
+# third-party backport `tomli` provides the same API.
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - Python 3.10
+    import tomli as tomllib
+
 
 
 def test_packaged_templates_exist():

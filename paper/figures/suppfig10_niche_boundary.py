@@ -1,30 +1,37 @@
 """
-Supplementary Figure 10 — Neighbourhood identification, ROI selection, and boundary analysis
-============================================================================================
-Extracted directly from:
-  - 05_dev_spatial_niche_boundaries.ipynb   (liver metastasis / exp_1 boundary panels)
-  - 09_RA_OA_ECM_cell_spatioev_module_paper_applications.ipynb (RA/OA neighbourhood panels)
+Supplementary Figure 10 — Identification and characterization of tumor nests in
+cancer metastasis in liver
+==============================================================================
+Panel lettering follows the published figure legend verbatim (this figure was
+carried over unchanged from Figure 4 of the original manuscript):
 
-Each cell from those notebooks becomes a panel here, with:
-  - Publication RC (Arial 6 pt)
-  - savefig() call added after each plot
+A  : RCN cell-type composition stacked bar
+B  : Spatial scatter coloured by RCN
+C  : Spatial scatter coloured by connected ROIs
+D  : [Placeholder] Representative liver metastasis image (DAPI + CK19)
+E  : UMAP of liver metastasis cells coloured by phenotype
+F  : Overlay of tumour-cell and other-cell clusters
+G  : Tumour nests defined by DBSCAN, with zoomed insets
+       (individual nest / defined boundary / shrunken + expanded boundaries)
+H  : Tumour nest boundaries across the entire liver metastasis image
+I  : UMAP embedding of boundary cell neighbourhoods
+J  : Stacked bar of the cellular composition of boundary cell neighbourhoods
+K  : Proportions of cells in different boundary clusters
 
-Panels
-------
-A  : RCN cell-type composition stacked bar (RA/OA)
-B  : Spatial scatter coloured by RCN — representative RA sample
-C  : Spatial scatter coloured by connected ROI components
-D  : RCN abundance distribution across RA vs OA
-E  : Liver metastasis phenotype annotation heatmap
-F  : [Placeholder] Representative tissue image (DAPI + CK19)
-G  : UMAP of liver metastasis cells coloured by phenotype
-H  : Tumour / other cells spatial overlay
-I  : Tumour nests (DBSCAN component labels)
-J  : Tumour niche boundaries with expanded / shrunk contours
-K  : Tumour region assignments (core / border / background)
+Sources:
+  - 05_dev_spatial_niche_boundaries.ipynb   (liver metastasis boundary panels)
+  - 09_RA_OA_ECM_cell_spatioev_module_paper_applications.ipynb (RCN panels A–C)
 
-Run from SpatioEv root:
-    python notebooks/suppfig10_niche_boundary.py
+Run from anywhere:
+    python paper/figures/suppfig10_niche_boundary.py
+
+Outputs
+-------
+Figures : paper/notebooks/results/suppfig10/suppfig10_*.pdf (.png)
+Tables  : paper/notebooks/results/suppfig10/tables/*.csv
+
+Panels beyond the published lettering (kept for reference, not part of the
+figure) are saved with an ``extra_`` prefix.
 """
 
 import os
@@ -36,22 +43,58 @@ warnings.filterwarnings("ignore")
 os.environ.setdefault("MPLCONFIGDIR", "/private/tmp/matplotlib")
 os.environ.setdefault("NUMBA_CACHE_DIR",  "/private/tmp/numba")
 
-# Run from project root
-ROOT = Path(__file__).parent.parent
-os.chdir(ROOT)
+# Resolve the repository root by walking up to the directory containing
+# pyproject.toml, so the script works from any working directory.
+_HERE = Path(__file__).resolve().parent
+PROJECT_ROOT = next(
+    (p for p in (_HERE, *_HERE.parents) if (p / "pyproject.toml").is_file()),
+    _HERE,
+)
+sys.path.insert(0, str(PROJECT_ROOT))
+os.chdir(PROJECT_ROOT)
+ROOT = PROJECT_ROOT
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import seaborn as sns
+from sklearn.neighbors import BallTree
+from sklearn.cluster import KMeans
 import spatioev as sv
 
-# ── Output directory ───────────────────────────────────────────────────────────
-OUT_DIR = Path("paper/notebooks/results/suppfig10")
+# ── Output directories ─────────────────────────────────────────────────────────
+OUT_DIR    = ROOT / "paper" / "notebooks" / "results" / "suppfig10"
+TABLES_DIR = OUT_DIR / "tables"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
+TABLES_DIR.mkdir(parents=True, exist_ok=True)
 
 MM2IN = 1 / 25.4
+
+# ── Analysis constants ─────────────────────────────────────────────────────────
+PIXEL_SIZE_UM        = 0.325
+TUMOUR_LABEL         = "tumour"
+TUMOUR_DBSCAN_EPS    = 45
+TUMOUR_DBSCAN_MINPTS = 5
+ROI_DBSCAN_EPS       = 100
+ROI_DBSCAN_MINPTS    = 3
+BOUNDARY_BUFFER_UM   = 30.0
+BOUNDARY_BUFFER_PX   = BOUNDARY_BUFFER_UM / PIXEL_SIZE_UM
+MASK_RESOLUTION      = 6.0
+NEIGHBOURHOOD_RADIUS_UM = 30.0
+NEIGHBOURHOOD_RADIUS_PX = NEIGHBOURHOOD_RADIUS_UM / PIXEL_SIZE_UM
+N_BOUNDARY_CLUSTERS  = 5      # five tumour boundary types, per the manuscript
+RANDOM_STATE         = 42
+
+
+def _save_table(df, name):
+    """Write a statistics table to TABLES_DIR."""
+    if df is None or (hasattr(df, "empty") and df.empty):
+        print(f"  [skip] {name} — no data")
+        return
+    path = TABLES_DIR / f"{name}.csv"
+    df.to_csv(path, index=False)
+    print(f"  table: {path.name}  ({len(df)} rows)")
 
 # ── Publication RC ─────────────────────────────────────────────────────────────
 plt.rcParams.update({
@@ -150,6 +193,11 @@ if rcn_col is not None:
         ax.spines[sp].set_visible(False)
     fig.tight_layout()
     _save(fig, "A", title="A   RCN cell-type composition")
+    _save_table(comp, "suppfig10_A_rcn_celltype_composition")
+    _save_table(
+        adata_ra.obs.groupby([GROUP_KEY, rcn_col], observed=True)
+        .size().reset_index(name="n_cells"),
+        "suppfig10_A_rcn_counts_by_pathology")
 else:
     _placeholder("A", "Panel A — RCN composition\n(requires pre-computed RCN column in obs)")
 
@@ -183,6 +231,10 @@ if rcn_col is not None:
         ax.spines[sp].set_visible(False)
     fig.tight_layout()
     _save(fig, "B", title="B   RCN spatial distribution")
+    _save_table(
+        vals.value_counts().rename_axis("RCN")
+        .reset_index(name="n_cells").assign(sample=str(sample_id)),
+        "suppfig10_B_rcn_cell_counts")
 else:
     _placeholder("B", "Panel B — RCN spatial map\n(requires pre-computed RCN column in obs)")
 
@@ -197,7 +249,7 @@ if rcn_col is not None:
         try:
             sub_img = sv.tl.cluster_spatial_niches(
                 sub_img, label_key=rcn_col, label_value=rcn_val,
-                eps=100, min_samples=3)
+                eps=ROI_DBSCAN_EPS, min_samples=ROI_DBSCAN_MINPTS)
             if comp_col in sub_img.obs.columns:
                 mask = sub_img.obs[comp_col].astype(str) != "-1"
                 sub_img.obs.loc[mask[mask].index, "connected_roi"] = (
@@ -230,6 +282,11 @@ if rcn_col is not None:
         ax.spines[sp].set_visible(False)
     fig.tight_layout()
     _save(fig, "C", title="C   Connected ROI spatial map")
+    _save_table(
+        vals.value_counts().rename_axis("connected_roi")
+        .reset_index(name="n_cells").assign(sample=str(sample_id)),
+        "suppfig10_C_connected_roi_sizes")
+    print(f"    {n_rois} connected ROIs in {sample_id}")
 else:
     _placeholder("C", "Panel C — Connected ROIs\n(requires pre-computed RCN column in obs)")
 
@@ -261,9 +318,10 @@ if rcn_col is not None:
     for sp in ["top", "right"]:
         ax.spines[sp].set_visible(False)
     fig.tight_layout()
-    _save(fig, "D", title="D   RCN abundance across RA and OA")
+    # Not part of the published figure lettering — kept for reference only.
+    _save(fig, "extra_rcn_abundance", title="RCN abundance across RA and OA")
 else:
-    _placeholder("D", "Panel D — RCN distribution\n(requires pre-computed RCN column in obs)")
+    print("  [skip] extra RCN abundance panel — no RCN column")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -272,10 +330,11 @@ else:
 # ══════════════════════════════════════════════════════════════════════════════
 
 print("\nLoading liver metastasis data (exp_1) ...")
-adata = sv.load_h5ad("data/exp_1.h5ad")
+# NOTE: this previously read "data/exp_1.h5ad", which does not exist.
+adata = sv.load_h5ad(str(ROOT / "data" / "exp_1" / "exp_1.h5ad"))
 
 # --- from notebook cell 3 ---
-ann = pd.read_csv("results/svm_phenotyping_results.csv", index_col=0)
+ann = pd.read_csv(ROOT / "results" / "svm_phenotyping_results.csv", index_col=0)
 ann = ann[["annotated_clusters_update3", "svm_prediction"]]
 adata.obs = adata.obs.join(ann, how="left")
 print(f"  {adata.n_obs:,} cells annotated")
@@ -307,17 +366,19 @@ try:
     ax.set_xlabel("Marker", fontsize=5.5)
     ax.set_ylabel("")
     fig.tight_layout()
-    _save(fig, "E", title="E   Liver metastasis cell annotation")
+    # Not part of the published figure lettering — kept for reference only.
+    _save(fig, "extra_annotation_heatmap", title="Liver metastasis cell annotation")
+    _save_table(mean_df.reset_index().rename(columns={"index": "phenotype"}),
+                "suppfig10_extra_annotation_marker_zscores")
 except Exception as exc:
-    print(f"  Panel E error: {exc}")
-    _placeholder("E", f"Panel E — Annotation heatmap\n({str(exc)[:60]})")
+    print(f"  Annotation heatmap error: {exc}")
 
-# ── Panel F — Tissue image placeholder ────────────────────────────────────────
-_placeholder("F", "F   Representative tissue image\nDAP + CK19 fluorescence\n(source image file required)")
+# ── Panel D — Representative tissue image (placeholder) ───────────────────────
+_placeholder("D", "D   Representative liver metastasis image\nDAPI + CK19 fluorescence\n(source image file required)")
 
-# ── Panel G — UMAP coloured by phenotype ─────────────────────────────────────
+# ── Panel E — UMAP coloured by phenotype ─────────────────────────────────────
 if "X_umap" not in adata.obsm:
-    print("  Computing UMAP for Panel G ...")
+    print("  Computing UMAP for Panel E ...")
     try:
         import umap as umap_lib
         X_raw = adata.X
@@ -350,15 +411,19 @@ if adata.obsm.get("X_umap") is not None:
     for sp in ["top", "right"]:
         ax.spines[sp].set_visible(False)
     fig.tight_layout()
-    _save(fig, "G", title="G   Phenotype UMAP")
+    _save(fig, "E", title="E   Phenotype UMAP")
+    _save_table(
+        adata.obs["annotated_clusters_update3"].fillna("Unknown")
+        .value_counts().rename_axis("phenotype").reset_index(name="n_cells"),
+        "suppfig10_E_phenotype_counts")
 else:
-    _placeholder("G", "Panel G — UMAP\n(umap-learn not available)")
+    _placeholder("E", "Panel E — UMAP\n(umap-learn not available)")
 
-# ── Panel H — Tumour / other overlay ─────────────────────────────────────────
+# ── Panel F — Tumour / other overlay ─────────────────────────────────────────
 # equivalent to the initial spatial view before boundary computation
-print("  Panel H — tumour/other spatial overlay ...")
+print("  Panel F — tumour/other spatial overlay ...")
 phenos_h = adata.obs["annotated_clusters_update3"].fillna("other").values
-is_tumour = phenos_h == "tumour"
+is_tumour = phenos_h == TUMOUR_LABEL
 
 fig, ax = plt.subplots(figsize=(72 * MM2IN, 70 * MM2IN), facecolor="white")
 ax.scatter(adata.obs.loc[~is_tumour, "X_centroid"],
@@ -379,7 +444,11 @@ ax.legend(handles=handles, fontsize=4.0, loc="lower right", frameon=False)
 for sp in ["top", "right"]:
     ax.spines[sp].set_visible(False)
 fig.tight_layout()
-_save(fig, "H", title="H   Tumour and other cells")
+_save(fig, "F", title="F   Tumour and other cells")
+_save_table(pd.DataFrame([
+    {"group": "tumour", "n_cells": int(is_tumour.sum())},
+    {"group": "other",  "n_cells": int((~is_tumour).sum())},
+]), "suppfig10_F_tumour_other_counts")
 
 # ── Pipeline: cluster niches → boundaries → assign regions ────────────────────
 # (directly from notebook cells 4–9)
@@ -387,14 +456,14 @@ print("  Running tumour niche clustering (DBSCAN) ...")
 adata = sv.tl.cluster_spatial_niches(
     adata,
     label_key="annotated_clusters_update3",
-    label_value="tumour",
-    eps=45,
-    min_samples=5,
+    label_value=TUMOUR_LABEL,
+    eps=TUMOUR_DBSCAN_EPS,
+    min_samples=TUMOUR_DBSCAN_MINPTS,
 )
 
-# ── Panel I — DBSCAN tumour nests ─────────────────────────────────────────────
+# ── Panel G — DBSCAN tumour nests ─────────────────────────────────────────────
 # (from notebook cell 6: sv.pl.plot_spatial_category with tumour_component)
-print("  Panel I — DBSCAN tumour nests ...")
+print("  Panel G — DBSCAN tumour nests ...")
 fig, ax = plt.subplots(figsize=(72 * MM2IN, 70 * MM2IN), facecolor="white")
 sv.pl.plot_spatial_category(
     adata,
@@ -415,7 +484,13 @@ ax.set_ylabel("Y centroid (px)", fontsize=5.5)
 for sp in ["top", "right"]:
     ax.spines[sp].set_visible(False)
 fig.tight_layout()
-_save(fig, "I", title="I   Tumour nests (DBSCAN)")
+_save(fig, "G", title="G   Tumour nests (DBSCAN)")
+
+_nest_counts = (adata.obs["tumour_component"].dropna()
+                .value_counts().rename_axis("tumour_component")
+                .reset_index(name="n_cells"))
+_save_table(_nest_counts, "suppfig10_G_tumour_nest_sizes")
+print(f"    {len(_nest_counts)} tumour nests detected")
 
 print("  Building niche boundaries ...")
 boundary_df = sv.tl.build_niche_boundaries(
@@ -423,7 +498,7 @@ boundary_df = sv.tl.build_niche_boundaries(
     component_key="tumour_component",
     min_cluster_size=20,
     method="density_mask",
-    mask_resolution=6.0,
+    mask_resolution=MASK_RESOLUTION,
     mask_sigma=2.0,
     mask_threshold=0.08,
     mask_closing_size=9,
@@ -432,8 +507,8 @@ boundary_df = sv.tl.build_niche_boundaries(
 buffered_boundary_df = sv.tl.buffer_niche_boundaries(
     boundary_df,
     component_key="tumour_component",
-    expand_by=30 / 0.325,
-    shrink_by=30 / 0.325,
+    expand_by=BOUNDARY_BUFFER_PX,
+    shrink_by=BOUNDARY_BUFFER_PX,
 )
 
 assignments_df = sv.tl.assign_cells_to_niche_regions(
@@ -445,12 +520,12 @@ assignments_df = sv.tl.assign_cells_to_niche_regions(
     y_key="Y_centroid",
     region_key="tumour_region",
     mode="distance_to_edge",
-    boundary_width=30 / 0.325,
+    boundary_width=BOUNDARY_BUFFER_PX,
 )
 
-# ── Panel J — Niche boundaries ────────────────────────────────────────────────
+# ── Panel H — Niche boundaries ────────────────────────────────────────────────
 # (from notebook cell 8: sv.pl.plot_niche_boundaries)
-print("  Panel J — niche boundaries ...")
+print("  Panel H — niche boundaries ...")
 fig, ax = plt.subplots(figsize=(72 * MM2IN, 70 * MM2IN), facecolor="white")
 sv.pl.plot_niche_boundaries(
     adata,
@@ -482,11 +557,12 @@ ax.legend(handles=handles_j, fontsize=4.0, loc="lower right", frameon=False)
 for sp in ["top", "right"]:
     ax.spines[sp].set_visible(False)
 fig.tight_layout()
-_save(fig, "J", title="J   Tumour-nest boundaries")
+_save(fig, "H", title="H   Tumour-nest boundaries")
 
-# ── Panel K — Tumour region assignments ───────────────────────────────────────
-# (from notebook cell 9–10: add_niche_regions_to_obs + plot_spatial_category)
-print("  Panel K — tumour region assignments ...")
+_save_table(boundary_df, "suppfig10_H_niche_boundaries")
+
+# ── Region assignment (input to panels I–K) ───────────────────────────────────
+print("  Assigning cells to tumour regions ...")
 adata = sv.add_niche_regions_to_obs(
     adata,
     assignments_df,
@@ -494,6 +570,13 @@ adata = sv.add_niche_regions_to_obs(
     component_key="tumour_component",
 )
 
+_region_counts = (adata.obs["tumour_region"].fillna("background")
+                  .value_counts().rename_axis("tumour_region")
+                  .reset_index(name="n_cells"))
+_region_counts["fraction"] = _region_counts["n_cells"] / _region_counts["n_cells"].sum()
+_save_table(_region_counts, "suppfig10_region_assignment_counts")
+
+# Reference panel (region assignments) — not part of the published lettering.
 fig, ax = plt.subplots(figsize=(72 * MM2IN, 70 * MM2IN), facecolor="white")
 sv.pl.plot_spatial_category(
     adata,
@@ -514,6 +597,188 @@ ax.set_ylabel("Y centroid (px)", fontsize=5.5)
 for sp in ["top", "right"]:
     ax.spines[sp].set_visible(False)
 fig.tight_layout()
-_save(fig, "K", title="K   Tumour region assignments")
+_save(fig, "extra_region_assignments", title="Tumour region assignments")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Boundary cell neighbourhood profiling — Panels I, J, K
+# ══════════════════════════════════════════════════════════════════════════════
+# Cells lying on the tumour-nest boundary are profiled by the phenotype
+# composition of their local neighbourhood (radius NEIGHBOURHOOD_RADIUS_UM),
+# then embedded with UMAP and partitioned by k-means into N_BOUNDARY_CLUSTERS
+# distinct tumour boundary types.
+
+print("\n  Profiling boundary cell neighbourhoods ...")
+
+region_series = adata.obs["tumour_region"].fillna("background").astype(str)
+boundary_mask = region_series.str.contains("border|boundary|edge", case=False,
+                                           regex=True, na=False).to_numpy()
+
+if boundary_mask.sum() < N_BOUNDARY_CLUSTERS * 10:
+    print(f"    Only {int(boundary_mask.sum())} boundary cells found "
+          f"(regions present: {sorted(region_series.unique())}).")
+    print("    Falling back to all cells assigned to a tumour component.")
+    boundary_mask = adata.obs["tumour_component"].notna().to_numpy()
+
+n_boundary = int(boundary_mask.sum())
+print(f"    {n_boundary:,} boundary cells")
+
+if n_boundary >= N_BOUNDARY_CLUSTERS * 10:
+    coords_all = adata.obs[["X_centroid", "Y_centroid"]].to_numpy(dtype=float)
+    phen_all   = adata.obs["annotated_clusters_update3"].fillna("Unknown").astype(str).to_numpy()
+    categories = sorted(pd.unique(phen_all))
+    cat_index  = {c: i for i, c in enumerate(categories)}
+
+    finite = np.isfinite(coords_all).all(axis=1)
+    tree   = BallTree(coords_all[finite])
+    phen_finite = phen_all[finite]
+
+    b_idx    = np.where(boundary_mask & finite)[0]
+    b_coords = coords_all[b_idx]
+
+    print(f"    Counting neighbours within {NEIGHBOURHOOD_RADIUS_UM:.0f} µm "
+          f"({NEIGHBOURHOOD_RADIUS_PX:.0f} px) ...")
+    neighbours = tree.query_radius(b_coords, r=NEIGHBOURHOOD_RADIUS_PX)
+
+    profile = np.zeros((len(b_idx), len(categories)), dtype=float)
+    for i, nb in enumerate(neighbours):
+        if len(nb) == 0:
+            continue
+        vals, counts = np.unique(phen_finite[nb], return_counts=True)
+        for v, c in zip(vals, counts):
+            profile[i, cat_index[v]] = c
+
+    totals = profile.sum(axis=1, keepdims=True)
+    profile_frac = np.divide(profile, totals, out=np.zeros_like(profile),
+                             where=totals > 0)
+
+    profile_df = pd.DataFrame(profile_frac, columns=categories)
+    profile_df.insert(0, "cell_id", adata.obs_names[b_idx])
+    profile_df["n_neighbours"] = totals.ravel().astype(int)
+
+    # ── k-means into boundary types ───────────────────────────────────────────
+    print(f"    k-means into {N_BOUNDARY_CLUSTERS} boundary types ...")
+    km = KMeans(n_clusters=N_BOUNDARY_CLUSTERS, random_state=RANDOM_STATE,
+                n_init=10)
+    boundary_cluster = km.fit_predict(profile_frac)
+    profile_df["boundary_cluster"] = boundary_cluster
+    _save_table(profile_df, "suppfig10_IJK_boundary_neighbourhood_profiles")
+
+    # ── UMAP of the neighbourhood profiles ────────────────────────────────────
+    emb_b = None
+    try:
+        import umap as umap_lib
+        print("    UMAP of boundary neighbourhood profiles ...")
+        emb_b = umap_lib.UMAP(n_components=2, random_state=RANDOM_STATE,
+                              min_dist=0.3, n_neighbors=15).fit_transform(profile_frac)
+    except ImportError:
+        print("    umap-learn not found — Panel I will be a placeholder")
+
+    # ── Panel I — UMAP of boundary cell neighbourhoods ────────────────────────
+    if emb_b is not None:
+        cmap_b  = plt.get_cmap("tab10", N_BOUNDARY_CLUSTERS)
+        fig, ax = plt.subplots(figsize=(65 * MM2IN, 65 * MM2IN), facecolor="white")
+        for c in range(N_BOUNDARY_CLUSTERS):
+            m = boundary_cluster == c
+            ax.scatter(emb_b[m, 0], emb_b[m, 1], c=[cmap_b(c)], s=0.6,
+                       edgecolors="none", rasterized=True,
+                       label=f"Cluster {c} (n={int(m.sum()):,})")
+        ax.set_xlabel("UMAP 1", fontsize=5.5)
+        ax.set_ylabel("UMAP 2", fontsize=5.5)
+        ax.legend(fontsize=3.5, loc="upper left", bbox_to_anchor=(1.02, 1),
+                  bbox_transform=ax.transAxes, frameon=False,
+                  title="Boundary cluster", title_fontsize=4.0, borderaxespad=0)
+        for sp in ["top", "right"]:
+            ax.spines[sp].set_visible(False)
+        fig.tight_layout()
+        _save(fig, "I", title="I   Boundary cell neighbourhood UMAP")
+
+        umap_df = pd.DataFrame({
+            "cell_id": adata.obs_names[b_idx],
+            "umap_1":  emb_b[:, 0],
+            "umap_2":  emb_b[:, 1],
+            "boundary_cluster": boundary_cluster,
+        })
+        _save_table(umap_df, "suppfig10_I_boundary_umap_coordinates")
+    else:
+        _placeholder("I", "Panel I — Boundary neighbourhood UMAP\n(umap-learn not available)")
+
+    # ── Panel J — Composition of each boundary cluster ────────────────────────
+    print("  Panel J — boundary cluster composition ...")
+    comp_b = (profile_df.groupby("boundary_cluster")[categories]
+              .mean()
+              .loc[:, lambda d: d.sum(axis=0) > 0])
+    comp_b = comp_b.div(comp_b.sum(axis=1), axis=0)
+
+    cmap_p  = plt.get_cmap("tab20", comp_b.shape[1])
+    fig, ax = plt.subplots(figsize=(75 * MM2IN, 55 * MM2IN), facecolor="white")
+    bottom = np.zeros(len(comp_b))
+    for i, ph in enumerate(comp_b.columns):
+        ax.bar(comp_b.index.astype(str), comp_b[ph].to_numpy(), bottom=bottom,
+               color=cmap_p(i), width=0.75, label=ph, linewidth=0)
+        bottom += comp_b[ph].to_numpy()
+    ax.set_xlabel("Boundary cluster", fontsize=5.5)
+    ax.set_ylabel("Mean neighbourhood proportion", fontsize=5.5)
+    ax.set_ylim(0, 1)
+    ax.tick_params(labelsize=4.5, length=2)
+    ax.legend(fontsize=3.5, loc="upper left", bbox_to_anchor=(1.02, 1),
+              bbox_transform=ax.transAxes, frameon=False,
+              title="Phenotype", title_fontsize=4.0, borderaxespad=0)
+    for sp in ["top", "right"]:
+        ax.spines[sp].set_visible(False)
+    fig.tight_layout()
+    _save(fig, "J", title="J   Boundary neighbourhood composition")
+
+    _save_table(comp_b.reset_index(), "suppfig10_J_boundary_cluster_composition")
+
+    # ── Panel K — Proportion of cells per boundary cluster ────────────────────
+    print("  Panel K — boundary cluster proportions ...")
+    prop_b = (pd.Series(boundary_cluster).value_counts().sort_index()
+              .rename_axis("boundary_cluster").reset_index(name="n_cells"))
+    prop_b["proportion"] = prop_b["n_cells"] / prop_b["n_cells"].sum()
+
+    cmap_b  = plt.get_cmap("tab10", N_BOUNDARY_CLUSTERS)
+    fig, ax = plt.subplots(figsize=(60 * MM2IN, 52 * MM2IN), facecolor="white")
+    ax.bar(prop_b["boundary_cluster"].astype(str), prop_b["proportion"],
+           color=[cmap_b(c) for c in prop_b["boundary_cluster"]],
+           width=0.7, linewidth=0)
+    for _, r in prop_b.iterrows():
+        ax.text(str(r["boundary_cluster"]), r["proportion"] + 0.008,
+                f"{r['proportion']*100:.1f}%", ha="center", va="bottom",
+                fontsize=4.0, color="#444444")
+    ax.set_xlabel("Boundary cluster", fontsize=5.5)
+    ax.set_ylabel("Proportion of boundary cells", fontsize=5.5)
+    ax.set_ylim(0, min(1.0, prop_b["proportion"].max() * 1.25))
+    ax.tick_params(labelsize=4.5, length=2)
+    for sp in ["top", "right"]:
+        ax.spines[sp].set_visible(False)
+    fig.tight_layout()
+    _save(fig, "K", title="K   Boundary cluster proportions")
+
+    _save_table(prop_b, "suppfig10_K_boundary_cluster_proportions")
+
+else:
+    print("    Too few boundary cells — Panels I, J, K will be placeholders.")
+    for p in ["I", "J", "K"]:
+        _placeholder(p, f"Panel {p} — boundary neighbourhood analysis\n"
+                        f"(insufficient boundary cells: {n_boundary})")
+
+
+# ── Analysis parameters, for the Methods section ──────────────────────────────
+_save_table(pd.DataFrame([
+    ("pixel_size_um",            PIXEL_SIZE_UM,           "µm per pixel"),
+    ("tumour_label",             TUMOUR_LABEL,            "phenotype treated as tumour"),
+    ("tumour_dbscan_eps",        TUMOUR_DBSCAN_EPS,       "DBSCAN eps for tumour nests (px)"),
+    ("tumour_dbscan_min_samples", TUMOUR_DBSCAN_MINPTS,   "DBSCAN min_samples for tumour nests"),
+    ("roi_dbscan_eps",           ROI_DBSCAN_EPS,          "DBSCAN eps for connected ROIs (px)"),
+    ("roi_dbscan_min_samples",   ROI_DBSCAN_MINPTS,       "DBSCAN min_samples for connected ROIs"),
+    ("boundary_buffer_um",       BOUNDARY_BUFFER_UM,      "expansion / shrink distance for boundaries"),
+    ("mask_resolution",          MASK_RESOLUTION,         "density-mask resolution for boundary extraction"),
+    ("neighbourhood_radius_um",  NEIGHBOURHOOD_RADIUS_UM, "radius for boundary neighbourhood profiling"),
+    ("n_boundary_clusters",      N_BOUNDARY_CLUSTERS,     "k-means clusters (tumour boundary types)"),
+    ("random_state",             RANDOM_STATE,            "random seed"),
+    ("boundary_method",          "density_mask",          "sv.tl.build_niche_boundaries method"),
+], columns=["parameter", "value", "description"]), "suppfig10_analysis_parameters")
 
 print(f"\nAll panels saved to {OUT_DIR}/")
+print(f"Tables saved to     {TABLES_DIR}/")

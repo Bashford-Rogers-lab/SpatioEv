@@ -55,6 +55,8 @@ dev = [
     # session aborts during collection rather than skipping.
     "tifffile>=2023.7",
     "zarr>=2.16,<3",
+    # tomllib is stdlib only from 3.11; tests parse pyproject.toml on 3.10 too.
+    "tomli>=2.0; python_version < '3.11'",
     "ruff>=0.4",
     "black>=24.0",
     "nbmake>=1.5",
