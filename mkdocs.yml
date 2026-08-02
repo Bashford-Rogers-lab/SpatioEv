@@ -58,6 +58,11 @@ nav:
       - ECM–Cell Model: methods/ecm_cell_model.md
   - Publication:
       - Reproducibility: publication/reproducibility.md
+  - Project:
+      - Function Catalog: function_catalog.md
+      - Data Policy: data_policy.md
+      - Testing: testing.md
+      - Release Checklist: release_checklist.md
 
 markdown_extensions:
   - admonition

@@ -19,6 +19,7 @@ recursive-exclude background *
 recursive-exclude results *
 recursive-exclude outputs *
 recursive-exclude paper *
+recursive-exclude examples *
 recursive-exclude tools *
 recursive-exclude scripts *
 prune paper

@@ -65,7 +65,7 @@ You should see this path:
 You should also see these two files:
 
 ```text
-environments.yml
+environment.yml
 requirements-spatioev_env.txt
 ```
 
@@ -76,7 +76,7 @@ If you do not see both files, stop and ask for help.
 Paste this into Terminal:
 
 ```bash
-conda env create -f environments.yml
+conda env create -f environment.yml
 ```
 
 This step may take a few minutes.

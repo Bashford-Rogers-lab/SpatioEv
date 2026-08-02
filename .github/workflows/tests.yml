@@ -53,6 +53,23 @@ jobs:
           name: coverage
           path: coverage.xml
 
+  examples:
+    # The example notebooks run on synthetic data, so they execute anywhere
+    # and act as an end-to-end check of the documented public API.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install package with notebook tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]" ipykernel
+      - name: Execute example notebooks
+        run: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest --nbmake examples/ -p nbmake
+
   build:
     runs-on: ubuntu-latest
     steps:

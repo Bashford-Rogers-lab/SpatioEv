@@ -25,14 +25,14 @@ ranges required by SCIMAP 2.3.x. Create the environment with Python 3.11 for
 the most predictable combination of Streamlit, Scanpy, SCIMAP, and Napari
 dependencies.
 
-The repository `environments.yml` plus `requirements-spatioev_env.txt` recreate
+The repository `environment.yml` plus `requirements-spatioev_env.txt` recreate
 a pinned working environment that includes scimap/Napari, SpatialData, and
 `dask==2024.11.2`. Create the conda environment first, then install the pinned
 pip requirements with `--no-deps` so pip uses the same package set instead of
 re-solving upstream dependency metadata:
 
 ```bash
-conda env create -f environments.yml
+conda env create -f environment.yml
 conda activate spatioev_env
 python -m pip install --no-deps -r requirements-spatioev_env.txt
 ```

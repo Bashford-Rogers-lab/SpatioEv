@@ -15,7 +15,11 @@ def test_packaged_templates_exist():
 
 
 def _extras() -> dict[str, list[str]]:
-    pyproject = Path(__file__).resolve().parents[1] / "pyproject.toml"
+    # Walk up to the repository root rather than assuming a fixed depth, so
+    # this keeps working if the test is moved between directories.
+    here = Path(__file__).resolve()
+    root = next(p for p in here.parents if (p / "pyproject.toml").is_file())
+    pyproject = root / "pyproject.toml"
     metadata = tomllib.loads(pyproject.read_text(encoding="utf-8"))
     return metadata["project"]["optional-dependencies"]
 

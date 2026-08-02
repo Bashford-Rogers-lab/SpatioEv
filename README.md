@@ -51,14 +51,14 @@ pip install -e ".[trajectory]"   # UMAP and ElPiGraph trajectory notebooks
 pip install -e ".[dev]"          # tests and developer tools
 ```
 
-The repository `environments.yml` plus `requirements-spatioev_env.txt` recreate
+The repository `environment.yml` plus `requirements-spatioev_env.txt` recreate
 a pinned working environment that includes scimap/Napari, SpatialData, and
 `dask==2024.11.2`. The pip requirements are installed with `--no-deps` so pip
 uses the same pinned package set instead of re-solving upstream dependency
 metadata:
 
 ```bash
-conda env create -f environments.yml
+conda env create -f environment.yml
 conda activate spatioev_env
 python -m pip install --no-deps -r requirements-spatioev_env.txt
 ```
@@ -116,6 +116,7 @@ tests/              Test suite
 docs/               Documentation sources (MkDocs)
 scripts/            Standalone data-conversion utilities
 tools/              Repository maintenance tooling
+examples/           Runnable tutorial notebooks (synthetic data, CI-executed)
 paper/              Analysis notebooks and figure scripts for the manuscript
 ```
 
@@ -160,7 +161,14 @@ The website-style tutorial landing page is
 
 ## Tutorials
 
-The tutorial landing page is
+Three runnable notebooks live in [examples](examples). They execute end to end
+on synthetic data — no download required — and are run in CI on every push:
+
+1. [Quick start](examples/01_quickstart.ipynb) — QC, tile density, Moran's I, Ripley's K
+2. [Spatial niches](examples/02_spatial_niches.ipynb) — components, boundaries, composition
+3. [ECM–cell analysis](examples/03_ecm_cell_analysis.ipynb) — fibre links, orientation, coupling
+
+The narrative tutorial is
 [Mastering Spatial Evolution Analysis with SpatioEv](docs/tutorials/md/spatial_evolution_spatioev.md).
 
 The full generated API guide is in
