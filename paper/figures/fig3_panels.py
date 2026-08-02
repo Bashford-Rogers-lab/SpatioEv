@@ -5,30 +5,54 @@ fig3_panels.py
 Generates Figure 3 panels as SEPARATE PDF files for free arrangement
 on a 6.69" × 8.86" (170 × 225 mm) canvas.
 
-Panels
-------
-A  Spatial pseudotime maps — all 4 Xenium samples (2 × 2 grid)
-   Cells coloured by xenium_pseudotime_norm (viridis); non-ductal cells in gray.
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  PUBLISHED FIGURE 3 PANEL MAP — authoritative                                ║
+║                                                                              ║
+║  The panel codes below are INTERNAL and do NOT match the published panel     ║
+║  letters. Use this table when citing or assembling the figure.               ║
+║                                                                              ║
+║   Fig. 3   Output file                    Produced by                        ║
+║   ──────   ──────────────────────────     ─────────────────────────────────  ║
+║     A      fig3_panelA.pdf                this script, code `A`              ║
+║     B      fig3_panelC_standalone.pdf     fig3_xenium_pseudotime.py, code `C`║
+║     C      fig3_panelC_pooled_niche.pdf   this script, code `Cn`             ║
+║     D      fig3_panelC_branch.pdf         this script, code `Cb`             ║
+║     E      fig3_panelC.pdf                this script, code `C`              ║
+║                                                                              ║
+║  ⚠ Code `C` means DIFFERENT things in the two scripts:                       ║
+║      fig3_panels.py            C  → per-sample niche composition  (Fig. 3E)  ║
+║      fig3_xenium_pseudotime.py C  → 9-gene pooled trends          (Fig. 3B)  ║
+║                                                                              ║
+║  To regenerate all of Figure 3:                                              ║
+║      python paper/figures/fig3_panels.py A Cn Cb C                           ║
+║      python paper/figures/fig3_xenium_pseudotime.py C                        ║
+║                                                                              ║
+║  NOT part of Figure 3 (feed Supplementary Figure 5):                         ║
+║      fig3_panelB.pdf         code `B`   per-branch gene LOWESS               ║
+║      fig3_panelB_sample.pdf  code `Bs`  per-sample gene LOWESS               ║
+║  Dead code: `Cp` (make_panel_C_pooled) duplicates Fig. 3B and is unused.     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
 
-B  Ductal gene expression along pseudotime (2 × 3 LOWESS, per-branch)
-   Genes: PROX1, CFTR, KRT7 | TFF2, MUC5AC, MKI67
+Internal panel codes
+--------------------
+A   Spatial pseudotime maps — all 4 Xenium samples (2 × 2 grid)          → Fig 3A
+    Cells coloured by xenium_pseudotime_norm (viridis); non-ductal in gray.
 
-C  Surrounding niche composition along pseudotime (2 × 2 LOWESS, per-sample)
-   Cell types: Fibroblasts, Myeloid cells, T cells, Acinar epithelium
+B   Ductal gene expression along pseudotime (2 × 3 LOWESS, per-branch)   → Supp 5
+Bs  Ductal gene expression along pseudotime (2 × 3 LOWESS, per-sample)   → Supp 5
 
-D  Branch-discriminating gene expression (1 × 4 LOWESS, per-branch)
-   Genes: CFTR, AMY2A, KRT7, PROX1
+Cp  9-gene common-trend LOWESS (3 × 3, single pooled line)               [unused]
+Cn  Surrounding niche composition (2 × 2 LOWESS, single pooled line)     → Fig 3C
+Cb  Surrounding niche composition (2 × 2 LOWESS, per-branch)             → Fig 3D
+C   Surrounding niche composition (2 × 2 LOWESS, per-sample)             → Fig 3E
+    Cell types: Fibroblasts, Myeloid cells, T cells, Acinar epithelium
 
-Outputs (all in paper/notebooks/results/fig3/)
------------------------------------------
-fig3_panelA.pdf / .png
-fig3_panelB.pdf / .png
-fig3_panelC.pdf / .png
-fig3_panelD.pdf / .png
+D   Branch-discriminating gene expression (1 × 4 LOWESS, per-branch)     [unused]
+    Genes: CFTR, AMY2A, KRT7, PROX1
 
 Usage (from project root):
-    python notebooks/fig3_panels.py          # all panels
-    python notebooks/fig3_panels.py A C      # specific panels only
+    python paper/figures/fig3_panels.py            # all panel codes
+    python paper/figures/fig3_panels.py A Cn Cb C  # just the Figure 3 panels
 """
 
 from __future__ import annotations

@@ -6,7 +6,6 @@ from __future__ import annotations
 import os
 import subprocess
 import tempfile
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -170,6 +169,54 @@ def launch_napari(
     return process.pid, log_path
 
 
+@st.fragment(run_every=AUTO_REFRESH_SECONDS)
+def _render_running_job(status_path: Path, *, label: str) -> None:
+    """Live progress for an in-flight worker, refreshed in isolation.
+
+    This is a fragment so that polling reruns only this block. Sleeping and
+    calling ``st.rerun()`` on the whole page instead would restart the entire
+    script every couple of seconds, which discards widget interactions the
+    user makes in between -- the FOV selector would snap back to its default
+    while a job was running.
+    """
+    status = read_json(status_path)
+    if status is None:
+        return
+
+    state = status.get("state")
+    if state in {"complete", "failed"}:
+        # The job finished while we were polling; refresh the whole page so
+        # the downstream sections (QC images, mapping editor) render.
+        st.rerun()
+
+    message = status.get("message", "")
+    stage = str(status.get("stage", "queued"))
+    progress = JOB_STAGE_PROGRESS.get(stage, 0.05)
+    st.progress(progress, text=f"{label}: {message}")
+    if stage == "cluster":
+        st.caption(
+            "PCA, neighbor graph, UMAP, and Leiden are running. This is usually the longest stage; "
+            "large slides can take several minutes."
+        )
+
+    updated_at = status.get("updated_at")
+    age_seconds = 0.0
+    if updated_at:
+        try:
+            timestamp = datetime.fromisoformat(str(updated_at).replace("Z", "+00:00"))
+            age_seconds = max(0.0, (datetime.now(timezone.utc) - timestamp).total_seconds())
+            st.caption(f"Last worker update: {int(age_seconds):,} seconds ago. Refreshing automatically.")
+        except ValueError:
+            pass
+
+    if age_seconds > STALE_JOB_SECONDS:
+        st.warning(
+            f"No worker update for more than {STALE_JOB_SECONDS // 60} minutes. "
+            "Check the worker log before rerunning the job."
+        )
+        st.button("Refresh status", key=f"refresh_{status_path.name}", icon=":material/refresh:")
+
+
 def render_job(status_path: Path, *, label: str) -> dict | None:
     status = read_json(status_path)
     if status is None:
@@ -183,34 +230,7 @@ def render_job(status_path: Path, *, label: str) -> dict | None:
         with st.expander("Worker error details"):
             st.code(status.get("traceback", "No traceback available"))
     else:
-        stage = str(status.get("stage", "queued"))
-        progress = JOB_STAGE_PROGRESS.get(stage, 0.05)
-        st.progress(progress, text=f"{label}: {message}")
-        if stage == "cluster":
-            st.caption(
-                "PCA, neighbor graph, UMAP, and Leiden are running. This is usually the longest stage; "
-                "large slides can take several minutes."
-            )
-
-        updated_at = status.get("updated_at")
-        age_seconds = 0.0
-        if updated_at:
-            try:
-                timestamp = datetime.fromisoformat(str(updated_at).replace("Z", "+00:00"))
-                age_seconds = max(0.0, (datetime.now(timezone.utc) - timestamp).total_seconds())
-                st.caption(f"Last worker update: {int(age_seconds):,} seconds ago. Refreshing automatically.")
-            except ValueError:
-                pass
-
-        if age_seconds > STALE_JOB_SECONDS:
-            st.warning(
-                f"No worker update for more than {STALE_JOB_SECONDS // 60} minutes. "
-                "Check the worker log before rerunning the job."
-            )
-            st.button("Refresh status", key=f"refresh_{status_path.name}", icon=":material/refresh:")
-        else:
-            time.sleep(AUTO_REFRESH_SECONDS)
-            st.rerun()
+        _render_running_job(status_path, label=label)
     return status
 
 

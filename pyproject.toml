@@ -57,6 +57,10 @@ dev = [
     "zarr>=2.16,<3",
     # tomllib is stdlib only from 3.11; tests parse pyproject.toml on 3.10 too.
     "tomli>=2.0; python_version < '3.11'",
+    # Streamlit AppTest drives the interface regression tests. Without it in
+    # CI those tests silently skip, which is how the FOV-selector bug reached
+    # a user in the first place.
+    "streamlit>=1.40",
     "ruff>=0.4",
     "black>=24.0",
     "nbmake>=1.5",

@@ -492,10 +492,20 @@ def make_figure():
 
 # ── Standalone panel helpers ──────────────────────────────────────────────────
 def make_panel_C_standalone():
-    """Generate Panel C — 9-gene common-trend LOWESS (3×3) — as its own PDF.
+    """Generate the 9-gene common-trend LOWESS (3×3) as its own PDF.
 
-    Each subplot shows ONE LOWESS line computed on all ductal cells pooled
-    (ignoring branch and sample), representing the common pseudotime trend.
+    ── PUBLISHED AS **FIGURE 3B** ──────────────────────────────────────────────
+    Output file: fig3_panelC_standalone.pdf
+    Invoke with: python paper/figures/fig3_xenium_pseudotime.py C
+
+    NOTE the code collision: `C` here produces Figure 3B, whereas `C` in
+    fig3_panels.py produces Figure 3E (per-sample niche composition).
+    See the panel map in the fig3_panels.py module docstring.
+
+    Each subplot shows ONE LOWESS line (frac = 0.40) computed on all ductal
+    cells pooled, ignoring branch and sample, representing the common
+    pseudotime trend. Genes: EPCAM, KRT7, CFTR, AGR3, TFF2, MUC5AC, PROX1,
+    MKI67, UBE2C. Plotted against `xenium_pseudotime_norm` (un-centred).
     """
     merged = load_merged()
 

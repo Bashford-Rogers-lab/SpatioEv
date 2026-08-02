@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import subprocess
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -134,6 +133,28 @@ def start_tma_conversion(
     return process.pid
 
 
+@st.fragment(run_every=AUTO_REFRESH_SECONDS)
+def _render_running_worker(status_path: Path, log_path: Path) -> None:
+    """Live conversion progress, refreshed in isolation.
+
+    Polling with ``time.sleep()`` + ``st.rerun()`` restarts the whole script
+    every couple of seconds, discarding any widget interaction made in
+    between.
+    """
+    status = read_json(status_path)
+    if status is None:
+        return
+    if status.get("state") in {"complete", "failed"}:
+        # Job finished; refresh the whole page so the results render.
+        st.rerun()
+
+    st.progress(float(status.get("progress", 0.02)), text=status.get("message", "Running"))
+    st.caption(f"Stage: {status.get('stage', 'queued')}")
+    if log_path.exists():
+        with st.expander("Worker log"):
+            st.code(log_path.read_text(encoding="utf-8", errors="replace")[-6000:])
+
+
 def render_status(status_path: Path, log_path: Path) -> None:
     status = read_json(status_path)
     if status is None:
@@ -166,14 +187,7 @@ def render_status(status_path: Path, log_path: Path) -> None:
                 column.image(image_path, width="stretch")
         return
 
-    progress = float(status.get("progress", 0.02))
-    st.progress(progress, text=message)
-    st.caption(f"Stage: {status.get('stage', 'queued')}")
-    if log_path.exists():
-        with st.expander("Worker log"):
-            st.code(log_path.read_text(encoding="utf-8", errors="replace")[-6000:])
-    time.sleep(AUTO_REFRESH_SECONDS)
-    st.rerun()
+    _render_running_worker(status_path, log_path)
 
 
 def render_tma() -> None:

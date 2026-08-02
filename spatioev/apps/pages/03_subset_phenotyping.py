@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import json
 import subprocess
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -128,6 +127,28 @@ def launch_napari(
     return process.pid, log_path
 
 
+@st.fragment(run_every=AUTO_REFRESH_SECONDS)
+def _render_running_worker(status_path: Path, log_path: Path) -> None:
+    """Live worker progress, refreshed in isolation.
+
+    Polling with ``time.sleep()`` + ``st.rerun()`` restarts the whole script
+    every couple of seconds, which discards widget interactions made in
+    between -- selectors snap back to their defaults while a job runs.
+    """
+    status = read_json(status_path)
+    if status is None:
+        return
+    if status.get("state") in {"complete", "failed"}:
+        # Job finished; refresh the whole page so the results render.
+        st.rerun()
+
+    st.progress(float(status.get("progress", 0.02)), text=status.get("message", "Running"))
+    st.caption(f"Stage: {status.get('stage', 'queued')}")
+    if log_path.exists():
+        with st.expander("Worker log"):
+            st.code(log_path.read_text(encoding="utf-8", errors="replace")[-8000:])
+
+
 def render_status(status_path: Path, log_path: Path, image_path: str, output_dir: Path) -> None:
     status = read_json(status_path)
     if status is None:
@@ -139,13 +160,7 @@ def render_status(status_path: Path, log_path: Path, image_path: str, output_dir
             st.code(status.get("traceback", "No traceback recorded"))
         return
     if state != "complete":
-        st.progress(float(status.get("progress", 0.02)), text=status.get("message", "Running"))
-        st.caption(f"Stage: {status.get('stage', 'queued')}")
-        if log_path.exists():
-            with st.expander("Worker log"):
-                st.code(log_path.read_text(encoding="utf-8", errors="replace")[-8000:])
-        time.sleep(AUTO_REFRESH_SECONDS)
-        st.rerun()
+        _render_running_worker(status_path, log_path)
         return
 
     outputs = status.get("outputs", {})
@@ -227,10 +242,13 @@ def main() -> None:
         metric1.metric("Cells", f"{report['n_cells']:,}")
         metric2.metric("Markers", report["n_markers"])
         metric3.metric("Workflow phenotypes", report["workflow"]["workflow_rows"])
+        # A key is required: without one the widget has no session-state entry,
+        # so the recomputed `index` forces the value back to the default on
+        # every rerun and the selection can never stick.
         review_imageid = st.selectbox(
             "FOV used for original-image overlays and napari review",
             report["imageids"],
-            index=report["imageids"].index(report["default_review_imageid"]),
+            key="scimap_review_imageid",
         )
         st.caption(
             f"The SCIMAP model uses all selected cells; image review uses {review_imageid}."
@@ -239,10 +257,13 @@ def main() -> None:
         st.subheader("Population selection")
         candidate_columns = list(report["candidate_columns"])
         default_column = "annotation_level2" if "annotation_level2" in candidate_columns else candidate_columns[0]
+        # Keyed so the choice persists; a recomputed `index` with no key resets
+        # the widget to the default on every rerun.
+        st.session_state.setdefault("scimap_broad_column", default_column)
         broad_column = st.selectbox(
             "Broad annotation column",
             candidate_columns,
-            index=candidate_columns.index(default_column),
+            key="scimap_broad_column",
         )
         population_rows = report["candidate_columns"][broad_column]
         population_options = [row["value"] for row in population_rows]
