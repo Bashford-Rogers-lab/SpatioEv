@@ -6,6 +6,27 @@ primitives (neighbour graphs, weight matrices, coordinate extraction) in
 every function.
 """
 
+from .coords import (
+    clean_coords,
+    ensure_list,
+    get_coords,
+    label_suffix,
+    per_image,
+    per_image_table,
+    require_obs_columns,
+)
 from .neighbors import knn_weights, resolve_k
+from .optional import require
 
-__all__ = ["knn_weights", "resolve_k"]
+__all__ = [
+    "clean_coords",
+    "ensure_list",
+    "get_coords",
+    "knn_weights",
+    "label_suffix",
+    "per_image",
+    "per_image_table",
+    "require",
+    "require_obs_columns",
+    "resolve_k",
+]

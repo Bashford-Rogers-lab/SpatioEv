@@ -55,6 +55,34 @@ def assign_tiles(
     return df
 
 
+def _tile_density(
+    df: pd.DataFrame,
+    tile_size: int,
+    group_keys: list[str],
+) -> pd.DataFrame:
+    """Aggregate per-tile object and pixel density over *group_keys*.
+
+    Shared by :func:`compute_general_density` and
+    :func:`compute_phenotype_density`, which differ only in whether the
+    phenotype column joins the grouping.
+    """
+    tile_area = tile_size ** 2
+
+    stats = (
+        df.groupby(group_keys)
+        .agg(
+            object_count=("label", "nunique"),
+            pixel_sum=("area", "sum"),
+        )
+        .reset_index()
+    )
+
+    stats["object_density"] = stats["object_count"] / tile_area * 100
+    stats["pixel_density"] = stats["pixel_sum"] / tile_area * 100
+
+    return stats
+
+
 def compute_general_density(
     df: pd.DataFrame,
     tile_size: int = 128,
@@ -83,21 +111,7 @@ def compute_general_density(
     >>> density_df = sv.tl.compute_general_density(tile_df, tile_size=128)
     """
 
-    tile_area = tile_size ** 2
-
-    stats = (
-        df.groupby(["imageid", "tile_x", "tile_y"])
-        .agg(
-            object_count=("label", "nunique"),
-            pixel_sum=("area", "sum")
-        )
-        .reset_index()
-    )
-
-    stats["object_density"] = stats["object_count"] / tile_area * 100
-    stats["pixel_density"] = stats["pixel_sum"] / tile_area * 100
-
-    return stats
+    return _tile_density(df, tile_size, ["imageid", "tile_x", "tile_y"])
 
 
 def compute_phenotype_density(
@@ -131,21 +145,11 @@ def compute_phenotype_density(
     >>> pheno_density = sv.tl.compute_phenotype_density(tile_df, phenotype_key="phenotype")
     """
 
-    tile_area = tile_size ** 2
-
-    stats = (
-        df.groupby(["imageid", "tile_x", "tile_y", phenotype_key])
-        .agg(
-            object_count=("label", "nunique"),
-            pixel_sum=("area", "sum")
-        )
-        .reset_index()
+    return _tile_density(
+        df,
+        tile_size,
+        ["imageid", "tile_x", "tile_y", phenotype_key],
     )
-
-    stats["object_density"] = stats["object_count"] / tile_area * 100
-    stats["pixel_density"] = stats["pixel_sum"] / tile_area * 100
-
-    return stats
 
 
 def phenotype_density_correlation(

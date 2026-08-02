@@ -6,6 +6,27 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+# Shared implementations live in spatioev._core. They are re-exported under
+# the existing private names so call sites across this sub-package are
+# unchanged; __all__ marks them as deliberate re-exports.
+from ..._core.coords import (
+    ensure_list as _ensure_list,
+)
+from ..._core.coords import (
+    label_suffix as _label_suffix,
+)
+from ..._core.neighbors import resolve_k as _resolve_k
+
+__all__ = [
+    "_ensure_list",
+    "_estimate_min_samples",
+    "_label_suffix",
+    "_make_component_geometry",
+    "_make_density_mask_geometry",
+    "_require_shapely",
+    "_resolve_k",
+]
+
 if TYPE_CHECKING:  # pragma: no cover
     pass
 
@@ -39,39 +60,10 @@ def _require_shapely():
     return concave_hull, LineString, MultiPoint, Point, box, unary_union, make_valid
 
 
-def _ensure_list(value):
-    """
-    Normalize a scalar or iterable label selection to a list.
-    """
-    if value is None:
-        return None
-
-    if isinstance(value, str):
-        return [value]
-
-    return list(value)
 
 
-def _label_suffix(value, default):
-    """
-    Build a stable suffix for derived column names.
-    """
-    value = _ensure_list(value)
-
-    if value is None or len(value) == 0:
-        return default
-
-    return "_".join(map(str, value))
 
 
-def _resolve_k(n_obs, k):
-    """
-    Ensure nearest-neighbor queries use a valid number of neighbors.
-    """
-    if n_obs < 2:
-        return None
-
-    return min(k, n_obs - 1)
 
 
 def _estimate_min_samples(

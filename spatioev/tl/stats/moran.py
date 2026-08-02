@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from sklearn.neighbors import BallTree, kneighbors_graph
 
+from ..._core.coords import per_image_table
 from ..._core.neighbors import (
     knn_weights,
     morans_i_batch,
@@ -191,22 +192,16 @@ def morans_i_by_image(
         Number of nearest neighbors used to define the spatial graph.
     """
 
-    rows = []
-
-    for img in adata.obs[image_key].unique():
-
-        idx = adata.obs.index[adata.obs[image_key] == img]
-
-        coords = adata.obs.loc[idx, [x_key, y_key]].to_numpy()
-
-        values = adata.obs.loc[idx, value_key].to_numpy()
-
-        rows.append({
-            image_key: img,
-            "morans_i": morans_i(coords, values, k=k)
-        })
-
-    return pd.DataFrame(rows)
+    return per_image_table(
+        adata,
+        [value_key],
+        morans_i,
+        x_key=x_key,
+        y_key=y_key,
+        image_key=image_key,
+        result_key="morans_i",
+        k=k,
+    )
 
 
 def morans_i_by_image_permutation_test(
@@ -222,29 +217,17 @@ def morans_i_by_image_permutation_test(
     """
     Permutation test for Moran's I per image.
     """
-    rows = []
-    rng = np.random.default_rng(random_state)
-
-    for img in adata.obs[image_key].unique():
-        idx = adata.obs.index[adata.obs[image_key] == img]
-        coords = adata.obs.loc[idx, [x_key, y_key]].to_numpy()
-        values = adata.obs.loc[idx, value_key].to_numpy()
-
-        seed = int(rng.integers(0, np.iinfo(np.int32).max))
-        stats = morans_i_permutation_test(
-            coords,
-            values,
-            k=k,
-            n_sim=n_sim,
-            random_state=seed,
-        )
-
-        rows.append({
-            image_key: img,
-            **stats,
-        })
-
-    return pd.DataFrame(rows)
+    return per_image_table(
+        adata,
+        [value_key],
+        morans_i_permutation_test,
+        x_key=x_key,
+        y_key=y_key,
+        image_key=image_key,
+        rng=np.random.default_rng(random_state),
+        k=k,
+        n_sim=n_sim,
+    )
 
 
 # ============================================================
@@ -539,28 +522,17 @@ def cross_morans_i_by_image(
         Number of nearest neighbors used to define the spatial graph.
     """
 
-    rows = []
-
-    for img in adata.obs[image_key].unique():
-        idx = adata.obs.index[adata.obs[image_key] == img]
-
-        coords = adata.obs.loc[idx, [x_key, y_key]].to_numpy()
-        x_values = adata.obs.loc[idx, x_value_key].to_numpy()
-        y_values = adata.obs.loc[idx, y_value_key].to_numpy()
-
-        rows.append({
-            image_key: img,
-            "x_feature": x_value_key,
-            "y_feature": y_value_key,
-            "cross_morans_i": cross_morans_i(
-                coords,
-                x_values,
-                y_values,
-                k=k,
-            ),
-        })
-
-    return pd.DataFrame(rows)
+    return per_image_table(
+        adata,
+        [x_value_key, y_value_key],
+        cross_morans_i,
+        x_key=x_key,
+        y_key=y_key,
+        image_key=image_key,
+        extra={"x_feature": x_value_key, "y_feature": y_value_key},
+        result_key="cross_morans_i",
+        k=k,
+    )
 
 
 def cross_morans_i_permutation_test(
@@ -656,35 +628,19 @@ def cross_morans_i_by_image_permutation_test(
     Permutation test for cross Moran's I per image.
     """
 
-    rows = []
-    rng = np.random.default_rng(random_state)
-
-    for img in adata.obs[image_key].unique():
-        idx = adata.obs.index[adata.obs[image_key] == img]
-
-        coords = adata.obs.loc[idx, [x_key, y_key]].to_numpy()
-        x_values = adata.obs.loc[idx, x_value_key].to_numpy()
-        y_values = adata.obs.loc[idx, y_value_key].to_numpy()
-
-        seed = int(rng.integers(0, np.iinfo(np.int32).max))
-        stats = cross_morans_i_permutation_test(
-            coords,
-            x_values,
-            y_values,
-            k=k,
-            n_sim=n_sim,
-            permute=permute,
-            random_state=seed,
-        )
-
-        rows.append({
-            image_key: img,
-            "x_feature": x_value_key,
-            "y_feature": y_value_key,
-            **stats,
-        })
-
-    return pd.DataFrame(rows)
+    return per_image_table(
+        adata,
+        [x_value_key, y_value_key],
+        cross_morans_i_permutation_test,
+        x_key=x_key,
+        y_key=y_key,
+        image_key=image_key,
+        extra={"x_feature": x_value_key, "y_feature": y_value_key},
+        rng=np.random.default_rng(random_state),
+        k=k,
+        n_sim=n_sim,
+        permute=permute,
+    )
 
 
 def local_cross_morans_i(coords: np.ndarray, x_values: np.ndarray, y_values: np.ndarray, k: int=8) -> np.ndarray:

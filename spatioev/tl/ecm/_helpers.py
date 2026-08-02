@@ -7,6 +7,36 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pandas as pd
 
+# Shared implementations live in spatioev._core. They are re-exported under
+# the existing private names so call sites across this sub-package are
+# unchanged; __all__ marks them as deliberate re-exports.
+from ..._core.coords import (
+    clean_coords as _clean_coords,
+)
+from ..._core.coords import (
+    ensure_list as _ensure_list,
+)
+from ..._core.coords import (
+    label_suffix as _label_suffix,
+)
+from ..._core.neighbors import resolve_k as _resolve_k
+
+__all__ = [
+    "_clean_coords",
+    "_compute_cross_morans_i_from_fiber_table",
+    "_cross_ripleys_curve_from_links",
+    "_ensure_list",
+    "_fiber_cross_moran_inputs",
+    "_filter_cells",
+    "_filter_fibers",
+    "_label_suffix",
+    "_map_cell_feature_to_fibers",
+    "_permute_mask_within_images",
+    "_permute_values_within_images",
+    "_resolve_k",
+    "_subset_links",
+]
+
 from ..._core.neighbors import cross_morans_i_from_weights, knn_weights
 from ..preprocessing import compute_convex_hull_area
 
@@ -77,51 +107,12 @@ def _subset_links(
     return links
 
 
-def _ensure_list(value):
-    """
-    Normalize a scalar or iterable label selection to a list.
-    """
-    if value is None:
-        return None
-
-    if isinstance(value, str):
-        return [value]
-
-    return list(value)
 
 
-def _label_suffix(value, default):
-    """
-    Build a stable suffix for derived column names.
-    """
-    value = _ensure_list(value)
-
-    if value is None or len(value) == 0:
-        return default
-
-    return "_".join(map(str, value))
 
 
-def _clean_coords(coords):
-    """
-    Drop rows with non-finite x/y coordinates.
-    """
-    coords = np.asarray(coords, dtype=float)
-
-    if coords.ndim != 2 or coords.shape[1] != 2:
-        raise ValueError("Coordinates must be an Nx2 array.")
-
-    return coords[np.isfinite(coords).all(axis=1)]
 
 
-def _resolve_k(n_obs, k):
-    """
-    Ensure kNN graph construction uses a valid number of neighbors.
-    """
-    if n_obs < 2:
-        return None
-
-    return min(k, n_obs - 1)
 
 
 def _cross_ripleys_curve_from_links(

@@ -9,7 +9,6 @@ import os
 import re
 import tempfile
 import traceback
-from datetime import datetime, timezone
 from pathlib import Path
 
 os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "spatioev_clustering_matplotlib"))
@@ -29,16 +28,7 @@ from scipy import sparse
 import spatioev as se
 from spatioev.config import ClusteringConfig
 
-
-def now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
-
-
-def write_json(path: Path, payload: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(path)
+from ._io import now, write_json
 
 
 def update_status(path: Path, state: str, message: str, **extra) -> None:

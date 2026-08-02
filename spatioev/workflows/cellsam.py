@@ -12,7 +12,6 @@ import tempfile
 import traceback
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -26,6 +25,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import tifffile
+
+from ._io import now, write_json
 
 CHANNEL_ALIASES = {
     "EPCAM": "EpCAM",
@@ -95,15 +96,8 @@ class ConversionPlan:
 StatusCallback = Callable[[str, str, float], None]
 
 
-def now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def write_json(path: Path, payload: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(path)
 
 
 def read_header(path: Path) -> list[str]:

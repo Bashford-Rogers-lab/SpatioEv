@@ -13,7 +13,6 @@ import json
 import os
 import tempfile
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from pathlib import Path
 
 os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "spatioev_marker_gating_review_matplotlib"))
@@ -29,6 +28,8 @@ import tifffile
 import zarr
 
 from spatioev.workflows import marker_gating as mgq
+
+from ._io import now as utc_now
 
 STAINING_OPTIONS = [
     "clear_specific",
@@ -65,8 +66,6 @@ class MarkerReview:
     reviewed_at: str = ""
 
 
-def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
 def resolve_gate_table(output_dir: Path, sample_id: str, explicit: Path | None) -> Path:

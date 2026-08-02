@@ -13,6 +13,7 @@ import pandas as pd
 import streamlit as st
 
 from spatioev.apps._common import default_project_root, module_command, resource_path
+from spatioev.workflows._io import read_json
 from spatioev.workflows.scimap_phenotyping import inspect_inputs, write_json
 
 AUTO_REFRESH_SECONDS = 2.0
@@ -63,13 +64,6 @@ def initialize_state() -> None:
         st.session_state.setdefault(key, value)
 
 
-def read_json(path: Path) -> dict | None:
-    if not path.exists():
-        return None
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return None
 
 
 def inspection_config() -> dict:

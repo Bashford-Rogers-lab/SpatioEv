@@ -10,7 +10,6 @@ import os
 import re
 import tempfile
 import traceback
-from datetime import datetime, timezone
 from pathlib import Path
 
 os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "spatioev_scimap_matplotlib"))
@@ -31,18 +30,13 @@ import zarr
 from spatioev.workflows import marker_gating as mgq
 from spatioev.workflows.image_collection import natural_key, resolve_image
 
+from ._io import now, write_json
+
 ALLOWED_RULES = {"pos", "neg", "allpos", "allneg", "anypos", "anyneg"}
 
 
-def now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def write_json(path: Path, payload: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(path)
 
 
 def update_status(path: Path, state: str, message: str, *, stage: str, progress: float, **extra) -> None:

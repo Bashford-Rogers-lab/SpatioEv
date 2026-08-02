@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import time
 from datetime import datetime, timezone
@@ -13,6 +12,7 @@ import pandas as pd
 import streamlit as st
 
 from spatioev.apps._common import default_project_root, module_command
+from spatioev.workflows._io import read_json
 from spatioev.workflows.cellsam import (
     ROLE_LABELS,
     ROLE_MARKER,
@@ -29,13 +29,6 @@ EXAMPLE_IMAGE = EXAMPLE_ROOT / "sample.ome.tif"
 AUTO_REFRESH_SECONDS = 2.0
 
 
-def read_json(path: Path) -> dict | None:
-    if not path.exists():
-        return None
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return None
 
 
 def table_path(directory: Path, value: str) -> Path:

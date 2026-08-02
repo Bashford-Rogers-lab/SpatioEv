@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import json
 import os
 import subprocess
 import tempfile
@@ -22,6 +21,7 @@ import streamlit as st
 
 from spatioev.apps._common import default_project_root, module_command
 from spatioev.workflows import marker_gating as mgq
+from spatioev.workflows._io import read_json, write_json
 from spatioev.workflows.image_collection import natural_key, resolve_image
 
 PROJECT_ROOT_DEFAULT = default_project_root()
@@ -116,18 +116,8 @@ def recommended_defaults(sample_id: str, markers: list[str]) -> tuple[list[str],
     return selected, 0.4
 
 
-def write_json(path: Path, payload: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
-def read_json(path: Path) -> dict | None:
-    if not path.exists():
-        return None
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        return None
 
 
 def start_worker(action: str, config_path: Path, status_path: Path, log_path: Path) -> int:

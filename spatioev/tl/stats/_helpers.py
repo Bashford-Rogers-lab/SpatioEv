@@ -7,6 +7,23 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+
+# Shared implementations live in spatioev._core. They are re-exported under
+# the existing private names so call sites across this sub-package are
+# unchanged; __all__ marks them as deliberate re-exports.
+from ..._core.coords import (
+    clean_coords as _clean_coords,
+)
+from ..._core.neighbors import resolve_k as _resolve_k
+
+__all__ = [
+    "_clean_coords",
+    "_clean_paired_coords",
+    "_permute_values_within_groups",
+    "_random_points_in_hull",
+    "_resolve_k",
+    "_resolve_window_area",
+]
 from scipy.spatial import ConvexHull
 
 from ..preprocessing import compute_convex_hull_area
@@ -65,16 +82,6 @@ def _permute_values_within_groups(values, groups, rng):
     return permuted
 
 
-def _clean_coords(coords):
-    """
-    Drop rows with non-finite x/y coordinates.
-    """
-    coords = np.asarray(coords, dtype=float)
-
-    if coords.ndim != 2 or coords.shape[1] != 2:
-        raise ValueError("Coordinates must be an Nx2 array.")
-
-    return coords[np.isfinite(coords).all(axis=1)]
 
 
 def _clean_paired_coords(source_coords, target_coords):
@@ -84,14 +91,6 @@ def _clean_paired_coords(source_coords, target_coords):
     return _clean_coords(source_coords), _clean_coords(target_coords)
 
 
-def _resolve_k(n_obs, k):
-    """
-    Ensure kNN graph construction uses a valid number of neighbors.
-    """
-    if n_obs < 2:
-        return None
-
-    return min(k, n_obs - 1)
 
 
 def _resolve_window_area(coords, window_coords=None):
