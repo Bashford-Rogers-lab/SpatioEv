@@ -2,7 +2,13 @@ import anndata as ad
 import numpy as np
 import pandas as pd
 import pytest
-import tifffile
+
+# spatioev.workflows.{module} imports tifffile/zarr at module level, so a
+# missing image-IO stack must skip this file rather than abort collection
+# for the whole session. These are declared in the "dev" extra, so CI has
+# them and the tests actually run there.
+tifffile = pytest.importorskip("tifffile")
+pytest.importorskip("zarr")
 
 from spatioev.workflows.scimap_phenotyping import inspect_inputs, validate_workflow
 

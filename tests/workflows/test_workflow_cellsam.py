@@ -1,7 +1,13 @@
 import anndata as ad
 import numpy as np
 import pandas as pd
-import tifffile
+import pytest
+
+# spatioev.workflows.{module} imports tifffile at module level, so a
+# missing image-IO stack must skip this file rather than abort collection
+# for the whole session. These are declared in the "dev" extra, so CI has
+# them and the tests actually run there.
+tifffile = pytest.importorskip("tifffile")
 
 from spatioev.workflows.cellsam import (
     ROLE_MARKER,
