@@ -17,9 +17,26 @@ Data:
   data/exp_2/pixel_features.csv
 
 Run:
-    python notebooks/suppfig9_spatial_stats.py
+    python paper/figures/suppfig9_spatial_stats.py
 
-Output: paper/notebooks/results/suppfig9/suppfig9_*.pdf (.png)
+Outputs
+-------
+Figures : paper/figures/results/suppfig9/suppfig9_*.pdf (.png)
+Tables  : paper/figures/results/suppfig9/tables/*.csv
+
+    suppfig9_BC_ripleys_k_multiscale.csv        self-clustering L(r)-r, all phenotypes x 5 radii
+    suppfig9_D_b_lineage_hotspot_summary.csv    B-lineage local-Ripley hotspot counts
+    suppfig9_D_ripley_local_counts.csv          per-cell local Ripley counts (all phenotypes)
+    suppfig9_E_cross_ripley_all_pairs.csv       all ordered phenotype pairs at 50 um
+    suppfig9_F_cross_ripley_curve.csv           ductal <-> fibroblast curve, radius in um
+    suppfig9_G_permutation_envelope.csv         ductal <-> T cell, with 2.5/97.5% envelope + significance
+    suppfig9_H_fap_lisa_quadrant_counts.csv     FAP local Moran's I quadrant composition
+    suppfig9_I_cross_morans_i_matrix.csv        fibroblast marker x ductal feature cross-Moran's I,
+                                                with permutation p-values and BH-FDR
+    suppfig9_I_invasion_front_quadrant_counts.csv  local cross-Moran quadrant composition
+    suppfig9_analysis_parameters.csv            every constant used, for the Methods section
+
+Every number quoted for this figure in the manuscript must come from these tables.
 """
 
 import sys
@@ -41,6 +58,7 @@ DATA_PATH  = ROOT / "data" / "exp_2" / "34434_1_adata.h5ad"
 ANN_PATH   = ROOT / "data" / "exp_2" / "34434_1_annotation.csv"
 PIXEL_PATH = ROOT / "data" / "exp_2" / "pixel_features.csv"
 OUT_DIR    = Path(__file__).parent / "results" / "suppfig9"
+TABLES_DIR = OUT_DIR / "tables"
 
 MM2IN = 1 / 25.4
 
@@ -53,7 +71,15 @@ RADIUS_PX       = RADIUS_UM / PIXEL_SIZE_UM
 RADII_UM        = [20, 50, 100, 150, 200]
 RADII_PX        = [r / PIXEL_SIZE_UM for r in RADII_UM]
 K_NEIGHBORS     = 8
-N_PERM          = 99              # permutation envelope simulations
+N_PERM          = 99              # cross-Ripley permutation envelope simulations
+N_PERM_MORAN    = 999             # cross-Moran's I permutation simulations
+FDR_ALPHA       = 0.05
+
+# Cross-Ripley curve radii.  Declared in µm and converted to pixels so the
+# reported range is unambiguous.  (Previously this was linspace(10, 800, 30)
+# in *pixels*, i.e. 3.25–260 µm, which was mislabelled as µm in the legend.)
+CURVE_RADII_UM  = np.linspace(10 * PIXEL_SIZE_UM, 800 * PIXEL_SIZE_UM, 30)
+CURVE_RADII_PX  = CURVE_RADII_UM / PIXEL_SIZE_UM
 SOURCE_PHENO    = "pancreatic ductal epithelium"
 TARGET_PHENO    = "Fibroblasts"
 TARGET_IMMUNE   = "T cells"
@@ -122,6 +148,123 @@ def _despine(ax):
         ax.spines[sp].set_visible(False)
 
 
+# ── Table export ───────────────────────────────────────────────────────────────
+def _save_table(df, name):
+    """Write a statistics table to TABLES_DIR and report its shape."""
+    if df is None:
+        print(f"  [skip] {name} — no data")
+        return
+    if isinstance(df, pd.DataFrame) and df.empty:
+        print(f"  [skip] {name} — empty")
+        return
+    TABLES_DIR.mkdir(parents=True, exist_ok=True)
+    path = TABLES_DIR / f"{name}.csv"
+    df.to_csv(path, index=False)
+    n = len(df) if hasattr(df, "__len__") else "?"
+    print(f"  {path.name}  ({n} rows)")
+
+
+def _first_col(df, candidates, default=None):
+    """Return the first column name in `candidates` present in `df`."""
+    if df is None:
+        return default
+    return next((c for c in candidates if c in df.columns), default)
+
+
+def cross_morans_i_feature_matrix_with_permutation(
+    adata, phenotype_key, source_phenotype, target_phenotype,
+    source_feature_keys, target_feature_keys,
+    radius, agg="mean",
+    x_key="X_centroid", y_key="Y_centroid", image_key="imageid",
+    k=8, n_sim=999, permute="y", random_state=42,
+):
+    """Cross-Moran's I feature matrix with permutation p-values and BH-FDR.
+
+    Mirrors ``sv.tl.cross_morans_i_feature_matrix`` but additionally runs a
+    label-permutation test per (source feature x target feature x image) cell
+    of the matrix, so that the significance claimed in the figure legend is
+    actually computed rather than asserted.
+
+    The null model shuffles the *target* neighbourhood summary values
+    (``permute="y"``) while holding source values and coordinates fixed.
+    """
+    neighbor_df = sv.tl.summarize_target_features_around_source_cells(
+        adata=adata,
+        phenotype_key=phenotype_key,
+        source_phenotype=source_phenotype,
+        target_phenotype=target_phenotype,
+        target_feature_keys=target_feature_keys,
+        radius=radius,
+        agg=agg,
+        x_key=x_key,
+        y_key=y_key,
+        image_key=image_key,
+        source_only=True,
+    )
+
+    source_df = adata.obs[adata.obs[phenotype_key] == source_phenotype].copy()
+    if neighbor_df is None or neighbor_df.empty or source_df.empty:
+        return pd.DataFrame()
+
+    source_df = source_df.merge(
+        neighbor_df, how="left",
+        left_index=True, right_on="cell_id", suffixes=("", "__neighbor"),
+    )
+    if f"{image_key}__neighbor" in source_df.columns:
+        source_df = source_df.drop(columns=[f"{image_key}__neighbor"])
+
+    rows = []
+    neighbor_cols = [f"neighbor_{agg}__{f}" for f in target_feature_keys]
+    images = source_df[image_key].dropna().unique()
+    total = len(source_feature_keys) * len(target_feature_keys) * len(images)
+    done = 0
+
+    for src_feat in source_feature_keys:
+        for tgt_feat, tgt_col in zip(target_feature_keys, neighbor_cols):
+            if tgt_col not in source_df.columns:
+                continue
+            for img in images:
+                df_img = source_df[source_df[image_key] == img]
+                coords   = df_img[[x_key, y_key]].to_numpy()
+                x_values = df_img[src_feat].to_numpy(dtype=float)
+                y_values = df_img[tgt_col].to_numpy(dtype=float)
+
+                res = sv.tl.cross_morans_i_permutation_test(
+                    coords, x_values, y_values,
+                    k=k, n_sim=n_sim, permute=permute,
+                    random_state=random_state,
+                )
+                done += 1
+                print(f"    [{done}/{total}] {src_feat} x {tgt_feat} "
+                      f"({img}): I={res['observed']:.4f}, p={res['p_value']:.4f}")
+
+                rows.append({
+                    image_key:                img,
+                    "source_phenotype":       source_phenotype,
+                    "target_phenotype":       target_phenotype,
+                    "source_feature":         src_feat,
+                    "target_feature":         tgt_feat,
+                    "target_summary_feature": tgt_col,
+                    "cross_morans_i":         res["observed"],
+                    "p_value":                res["p_value"],
+                    "null_mean":              res["null_mean"],
+                    "null_std":               res["null_std"],
+                    "z_score":                res["z_score"],
+                    "n_sim":                  res["n_sim"],
+                    "n_source_cells":         len(df_img),
+                    "n_nonmissing_pairs":     int(np.sum(np.isfinite(x_values)
+                                                         & np.isfinite(y_values))),
+                })
+
+    out = pd.DataFrame(rows)
+    if out.empty:
+        return out
+
+    out["p_adj_bh"]   = sv.tl.benjamini_hochberg(out["p_value"].to_numpy()).to_numpy()
+    out["significant"] = out["p_adj_bh"] < FDR_ALPHA
+    return out
+
+
 # ── Data loading ───────────────────────────────────────────────────────────────
 def load_data():
     print("Loading 34434_1_adata.h5ad ...")
@@ -175,13 +318,14 @@ def compute_all(adata):
 
     # ── Local Ripley (B lineage TLS) ───────────────────────────────────────────
     print("Computing local Ripley (B lineage) ...")
-    sv.tl.ripley_local_counts_by_phenotype(
+    local_counts = sv.tl.ripley_local_counts_by_phenotype(
         adata, phenotype_key=PHENOTYPE_KEY, radius=RADIUS_PX,
         x_key="X_centroid", y_key="Y_centroid", image_key="imageid",
         add_to_obs=True,
     )
     hotspot_cols = [c for c in adata.obs.columns if "ripley_local_hotspot" in c]
-    results["hotspot_col"] = hotspot_cols[0] if hotspot_cols else None
+    results["hotspot_col"]  = hotspot_cols[0] if hotspot_cols else None
+    results["local_counts"] = local_counts
 
     # ── Cross-Ripley all-pairs ─────────────────────────────────────────────────
     print("Computing cross-Ripley all-pairs ...")
@@ -192,12 +336,12 @@ def compute_all(adata):
     )
 
     # ── Cross-Ripley curve: ductal ↔ fibroblasts ───────────────────────────────
-    print("Computing cross-Ripley curve (ductal <-> fibroblasts) ...")
-    radii_curve = np.linspace(10, 800, 30)
+    print(f"Computing cross-Ripley curve (ductal <-> fibroblasts, "
+          f"{CURVE_RADII_UM.min():.2f}–{CURVE_RADII_UM.max():.1f} µm) ...")
     results["curve_df"] = sv.tl.cross_ripleys_curve_by_phenotype(
         adata, phenotype_key=PHENOTYPE_KEY,
         source_phenotype=SOURCE_PHENO, target_phenotype=TARGET_PHENO,
-        radii=radii_curve,
+        radii=CURVE_RADII_PX,
         x_key="X_centroid", y_key="Y_centroid", image_key="imageid",
     )
 
@@ -229,7 +373,9 @@ def compute_all(adata):
     fib_feats  = [f for f in FIB_FEAT_KEYS  if f in adata.obs.columns]
     duct_feats = [f for f in DUCT_FEAT_KEYS if f in adata.obs.columns]
     if fib_feats and duct_feats:
-        raw_matrix = sv.tl.cross_morans_i_feature_matrix(
+        print(f"  Permutation testing {len(fib_feats)} x {len(duct_feats)} feature pairs "
+              f"(n_sim={N_PERM_MORAN}); this is the slow step.")
+        raw_matrix = cross_morans_i_feature_matrix_with_permutation(
             adata, phenotype_key=PHENOTYPE_KEY,
             source_phenotype="Fibroblasts",
             target_phenotype=SOURCE_PHENO,
@@ -237,17 +383,32 @@ def compute_all(adata):
             target_feature_keys=duct_feats,
             radius=RADIUS_PX, agg="mean",
             x_key="X_centroid", y_key="Y_centroid", image_key="imageid",
-            k=K_NEIGHBORS,
+            k=K_NEIGHBORS, n_sim=N_PERM_MORAN, permute="y", random_state=42,
         )
-        # Average across images if imageid column present
-        grp_cols = [c for c in ["source_feature", "target_feature"] if c in raw_matrix.columns]
-        results["matrix_df"] = (
-            raw_matrix.groupby(grp_cols)["cross_morans_i"].mean().reset_index()
-            if grp_cols else raw_matrix
-        )
+        results["matrix_full"] = raw_matrix
+
+        # Averaged across images for plotting; significance carried through as
+        # the fraction of images reaching FDR < alpha.
+        grp_cols = [c for c in ["source_feature", "target_feature"]
+                    if c in raw_matrix.columns]
+        if grp_cols and not raw_matrix.empty:
+            results["matrix_df"] = (
+                raw_matrix.groupby(grp_cols)
+                .agg(cross_morans_i=("cross_morans_i", "mean"),
+                     p_adj_bh=("p_adj_bh", "min"),
+                     frac_images_significant=("significant", "mean"),
+                     n_images=("cross_morans_i", "size"))
+                .reset_index()
+            )
+            n_sig = int(raw_matrix["significant"].sum())
+            print(f"  Cross-Moran's I: {n_sig}/{len(raw_matrix)} tests "
+                  f"significant at BH-FDR < {FDR_ALPHA}")
+        else:
+            results["matrix_df"] = raw_matrix
     else:
         print("  Feature columns not found — cross-Moran's I matrix skipped.")
-        results["matrix_df"] = None
+        results["matrix_df"]   = None
+        results["matrix_full"] = None
 
     # ── Local cross-Moran's I: invasion front ─────────────────────────────────
     src_feat = SRC_FEAT_KEY if SRC_FEAT_KEY in adata.obs.columns else (duct_feats[0] if duct_feats else None)
@@ -293,6 +454,180 @@ def compute_all(adata):
 
     print("All computations done.")
     return results, adata
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Statistics export
+# ══════════════════════════════════════════════════════════════════════════════
+
+def export_tables(results, adata):
+    """Write every statistic behind Supplementary Figure 9 to CSV.
+
+    Without this, none of the values quoted in the figure legend are traceable
+    to a file — they exist only inside the rendered PDFs.
+    """
+    print("\nExporting statistics tables:")
+    TABLES_DIR.mkdir(parents=True, exist_ok=True)
+
+    # ── B / C: Ripley's K multi-scale ─────────────────────────────────────────
+    ripley_all = results.get("ripley_all")
+    if ripley_all is not None and not ripley_all.empty:
+        df = ripley_all.copy()
+        if "radius" in df.columns:
+            df["radius_um_from_px"] = df["radius"] * PIXEL_SIZE_UM
+        df["phenotype_label"] = df["phenotype"].map(
+            lambda p: PHENOTYPE_LABELS.get(p, p))
+        df = df.sort_values(["phenotype", "radius_um"])
+        _save_table(df, "suppfig9_BC_ripleys_k_multiscale")
+
+        summary = (df.groupby(["phenotype_label", "radius_um"])["L_minus_r"]
+                     .mean().reset_index()
+                     .sort_values(["radius_um", "L_minus_r"], ascending=[True, False]))
+        _save_table(summary, "suppfig9_BC_ripleys_k_mean_by_phenotype")
+
+    # ── D: local Ripley / B-lineage hotspots ──────────────────────────────────
+    local_counts = results.get("local_counts")
+    if local_counts is not None and not getattr(local_counts, "empty", True):
+        _save_table(local_counts, "suppfig9_D_ripley_local_counts")
+
+    hotspot_col = results.get("hotspot_col")
+    if hotspot_col and hotspot_col in adata.obs.columns:
+        obs = adata.obs
+        rows = []
+        for pheno, sub in obs.groupby(PHENOTYPE_KEY, observed=True):
+            hot = sub[hotspot_col].fillna(False).astype(bool)
+            rows.append({
+                "phenotype":        pheno,
+                "phenotype_label":  PHENOTYPE_LABELS.get(pheno, pheno),
+                "n_cells":          int(len(sub)),
+                "n_hotspot":        int(hot.sum()),
+                "n_non_hotspot":    int((~hot).sum()),
+                "fraction_hotspot": float(hot.mean()) if len(sub) else np.nan,
+                "radius_um":        RADIUS_UM,
+                "hotspot_column":   hotspot_col,
+            })
+        _save_table(pd.DataFrame(rows).sort_values("fraction_hotspot",
+                                                   ascending=False),
+                    "suppfig9_D_b_lineage_hotspot_summary")
+
+    # ── E: cross-Ripley all pairs ─────────────────────────────────────────────
+    cross_all = results.get("cross_all")
+    if cross_all is not None and not cross_all.empty:
+        df = cross_all.copy()
+        src_c = _first_col(df, ["source", "source_phenotype"])
+        tgt_c = _first_col(df, ["target", "target_phenotype"])
+        if src_c:
+            df["source_label"] = df[src_c].map(lambda p: PHENOTYPE_LABELS.get(p, p))
+        if tgt_c:
+            df["target_label"] = df[tgt_c].map(lambda p: PHENOTYPE_LABELS.get(p, p))
+        df["radius_um"] = RADIUS_UM
+        _save_table(df, "suppfig9_E_cross_ripley_all_pairs")
+
+    # ── F: cross-Ripley curve ─────────────────────────────────────────────────
+    curve_df = results.get("curve_df")
+    if curve_df is not None and not curve_df.empty:
+        df = curve_df.copy()
+        if "radius" in df.columns:
+            df["radius_um"] = df["radius"] * PIXEL_SIZE_UM
+        _save_table(df, "suppfig9_F_cross_ripley_curve")
+
+    # ── G: permutation envelope, with significance ────────────────────────────
+    perm_df = results.get("perm_df")
+    if perm_df is not None and not perm_df.empty:
+        df = perm_df.copy()
+        if "radius" in df.columns:
+            df["radius_um"] = df["radius"] * PIXEL_SIZE_UM
+        obs_c = _first_col(df, ["L_minus_r", "observed", "L_r"])
+        lo_c  = _first_col(df, ["envelope_low", "lower", "lo", "q025", "env_lo", "env_low"])
+        hi_c  = _first_col(df, ["envelope_high", "upper", "hi", "q975", "env_hi", "env_high"])
+        if obs_c and lo_c and hi_c:
+            df["outside_envelope"] = (df[obs_c] > df[hi_c]) | (df[obs_c] < df[lo_c])
+            df["direction"] = np.where(
+                df[obs_c] > df[hi_c], "attraction",
+                np.where(df[obs_c] < df[lo_c], "exclusion", "not significant"))
+        df["n_sim"]          = N_PERM
+        df["envelope_level"] = "2.5-97.5 percentile"
+        df["source_phenotype"] = SOURCE_PHENO
+        df["target_phenotype"] = TARGET_IMMUNE
+        _save_table(df, "suppfig9_G_permutation_envelope")
+
+    # ── H: FAP LISA quadrants ─────────────────────────────────────────────────
+    adata_fib    = results.get("adata_fib")
+    fap_quad_col = results.get("fap_quad_col")
+    if adata_fib is not None and fap_quad_col in getattr(adata_fib, "obs", {}):
+        quad = adata_fib.obs[fap_quad_col].fillna("unclassified")
+        counts = quad.value_counts()
+        df = pd.DataFrame({
+            "quadrant": counts.index,
+            "n_cells":  counts.to_numpy(),
+        })
+        df["fraction"]   = df["n_cells"] / df["n_cells"].sum()
+        df["value_key"]  = FAP_KEY
+        df["phenotype"]  = "Fibroblasts"
+        df["k_neighbors"] = K_NEIGHBORS
+        _save_table(df, "suppfig9_H_fap_lisa_quadrant_counts")
+
+    # ── I: cross-Moran's I matrix + invasion-front quadrants ──────────────────
+    matrix_full = results.get("matrix_full")
+    if matrix_full is not None and not getattr(matrix_full, "empty", True):
+        _save_table(matrix_full, "suppfig9_I_cross_morans_i_matrix")
+
+    matrix_df = results.get("matrix_df")
+    if matrix_df is not None and not getattr(matrix_df, "empty", True):
+        _save_table(matrix_df, "suppfig9_I_cross_morans_i_matrix_mean")
+
+    adata_duct_local = results.get("adata_duct_local")
+    cross_quad_col   = results.get("cross_quad_col")
+    if adata_duct_local is not None and cross_quad_col:
+        quad = adata_duct_local.obs[cross_quad_col].fillna("unclassified")
+        counts = quad.value_counts()
+        df = pd.DataFrame({
+            "quadrant": counts.index,
+            "n_cells":  counts.to_numpy(),
+        })
+        df["fraction"]           = df["n_cells"] / df["n_cells"].sum()
+        df["interpretation"]     = df["quadrant"].map({
+            "high-high": "invasion front (high ductal entropy, high FAP stroma)",
+            "low-low":   "quiescent / normal",
+            "high-low":  "disorganised duct, low-FAP stroma",
+            "low-high":  "ordered duct, activated stroma",
+        }).fillna("unclassified")
+        df["source_feature"]     = results.get("src_feat")
+        df["target_feature"]     = results.get("tgt_feat")
+        df["source_phenotype"]   = SOURCE_PHENO
+        df["target_phenotype"]   = "Fibroblasts"
+        _save_table(df, "suppfig9_I_invasion_front_quadrant_counts")
+
+    # ── Parameters, for the Methods section ───────────────────────────────────
+    params = pd.DataFrame([
+        ("phenotype_key",        PHENOTYPE_KEY,   "adata.obs column holding phenotype labels"),
+        ("image_id",             IMAGE_ID,        "representative sample shown in spatial maps"),
+        ("pixel_size_um",        PIXEL_SIZE_UM,   "µm per pixel"),
+        ("radius_um",            RADIUS_UM,       "primary neighbourhood radius"),
+        ("radii_um",             ";".join(map(str, RADII_UM)), "multi-scale Ripley radii"),
+        ("curve_radii_um_min",   round(float(CURVE_RADII_UM.min()), 3), "cross-Ripley curve, minimum radius"),
+        ("curve_radii_um_max",   round(float(CURVE_RADII_UM.max()), 3), "cross-Ripley curve, maximum radius"),
+        ("curve_radii_n",        len(CURVE_RADII_UM), "cross-Ripley curve, number of radii"),
+        ("k_neighbors",          K_NEIGHBORS,     "k for Moran's I spatial weights"),
+        ("n_perm_ripley",        N_PERM,          "cross-Ripley permutation simulations"),
+        ("n_perm_moran",         N_PERM_MORAN,    "cross-Moran's I permutation simulations"),
+        ("fdr_alpha",            FDR_ALPHA,       "Benjamini-Hochberg significance threshold"),
+        ("random_state",         42,              "random seed"),
+        ("source_phenotype",     SOURCE_PHENO,    "cross-statistic source"),
+        ("target_phenotype",     TARGET_PHENO,    "cross-Ripley curve target"),
+        ("target_immune",        TARGET_IMMUNE,   "permutation envelope target"),
+        ("b_phenotype",          B_PHENO,         "local Ripley hotspot phenotype"),
+        ("fibroblast_markers",   ";".join(FIB_MARKERS),   "cross-Moran source features"),
+        ("ductal_markers",       ";".join(DUCT_MARKERS),  "cross-Moran target markers"),
+        ("morphology_features",  ";".join(MORPH_FEATURES), "cross-Moran target morphology"),
+        ("moran_null_model",     "permute target neighbourhood values (permute='y')",
+                                 "cross-Moran's I null model"),
+        ("ripley_null_model",    "phenotype label permutation within image",
+                                 "cross-Ripley null model"),
+    ], columns=["parameter", "value", "description"])
+    _save_table(params, "suppfig9_analysis_parameters")
+
+    print(f"\nTables written to: {TABLES_DIR}")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -622,11 +957,14 @@ def draw_cross_ripley_curve(ax, curve_df, show_label=True):
 
 def draw_permutation_envelope(ax, perm_df, show_label=True):
     """Panel G — Cross-Ripley permutation envelope: ductal <-> T cells."""
+    # NOTE: sv.tl.cross_ripley_permutation_envelope returns the envelope as
+    # "envelope_low"/"envelope_high".  These were previously missing from the
+    # candidate lists, so the shaded envelope was silently never drawn.
     obs_col = next((c for c in ["L_minus_r", "observed", "L_r"]
                     if c in perm_df.columns), None)
-    lo_col  = next((c for c in ["lower", "lo", "q025", "env_lo", "env_low"]
+    lo_col  = next((c for c in ["envelope_low", "lower", "lo", "q025", "env_lo", "env_low"]
                     if c in perm_df.columns), None)
-    hi_col  = next((c for c in ["upper", "hi", "q975", "env_hi", "env_high"]
+    hi_col  = next((c for c in ["envelope_high", "upper", "hi", "q975", "env_hi", "env_high"]
                     if c in perm_df.columns), None)
 
     if obs_col is None:
@@ -836,6 +1174,10 @@ def make_standalone_panels():
 
     adata = load_data()
     results, adata = compute_all(adata)
+
+    # Persist every statistic before drawing, so the tables exist even if a
+    # plotting call later fails.
+    export_tables(results, adata)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     print("\nSaving standalone panels:")
