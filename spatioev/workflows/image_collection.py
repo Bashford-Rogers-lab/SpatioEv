@@ -11,6 +11,29 @@ import tifffile
 OME_PATTERNS = ("*.ome.tif", "*.ome.tiff", "*.tif", "*.tiff")
 
 
+def zarr_array(root):
+    """Return the pixel array from an opened zarr store, group or not.
+
+    ``tifffile``'s ``aszarr()`` yields either a bare array or a group whose
+    first pyramid level is under key ``"0"``, depending on the file.
+
+    The obvious check, ``isinstance(root, zarr.hierarchy.Group)``, only works
+    on zarr 2: ``zarr.hierarchy`` was removed in zarr 3, so it raises
+    ``AttributeError: module 'zarr' has no attribute 'hierarchy'``. ``zarr.Group``
+    exists in both majors and is the *same object* as ``zarr.hierarchy.Group``
+    on zarr 2, so it is the portable spelling.
+    """
+    import zarr
+
+    group_type = getattr(zarr, "Group", None)
+    if group_type is not None and isinstance(root, group_type):
+        return root["0"]
+    # Fall back to duck-typing for any store type we do not recognise.
+    if hasattr(root, "keys") and not hasattr(root, "shape"):
+        return root["0"]
+    return root
+
+
 def natural_key(value: str) -> list[object]:
     return [
         int(token) if token.isdigit() else token.lower()

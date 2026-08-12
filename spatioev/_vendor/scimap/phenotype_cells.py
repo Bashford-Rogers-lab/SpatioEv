@@ -12,7 +12,9 @@ all of which are already SpatioEv core dependencies.
 
 Modifications from upstream:
   - removed the ``if __name__ == '__main__'`` CLI block and the argparse import
-  - no changes to the algorithm
+  - ``fillna(method='ffill')`` -> ``.ffill()`` (the keyword form was removed
+    in pandas 3; the replacement is behaviourally identical)
+  - no other changes to the algorithm
 
 Do not edit to add features. Re-vendor from upstream instead.
 """
@@ -305,7 +307,10 @@ Example:
 
     if verbose:
         print("Consolidating the phenotypes across all groups")
-    phenotype_labels_Consolidated = phenotype_labels.fillna(method='ffill', axis = 1)
+    # MODIFIED FROM UPSTREAM: `fillna(method='ffill')` was removed in pandas 3.
+    # `.ffill()` is the documented replacement and behaves identically on
+    # pandas 1.x/2.x, so this is safe across all supported versions.
+    phenotype_labels_Consolidated = phenotype_labels.ffill(axis=1)
     phenotype_labels[label] = phenotype_labels_Consolidated.iloc[:,-1].values
 
     # replace nan to 'other cells'

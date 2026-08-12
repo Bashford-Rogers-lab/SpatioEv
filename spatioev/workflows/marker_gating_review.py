@@ -30,6 +30,7 @@ import zarr
 from spatioev.workflows import marker_gating as mgq
 
 from ._io import now as utc_now
+from .image_collection import zarr_array
 
 STAINING_OPTIONS = [
     "clear_specific",
@@ -130,7 +131,7 @@ class PyramidImage:
         for level in self.series.levels:
             store = level.aszarr()
             root = zarr.open(store, mode="r")
-            array = root["0"] if isinstance(root, zarr.hierarchy.Group) else root
+            array = zarr_array(root)
             self.stores.append(store)
             self.levels.append(array)
 

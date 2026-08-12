@@ -27,7 +27,7 @@ import tifffile
 import zarr
 from sklearn.mixture import GaussianMixture
 
-from spatioev.workflows.image_collection import channel_names
+from spatioev.workflows.image_collection import channel_names, zarr_array
 
 try:
     from skimage.filters import threshold_otsu
@@ -793,7 +793,7 @@ def read_overview_array(
     store = level.aszarr()
     try:
         root = zarr.open(store, mode="r")
-        array = root["0"] if isinstance(root, zarr.hierarchy.Group) else root
+        array = zarr_array(root)
         overview = np.asarray(array[:, ::stride, ::stride])
     finally:
         close = getattr(store, "close", None)
@@ -971,7 +971,7 @@ def save_review_marker_crops(
         channels = canonical_channel_names(image_path, channel_markers)
         idx = {marker: i for i, marker in enumerate(channels)}
         rootz = zarr.open(tif.series[0].levels[0].aszarr(), mode="r")
-        z = rootz["0"] if isinstance(rootz, zarr.hierarchy.Group) else rootz
+        z = zarr_array(rootz)
 
         markers = [m for m in review_markers if m in idx]
         for crop_i, (fy, fx) in enumerate(windows, start=1):
@@ -1110,7 +1110,7 @@ def save_gate_spatial_overlays(
 
     with tifffile.TiffFile(image_path) as tif:
         rootz = zarr.open(tif.series[0].levels[0].aszarr(), mode="r")
-        z = rootz["0"] if isinstance(rootz, zarr.hierarchy.Group) else rootz
+        z = zarr_array(rootz)
         for crop_i, (fy, fx) in enumerate(windows, start=1):
             ncols = 4
             nrows = math.ceil(len(markers) / ncols)

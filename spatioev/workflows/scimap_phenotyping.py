@@ -28,7 +28,7 @@ import tifffile
 import zarr
 
 from spatioev.workflows import marker_gating as mgq
-from spatioev.workflows.image_collection import natural_key, resolve_image
+from spatioev.workflows.image_collection import natural_key, resolve_image, zarr_array
 
 from ._io import now, write_json
 
@@ -428,7 +428,7 @@ def save_image_overlays(
     paths: list[Path] = []
     with tifffile.TiffFile(image_path) as tif:
         root = zarr.open(tif.series[0].levels[0].aszarr(), mode="r")
-        image = root["0"] if isinstance(root, zarr.hierarchy.Group) else root
+        image = zarr_array(root)
         for crop_number, (y_start, x_start) in enumerate(windows, start=1):
             nuclear = image[nuclear_index, y_start : y_start + crop_size, x_start : x_start + crop_size]
             background = mgq.normalize_image(nuclear, 0.5, 99.7, 0.8)

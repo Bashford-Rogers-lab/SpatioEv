@@ -53,8 +53,8 @@ dev = [
     # Needed by the workflow tests: spatioev.workflows.{cellsam,marker_gating,
     # scimap_phenotyping} import these at module level. Without them the test
     # session aborts during collection rather than skipping.
-    "tifffile>=2023.7",
-    "zarr>=2.16,<3",
+    "tifffile>=2025.1",
+    "zarr>=3.1,<4",
     # tomllib is stdlib only from 3.11; tests parse pyproject.toml on 3.10 too.
     "tomli>=2.0; python_version < '3.11'",
     # Streamlit AppTest drives the interface regression tests. Without it in
@@ -87,8 +87,11 @@ viewer = [
 ui = [
     "dask[array]>=2024.1",
     "streamlit>=1.40",
-    "tifffile>=2023.7",
-    "zarr>=2.16,<3",
+    # tifffile's `aszarr()` requires zarr 3 from 2025 onwards: pairing a current
+    # tifffile with zarr 2 raises "zarr 2.x < 3 is not supported". anndata
+    # excludes the 3.0.* series, so the usable floor is 3.1.
+    "tifffile>=2025.1",
+    "zarr>=3.1,<4",
 ]
 apps = [
     "spatioev[scanpy,ui]",
