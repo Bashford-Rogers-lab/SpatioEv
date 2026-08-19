@@ -188,9 +188,9 @@ def ordered_marker_mapping(
     for channel in image_channels:
         key = marker_key(channel)
         if key in seen_keys:
-            raise ValueError(
-                f"OME image contains an ambiguous duplicate channel: {channel!r}"
-            )
+            # Repeated channel names are normal in cyclic imaging; the first
+            # plane is authoritative, matching inspect_inputs().
+            continue
         seen_keys.add(key)
         source = table_by_key.get(key)
         if source is None:
@@ -315,10 +315,11 @@ def inspect_inputs(plan: ConversionPlan) -> dict:
             if image_channel_keys.count(key) > 1
         }
     )
-    if duplicate_image_channels:
-        errors.append(
-            f"OME image contains ambiguous duplicate channels: {duplicate_image_channels}"
-        )
+    # Repeated channel names are normal in cyclic imaging: CODEX/PhenoCycler
+    # re-image the nuclear stain every round, so several planes legitimately
+    # share a name. That is only *ambiguous* if a marker column has to choose
+    # between them, which is checked once the marker targets are resolved
+    # below. An unused repeat is harmless and must not block the conversion.
     role_columns = {
         role: [column for column, value in roles.items() if value == role]
         for role in ROLE_OPTIONS
@@ -341,7 +342,12 @@ def inspect_inputs(plan: ConversionPlan) -> dict:
             "Spatial coordinates were not identified; AnnData can be built, but spatial workflow pages require them"
         )
 
-    channel_by_key = {marker_key(channel): channel for channel in image_channels}
+    # Keep the FIRST plane when a channel name repeats. A dict comprehension
+    # would keep the last, which is both arbitrary and surprising: in cyclic
+    # imaging the first occurrence is the reference round.
+    channel_by_key: dict[str, str] = {}
+    for channel in image_channels:
+        channel_by_key.setdefault(marker_key(channel), channel)
     resolved_targets: dict[str, str] = {}
     for column in role_columns[ROLE_MARKER]:
         target = targets.get(column)
@@ -355,6 +361,18 @@ def inspect_inputs(plan: ConversionPlan) -> dict:
         resolved_targets[column] = channel_by_key[marker_key(target)]
 
     assigned_channels = list(resolved_targets.values())
+
+    # Repeated channel names do not make the AnnData ambiguous: markers come
+    # from CSV columns, which are unique, so var_names stay unique either way.
+    # The repeat only decides which image plane a marker is displayed against,
+    # and that is resolved deterministically to the first occurrence above.
+    if duplicate_image_channels:
+        warnings.append(
+            f"OME image repeats channel name(s) {duplicate_image_channels}; the "
+            "first plane of each is used for image review. This is expected for "
+            "cyclic imaging, where the nuclear stain is re-imaged every round."
+        )
+
     duplicates = sorted(
         {
             channel
@@ -366,9 +384,17 @@ def inspect_inputs(plan: ConversionPlan) -> dict:
         errors.append(
             f"Multiple CSV columns are assigned to OME channels: {duplicates}"
         )
-    missing_channels = [
-        channel for channel in image_channels if channel not in assigned_channels
-    ]
+    # Compare on marker keys, not raw names: a channel name that appears twice
+    # is covered once the CSV supplies a single column for it.
+    covered_keys = {marker_key(channel) for channel in assigned_channels}
+    missing_channels = sorted(
+        {
+            channel
+            for channel in image_channels
+            if marker_key(channel) not in covered_keys
+        },
+        key=image_channels.index,
+    )
     if missing_channels:
         errors.append(f"OME channels without an expression column: {missing_channels}")
 
@@ -387,12 +413,20 @@ def inspect_inputs(plan: ConversionPlan) -> dict:
         )
 
     marker_rows = []
+    # Emit one row per distinct channel name. Iterating raw image_channels
+    # would add a row per repeated plane, giving duplicate var_names and
+    # reading the same CSV column several times.
+    seen_channel_keys: set[str] = set()
     for channel_index, channel in enumerate(image_channels):
+        channel_key = marker_key(channel)
+        if channel_key in seen_channel_keys:
+            continue
+        seen_channel_keys.add(channel_key)
         source = next(
             (
                 column
                 for column, target in resolved_targets.items()
-                if target == channel
+                if marker_key(target) == channel_key
             ),
             None,
         )
