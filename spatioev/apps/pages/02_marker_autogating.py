@@ -585,8 +585,8 @@ def main() -> None:
         review_image = resolve_image(loaded_paths["image"], review_imageid)
         st.caption(f"Image review uses {review_imageid}: {review_image}")
 
-    st.subheader("2. Marker staining questionnaire")
-    initialized_rows = int(
+    st.subheader("2. Marker staining questionnaire (optional)")
+    answered_rows = int(
         st.session_state.condition_table[REQUIRED_CONDITION_COLUMNS]
         .fillna("")
         .astype(str)
@@ -594,10 +594,66 @@ def main() -> None:
         .all(axis=1)
         .sum()
     )
+    total_rows = len(st.session_state.condition_table)
     st.caption(
-        f"({initialized_rows}/{len(st.session_state.condition_table)} markers fully initialized). "
-        "Expected positivity and parent populations are optional."
+        "You can skip this entirely: expression shape is inferred from each "
+        "marker's own distribution, and gates are computed either way. "
+        "Answering it only sharpens the method choice -- marking a marker "
+        "`clear_specific` with `low` artifact unlocks 2-component and "
+        "3-component GMM gates instead of the conservative upper-tail "
+        f"fallback. Currently {answered_rows}/{total_rows} markers answered."
     )
+
+    with st.expander("Fill several markers at once", icon=":material/bolt:"):
+        st.caption(
+            "Most panels are dominated by one answer, so set the common value "
+            "here and correct the few exceptions in the table below."
+        )
+        bulk_a, bulk_b = st.columns(2)
+        with bulk_a:
+            bulk_staining = st.selectbox(
+                "Staining condition", STAINING_OPTIONS, key="bulk_staining"
+            )
+            bulk_expression = st.selectbox(
+                "Expression condition", EXPRESSION_OPTIONS, key="bulk_expression"
+            )
+        with bulk_b:
+            bulk_compartment = st.selectbox(
+                "Compartment pattern", COMPARTMENT_OPTIONS, key="bulk_compartment"
+            )
+            bulk_artifact = st.selectbox(
+                "Artifact level", ARTIFACT_OPTIONS, key="bulk_artifact"
+            )
+
+        bulk_values = {
+            "staining_condition": bulk_staining,
+            "compartment_pattern": bulk_compartment,
+            "expression_condition": bulk_expression,
+            "artifact_level": bulk_artifact,
+        }
+        chosen = {key: value for key, value in bulk_values.items() if value}
+        only_blank = st.checkbox(
+            "Only fill markers that are still blank", value=True, key="bulk_only_blank"
+        )
+        apply_bulk = st.button(
+            "Apply to markers",
+            icon=":material/done_all:",
+            disabled=not chosen,
+            width="stretch",
+        )
+        if not chosen:
+            st.caption("Choose at least one value above to enable this.")
+        if apply_bulk:
+            table = st.session_state.condition_table.copy()
+            for column, value in chosen.items():
+                current = table[column].fillna("").astype(str).str.strip()
+                mask = current.eq("") if only_blank else slice(None)
+                table.loc[mask, column] = value
+            st.session_state.condition_table = table
+            st.session_state.editor_version += 1
+            st.toast(f"Applied {len(chosen)} value(s) to the questionnaire")
+            st.rerun()
+
     render_option_guide()
     st.download_button(
         "Download current condition template",
