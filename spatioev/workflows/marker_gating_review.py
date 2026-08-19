@@ -83,8 +83,31 @@ def resolve_gate_table(output_dir: Path, sample_id: str, explicit: Path | None) 
     return path
 
 
-def adaptive_gate_range(values: np.ndarray, gate: float) -> tuple[float, float]:
-    """Return a useful local threshold range centered around a calculated gate."""
+GATE_RANGE_WIDTH_SCALE = 1.6
+GATE_RANGE_MIN_SPAN_FRACTION = 0.60
+
+
+def adaptive_gate_range(
+    values: np.ndarray,
+    gate: float,
+    *,
+    width_scale: float = GATE_RANGE_WIDTH_SCALE,
+    min_span_fraction: float = GATE_RANGE_MIN_SPAN_FRACTION,
+) -> tuple[float, float]:
+    """Return a useful local threshold range centered around a calculated gate.
+
+    The span is driven by empirical positivity around the gate, which keeps
+    slider resolution where it matters. On its own that collapses for rare
+    markers: when the gate sits inside the dominant negative mode, both
+    reference quantiles land close to it and the slider ends up covering a
+    small part of the data (~26% in testing), so the gate cannot be pushed
+    stricter at all.
+
+    ``min_span_fraction`` therefore floors the half-width at a fraction of the
+    observed intensity spread, so the slider always offers meaningful travel in
+    both directions. Raise either knob for a wider range; the calculated gate
+    itself is unaffected, only how far it can be moved during review.
+    """
     x = np.asarray(values, dtype=float)
     x = x[np.isfinite(x)]
     if len(x) == 0:
@@ -99,7 +122,16 @@ def adaptive_gate_range(values: np.ndarray, gate: float) -> tuple[float, float]:
     candidate_low = float(np.quantile(x, 1.0 - lower_target_fraction))
     candidate_high = float(np.quantile(x, 1.0 - upper_target_fraction))
 
-    distance = 1.25 * max(gate - candidate_low, candidate_high - gate, 0.05)
+    distance = width_scale * max(gate - candidate_low, candidate_high - gate, 0.05)
+
+    # Floor the half-width against the observed spread so rare markers, whose
+    # reference quantiles all sit inside the negative mode, still get a slider
+    # that reaches the bright tail. Robust percentiles avoid a single outlier
+    # stretching the range.
+    spread = float(np.quantile(x, 0.999) - np.quantile(x, 0.001))
+    if np.isfinite(spread) and spread > 0:
+        distance = max(distance, min_span_fraction * spread)
+
     low = max(float(np.min(x)), gate - distance)
     high = min(float(np.max(x)), gate + distance)
     if high - low < 1e-5:
@@ -231,10 +263,12 @@ class MarkerGatingController:
         output_dir: Path,
         layer: str | None,
         imageid: str | None = None,
+        gate_range_width: float = GATE_RANGE_MIN_SPAN_FRACTION,
     ):
         from qtpy.QtCore import QTimer
 
         self.viewer = viewer
+        self.gate_range_width = gate_range_width
         self.sample_id = sample_id
         self.adata_path = adata_path
         self.image_path = image_path
@@ -267,7 +301,9 @@ class MarkerGatingController:
             self.log_values[marker] = values
             gate = float(row.selected_log1p_gate)
             fraction = float(np.mean(values >= gate))
-            low, high = adaptive_gate_range(values, gate)
+            low, high = adaptive_gate_range(
+                values, gate, min_span_fraction=self.gate_range_width
+            )
             self.reviews[marker] = MarkerReview(
                 marker=marker,
                 calculated_gate=gate,
@@ -820,6 +856,16 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--layer", default=None, help="AnnData layer; use 'raw' for adata.raw")
     parser.add_argument("--imageid", default=None, help="Only display cells from this image/FOV")
     parser.add_argument(
+        "--gate-range-width",
+        type=float,
+        default=GATE_RANGE_MIN_SPAN_FRACTION,
+        help=(
+            "Fraction of the observed intensity spread the gate slider must "
+            f"cover (default {GATE_RANGE_MIN_SPAN_FRACTION}). Raise it for a "
+            "wider review range; the calculated gate is unaffected."
+        ),
+    )
+    parser.add_argument(
         "--validate-only",
         action="store_true",
         help="Validate inputs and print a summary without launching napari.",
@@ -885,6 +931,7 @@ def main() -> None:
         sample_id=args.sample_id,
         layer=args.layer,
         imageid=args.imageid,
+        gate_range_width=args.gate_range_width,
         **paths,
     )
     viewer.window.add_dock_widget(controller.panel, name="Marker gate review", area="right")
