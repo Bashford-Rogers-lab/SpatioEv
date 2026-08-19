@@ -79,13 +79,44 @@ def standard_paths(sample_id: str, project_root: Path) -> dict[str, Path]:
     }
 
 
-def validate_paths(paths: dict[str, Path], *, require_condition_source: bool) -> list[str]:
+def optional_path(text: str) -> Path | None:
+    """Turn a text-input value into a path, treating blank as 'not set'.
+
+    ``Path("")`` is ``PosixPath(".")``, so an empty box silently becomes the
+    current directory. Since ``"."`` exists, existence checks pass and the
+    mistake only surfaces much later as ``IsADirectoryError`` from whatever
+    tries to open it.
+    """
+    text = (text or "").strip()
+    return Path(text).expanduser() if text else None
+
+
+def validate_paths(
+    paths: dict[str, Path | None], *, require_condition_source: bool
+) -> list[str]:
     errors = []
-    for key in ["adata", "image", "strategy"]:
-        if not paths[key].exists():
-            errors.append(f"{key} path does not exist: {paths[key]}")
-    if require_condition_source and not paths["conditions"].exists():
-        errors.append(f"condition CSV does not exist: {paths['conditions']}")
+    # adata and the strategy profile must be files; the image may be a single
+    # OME-TIFF or a folder of per-FOV images, so only its existence matters.
+    for key in ["adata", "strategy"]:
+        path = paths.get(key)
+        if path is None:
+            errors.append(f"{key} path is not set")
+        elif not path.is_file():
+            errors.append(
+                f"{key} path is not a file: {path}"
+                + (" (this is a directory)" if path.is_dir() else "")
+            )
+    image = paths.get("image")
+    if image is None:
+        errors.append("image path is not set")
+    elif not image.exists():
+        errors.append(f"image path does not exist: {image}")
+    if require_condition_source:
+        conditions = paths.get("conditions")
+        if conditions is None:
+            errors.append("condition CSV is not set")
+        elif not conditions.is_file():
+            errors.append(f"condition CSV is not a file: {conditions}")
     return errors
 
 
@@ -501,11 +532,11 @@ def main() -> None:
         )
 
     paths = {
-        "adata": Path(adata_text).expanduser(),
-        "image": Path(image_text).expanduser(),
-        "conditions": Path(condition_text).expanduser(),
-        "output": Path(output_text).expanduser(),
-        "strategy": Path(strategy_text).expanduser(),
+        "adata": optional_path(adata_text),
+        "image": optional_path(image_text),
+        "conditions": optional_path(condition_text),
+        "output": optional_path(output_text),
+        "strategy": optional_path(strategy_text),
     }
     require_source = source == "Current sample CSV"
     if st.button("Load sample", type="primary", icon=":material/folder_open:"):

@@ -123,8 +123,21 @@ def read_marker_conditions(path: Path) -> pd.DataFrame:
 
 
 def read_strategy_profile(path: Path | None) -> pd.DataFrame | None:
-    if path is None:
+    """Read an optional gating-strategy profile.
+
+    ``None`` means 'no profile', and so does a blank path: ``Path("")`` is
+    ``PosixPath(".")``, which exists as a directory and would otherwise reach
+    ``pd.read_csv`` and raise ``IsADirectoryError``.
+    """
+    if path is None or str(path).strip() in {"", "."}:
         return None
+    path = Path(path)
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"Gating strategy profile is not a file: {path}"
+            + (" (this is a directory)" if path.is_dir() else "")
+            + ". Leave the field blank to run without a strategy profile."
+        )
     df = pd.read_csv(path, encoding="utf-8-sig")
     required = {"marker", "preferred_method"}
     missing = required - set(df.columns)

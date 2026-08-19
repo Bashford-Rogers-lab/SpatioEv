@@ -345,9 +345,20 @@ def main() -> None:
     output_dir = Path(output_text).expanduser()
     if st.button("Load sample", type="primary", icon=":material/folder_open:"):
         errors = []
-        if not adata_path.exists():
-            errors.append(f"AnnData does not exist: {adata_path}")
-        if not image_path.exists():
+        # is_file(), not exists(): a blank box yields Path("") == Path("."),
+        # which exists as a directory and would pass an existence check only to
+        # fail later inside read_h5ad.
+        if not adata_text.strip():
+            errors.append("AnnData path is not set")
+        elif not adata_path.is_file():
+            errors.append(
+                f"AnnData is not a file: {adata_path}"
+                + (" (this is a directory)" if adata_path.is_dir() else "")
+            )
+        if not image_text.strip():
+            errors.append("Image path is not set")
+        elif not image_path.exists():
+            # The image may be a single OME-TIFF or a folder of per-FOV images.
             errors.append(f"Image does not exist: {image_path}")
         if errors:
             for error in errors:
