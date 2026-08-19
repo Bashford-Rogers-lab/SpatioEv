@@ -104,18 +104,54 @@ def default_sample_paths(sample_id: str, project_root: Path) -> SamplePaths:
     )
 
 
+CONDITION_COLUMNS = {
+    "marker",
+    "staining_condition",
+    "compartment_pattern",
+    "expression_condition",
+    "artifact_level",
+}
+STRATEGY_COLUMNS = {"marker", "preferred_method"}
+
+
+def _schema_error(
+    path: Path, found: list[str], missing: set[str], *, expected: str
+) -> str:
+    """Explain a CSV schema mismatch, including the likely file mix-up.
+
+    The marker-condition CSV and the gating-strategy profile are separate
+    inputs in adjacent fields on the autogating page, and both are keyed by
+    ``marker``. Swapping them produces a bare 'missing columns' message that
+    does not hint at what actually went wrong, so say it explicitly.
+    """
+    message = (
+        f"{expected} {Path(path).name!r} is missing required column(s): "
+        f"{sorted(missing)}.\n  File: {path}\n  Columns found: {found}"
+    )
+    other = "gating strategy profile" if expected.startswith("Marker") else "marker condition CSV"
+    other_required = (
+        STRATEGY_COLUMNS if expected.startswith("Marker") else CONDITION_COLUMNS
+    )
+    if other_required <= set(found):
+        message += (
+            f"\n  This file looks like a {other} instead. The two are separate "
+            "inputs on the autogating page -- check they are not swapped."
+        )
+    if expected.startswith("Gating"):
+        message += "\n  Leave the field blank to run without a strategy profile."
+    return message
+
+
 def read_marker_conditions(path: Path) -> pd.DataFrame:
     df = pd.read_csv(path, encoding="utf-8-sig")
-    required = {
-        "marker",
-        "staining_condition",
-        "compartment_pattern",
-        "expression_condition",
-        "artifact_level",
-    }
+    required = CONDITION_COLUMNS
     missing = required - set(df.columns)
     if missing:
-        raise ValueError(f"Marker condition CSV is missing columns: {sorted(missing)}")
+        raise ValueError(
+            _schema_error(
+                path, list(df.columns), missing, expected="Marker condition CSV"
+            )
+        )
     if df["marker"].duplicated().any():
         duplicated = sorted(df.loc[df["marker"].duplicated(), "marker"].astype(str).unique())
         raise ValueError(f"Marker condition CSV contains duplicated markers: {duplicated}")
@@ -139,10 +175,14 @@ def read_strategy_profile(path: Path | None) -> pd.DataFrame | None:
             + ". Leave the field blank to run without a strategy profile."
         )
     df = pd.read_csv(path, encoding="utf-8-sig")
-    required = {"marker", "preferred_method"}
+    required = STRATEGY_COLUMNS
     missing = required - set(df.columns)
     if missing:
-        raise ValueError(f"Strategy profile is missing columns: {sorted(missing)}")
+        raise ValueError(
+            _schema_error(
+                path, list(df.columns), missing, expected="Gating strategy profile"
+            )
+        )
     if df["marker"].duplicated().any():
         duplicated = sorted(df.loc[df["marker"].duplicated(), "marker"].astype(str).unique())
         raise ValueError(f"Strategy profile contains duplicated markers: {duplicated}")

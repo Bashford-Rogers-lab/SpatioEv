@@ -61,7 +61,7 @@ def test_missing_required_column_is_still_rejected(tmp_path):
     path = tmp_path / "bad.csv"
     pd.DataFrame({"marker": ["CD8"]}).to_csv(path, index=False)
 
-    with pytest.raises(ValueError, match="missing columns"):
+    with pytest.raises(ValueError, match="missing required column"):
         read_strategy_profile(path)
 
 
@@ -143,3 +143,87 @@ def test_validate_paths_rejects_unset_and_directory_paths(tmp_path):
         require_condition_source=False,
     )
     assert any("directory" in e for e in errors)
+
+
+# --------------------------------------------------------------------------- #
+# Swapping the two CSV inputs
+# --------------------------------------------------------------------------- #
+
+
+def _condition_csv(path: Path) -> Path:
+    pd.DataFrame(
+        {
+            "marker": ["CD8", "CD4"],
+            "staining_condition": ["clear_specific"] * 2,
+            "compartment_pattern": ["membrane"] * 2,
+            "expression_condition": ["bimodal"] * 2,
+            "artifact_level": ["low"] * 2,
+        }
+    ).to_csv(path, index=False)
+    return path
+
+
+def _strategy_csv(path: Path) -> Path:
+    pd.DataFrame(
+        {"marker": ["CD8", "CD4"], "preferred_method": ["otsu", "2component_gmm"]}
+    ).to_csv(path, index=False)
+    return path
+
+
+def test_condition_csv_given_as_strategy_names_the_mixup(tmp_path):
+    """The reported error: missing 'preferred_method'.
+
+    The two CSVs sit in adjacent fields and are both keyed by 'marker', so a
+    bare 'missing columns' message does not reveal what went wrong.
+    """
+    from spatioev.workflows.marker_gating import read_strategy_profile
+
+    path = _condition_csv(tmp_path / "marker_condition_for_gating.csv")
+    with pytest.raises(ValueError) as excinfo:
+        read_strategy_profile(path)
+
+    message = str(excinfo.value)
+    assert "preferred_method" in message
+    assert "marker condition CSV" in message, "should name the likely mix-up"
+    assert "swapped" in message
+    assert str(path) in message, "should name the offending file"
+    assert "blank" in message, "should say the field is optional"
+
+
+def test_strategy_given_as_condition_csv_names_the_mixup(tmp_path):
+    from spatioev.workflows.marker_gating import read_marker_conditions
+
+    path = _strategy_csv(tmp_path / "strategy.csv")
+    with pytest.raises(ValueError) as excinfo:
+        read_marker_conditions(path)
+
+    message = str(excinfo.value)
+    assert "gating strategy profile" in message
+    assert "swapped" in message
+
+
+def test_unrelated_csv_gets_no_misleading_hint(tmp_path):
+    """A genuinely malformed file must not be blamed on a swap."""
+    from spatioev.workflows.marker_gating import read_strategy_profile
+
+    path = tmp_path / "junk.csv"
+    pd.DataFrame({"foo": [1], "bar": [2]}).to_csv(path, index=False)
+
+    with pytest.raises(ValueError) as excinfo:
+        read_strategy_profile(path)
+
+    message = str(excinfo.value)
+    assert "swapped" not in message
+    assert "Columns found" in message
+
+
+def test_packaged_strategy_resource_is_valid():
+    """The shipped default must satisfy its own reader."""
+    from spatioev.apps._common import resource_path
+    from spatioev.workflows.marker_gating import read_strategy_profile
+
+    profile = read_strategy_profile(
+        resource_path("hcc_phenocycler_consensus_strategy.csv")
+    )
+    assert profile is not None
+    assert {"marker", "preferred_method"} <= set(profile.columns)
