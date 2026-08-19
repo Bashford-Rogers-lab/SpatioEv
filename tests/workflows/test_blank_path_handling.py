@@ -86,64 +86,43 @@ def test_optional_path_helper_maps_blank_to_none():
     assert module.optional_path("/tmp/x.csv") == Path("/tmp/x.csv")
 
 
-def test_validate_paths_rejects_unset_and_directory_paths(tmp_path):
-    pytest.importorskip("streamlit", minversion="1.40")
-    import importlib.util
+def test_validate_paths_only_requires_adata_and_image(tmp_path):
+    """The condition CSV, strategy profile and starting point were removed.
 
-    spec = importlib.util.spec_from_file_location(
-        "_autogating_page2",
-        Path(__file__).resolve().parents[2]
-        / "spatioev"
-        / "apps"
-        / "pages"
-        / "02_marker_autogating.py",
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-
+    Gates are computed from the data's own distribution diagnostics, so the
+    page should ask for nothing beyond the AnnData and the image.
+    """
+    module = _page_module("_pg_min")
     adata = tmp_path / "a.h5ad"
     adata.write_bytes(b"")
-    strategy = tmp_path / "s.csv"
-    strategy.write_text("marker,preferred_method\n")
 
-    ok = module.validate_paths(
-        {
-            "adata": adata,
-            "image": tmp_path,
-            "conditions": None,
-            "output": tmp_path,
-            "strategy": strategy,
-        },
-        require_condition_source=False,
-    )
-    assert ok == []
+    assert module.validate_paths({"adata": adata, "image": tmp_path, "output": tmp_path}) == []
 
-    # A blank AnnData path is a real problem and must be reported as unset,
-    # rather than silently becoming the working directory.
-    errors = module.validate_paths(
-        {
-            "adata": None,
-            "image": tmp_path,
-            "conditions": None,
-            "output": tmp_path,
-            "strategy": strategy,
-        },
-        require_condition_source=False,
-    )
+
+def test_validate_paths_reports_unset_and_directory_paths(tmp_path):
+    module = _page_module("_pg_errs")
+    adata = tmp_path / "a.h5ad"
+    adata.write_bytes(b"")
+
+    errors = module.validate_paths({"adata": None, "image": tmp_path, "output": tmp_path})
     assert any("AnnData" in e and "not set" in e for e in errors)
 
-    # strategy pointing at a directory -> named as a directory
-    errors = module.validate_paths(
-        {
-            "adata": adata,
-            "image": tmp_path,
-            "conditions": None,
-            "output": tmp_path,
-            "strategy": tmp_path,
-        },
-        require_condition_source=False,
-    )
+    # a directory where a file is required is named as such
+    errors = module.validate_paths({"adata": tmp_path, "image": tmp_path, "output": tmp_path})
     assert any("directory" in e for e in errors)
+
+
+def test_page_no_longer_exposes_the_removed_inputs():
+    """The three fields the user asked to drop must be gone."""
+    source = (
+        Path(__file__).resolve().parents[2]
+        / "spatioev" / "apps" / "pages" / "02_marker_autogating.py"
+    ).read_text()
+
+    assert 'key="condition_input"' not in source
+    assert 'key="strategy_input"' not in source
+    assert "Condition starting point" not in source
+    assert "CONDITION_START_OPTIONS" not in source
 
 
 # --------------------------------------------------------------------------- #
@@ -247,45 +226,3 @@ def _page_module(name: str):
     return module
 
 
-def test_blank_strategy_is_accepted_by_default(tmp_path):
-    """A gating strategy profile is optional; blank must not block loading.
-
-    Regression: an earlier fix for blank paths made the strategy field
-    mandatory, so leaving it empty reported 'strategy path is not set'.
-    """
-    module = _page_module("_pg_optional")
-    adata = tmp_path / "a.h5ad"
-    adata.write_bytes(b"")
-
-    errors = module.validate_paths(
-        {
-            "adata": adata,
-            "image": tmp_path,
-            "conditions": None,
-            "output": tmp_path,
-            "strategy": None,
-        },
-        require_condition_source=False,
-    )
-    assert errors == [], errors
-
-
-def test_blank_strategy_is_rejected_only_for_the_hcc_template(tmp_path):
-    """The template seeds the questionnaire from the profile, so it needs one."""
-    module = _page_module("_pg_required")
-    adata = tmp_path / "a.h5ad"
-    adata.write_bytes(b"")
-
-    errors = module.validate_paths(
-        {
-            "adata": adata,
-            "image": tmp_path,
-            "conditions": None,
-            "output": tmp_path,
-            "strategy": None,
-        },
-        require_condition_source=False,
-        require_strategy=True,
-    )
-    assert any("HCC Phenocycler template" in e for e in errors)
-    assert any("another condition source" in e for e in errors)

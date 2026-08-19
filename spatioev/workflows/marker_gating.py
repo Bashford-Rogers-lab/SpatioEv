@@ -613,8 +613,37 @@ def review_flags(row: pd.Series) -> str:
     return ";".join(flags)
 
 
-def add_method_plan(candidates: pd.DataFrame, strategy_profile: pd.DataFrame | None = None) -> pd.DataFrame:
+def fill_blank_expression_conditions(candidates: pd.DataFrame) -> pd.DataFrame:
+    """Fall back to the inferred expression label wherever the answer is blank.
+
+    ``condition_based_method`` returns ``"manual_review"`` when
+    ``expression_condition`` is empty, so an unanswered questionnaire yields no
+    usable gates at all. The distribution diagnostics already carry
+    ``inferred_expression_condition``; using it keeps every marker gateable
+    without a manual pass.
+
+    Note this only fills *expression shape*. ``staining_condition`` and
+    ``artifact_level`` cannot be inferred from intensities (see
+    :func:`infer_expression_condition`), so blanks there keep the conservative
+    branch of ``condition_based_method`` -- stricter gates than a curated
+    questionnaire would give. That is the safe direction to be wrong in.
+    """
     out = candidates.copy()
+    if "inferred_expression_condition" not in out.columns:
+        return out
+    if "expression_condition" not in out.columns:
+        out["expression_condition"] = ""
+
+    answered = out["expression_condition"].fillna("").astype(str).str.strip()
+    inferred = out["inferred_expression_condition"].fillna("").astype(str).str.strip()
+    use_inferred = (answered == "") & (inferred != "")
+    out.loc[use_inferred, "expression_condition"] = inferred[use_inferred]
+    out["expression_condition_source"] = np.where(use_inferred, "inferred", "answered")
+    return out
+
+
+def add_method_plan(candidates: pd.DataFrame, strategy_profile: pd.DataFrame | None = None) -> pd.DataFrame:
+    out = fill_blank_expression_conditions(candidates)
     out["condition_based_method"] = out.apply(condition_based_method, axis=1)
     out["review_flags"] = out.apply(review_flags, axis=1)
     if strategy_profile is not None:

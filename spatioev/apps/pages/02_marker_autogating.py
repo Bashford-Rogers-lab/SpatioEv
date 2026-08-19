@@ -50,11 +50,6 @@ COMPARTMENT_OPTIONS = [
 ]
 EXPRESSION_OPTIONS = ["", "bimodal", "multi_level", "broad_gradient"]
 ARTIFACT_OPTIONS = ["", "low", "medium", "high", "severe"]
-CONDITION_START_OPTIONS = [
-    "HCC Phenocycler template (example)",
-    "Current sample CSV",
-    "Blank questionnaire",
-]
 DISTRIBUTION_DISPLAY_COLUMNS = [
     "marker",
     "inferred_expression_condition",
@@ -91,18 +86,13 @@ def optional_path(text: str) -> Path | None:
     return Path(text).expanduser() if text else None
 
 
-def validate_paths(
-    paths: dict[str, Path | None],
-    *,
-    require_condition_source: bool,
-    require_strategy: bool = False,
-) -> list[str]:
+def validate_paths(paths: dict[str, Path | None]) -> list[str]:
     """Check the loaded paths.
 
-    The gating strategy profile is optional: gates can be computed without
-    one. It is only required when the condition table is seeded from the HCC
-    Phenocycler template, which reads it. Everything else treats a blank
-    strategy field as 'no profile'.
+    Only the AnnData and the image are needed. The condition CSV, the gating
+    strategy profile and the condition starting point were removed: the
+    questionnaire starts blank and expression shape is inferred from the
+    data's own distribution diagnostics, so gates compute without them.
     """
     errors = []
     adata = paths.get("adata")
@@ -114,30 +104,12 @@ def validate_paths(
             + (" (this is a directory)" if adata.is_dir() else "")
         )
 
-    strategy = paths.get("strategy")
-    if strategy is None:
-        if require_strategy:
-            errors.append(
-                "gating strategy profile is required for the HCC Phenocycler "
-                "template; choose another condition source to run without one"
-            )
-    elif not strategy.is_file():
-        errors.append(
-            f"gating strategy profile is not a file: {strategy}"
-            + (" (this is a directory)" if strategy.is_dir() else "")
-        )
-
     image = paths.get("image")
     if image is None:
         errors.append("image path is not set")
     elif not image.exists():
+        # A single OME-TIFF or a folder of per-FOV images are both valid.
         errors.append(f"image path does not exist: {image}")
-    if require_condition_source:
-        conditions = paths.get("conditions")
-        if conditions is None:
-            errors.append("condition CSV is not set")
-        elif not conditions.is_file():
-            errors.append(f"condition CSV is not a file: {conditions}")
     return errors
 
 
@@ -518,19 +490,14 @@ def main() -> None:
     project_root = Path(project_root_text).expanduser()
     defaults = standard_paths(sample_id, project_root)
     with top_c:
-        source = st.selectbox(
-            "Condition starting point",
-            CONDITION_START_OPTIONS,
-            help="The bundled HCC template is a worked example. Every value remains editable, and other panels can start from the questionnaire or their own CSV.",
-        )
+        # The questionnaire now starts blank and is seeded from the data's own
+        # distribution diagnostics, so there is nothing to choose here.
         fill_standard_paths = st.button("Fill standard sample paths", icon=":material/refresh:")
 
     path_state = {
         "adata_input": str(defaults["adata"]),
-        "condition_input": str(defaults["conditions"]),
         "output_input": str(defaults["output"]),
         "image_input": str(defaults["image"]),
-        "strategy_input": str(defaults["strategy"]),
     }
     for key, value in path_state.items():
         if key not in st.session_state:
@@ -541,11 +508,9 @@ def main() -> None:
     paths_a, paths_b = st.columns(2)
     with paths_a:
         adata_text = st.text_input("AnnData (.h5ad)", key="adata_input")
-        condition_text = st.text_input("Existing condition CSV", key="condition_input")
         output_text = st.text_input("Output directory", key="output_input")
     with paths_b:
         image_text = st.text_input("OME-TIFF image or FOV image folder", key="image_input")
-        strategy_text = st.text_input("Gating strategy profile", key="strategy_input")
         layer_choice = st.text_input(
             "Expression layer",
             value="",
@@ -555,18 +520,10 @@ def main() -> None:
     paths = {
         "adata": optional_path(adata_text),
         "image": optional_path(image_text),
-        "conditions": optional_path(condition_text),
         "output": optional_path(output_text),
-        "strategy": optional_path(strategy_text),
     }
-    require_source = source == "Current sample CSV"
-    require_strategy = source == "HCC Phenocycler template (example)"
     if st.button("Load sample", type="primary", icon=":material/folder_open:"):
-        errors = validate_paths(
-            paths,
-            require_condition_source=require_source,
-            require_strategy=require_strategy,
-        )
+        errors = validate_paths(paths)
         if errors:
             for error in errors:
                 st.error(error)
@@ -576,19 +533,12 @@ def main() -> None:
                 if metadata["missing_in_image"]:
                     st.error(f"Markers missing from image: {', '.join(metadata['missing_in_image'])}")
                 else:
-                    table = prepare_condition_table(
-                        metadata["review_markers"],
-                        source=source,
-                        condition_path=paths["conditions"],
-                        project_root=project_root,
-                        strategy_path=paths["strategy"],
-                    )
+                    table = blank_condition_table(metadata["review_markers"])
                     st.session_state.loaded_metadata = metadata
                     st.session_state.condition_table = table
                     st.session_state.loaded_paths = {key: str(value) for key, value in paths.items()}
                     st.session_state.loaded_sample_id = sample_id
                     st.session_state.loaded_project_root = str(project_root)
-                    st.session_state.loaded_condition_source = source
                     st.session_state.editor_version = st.session_state.get("editor_version", 0) + 1
                     st.session_state.pop("calculated_outputs", None)
                     st.session_state.pop("distribution_diagnostics", None)
@@ -645,7 +595,6 @@ def main() -> None:
         .sum()
     )
     st.caption(
-        f"Starting point: {st.session_state.get('loaded_condition_source', 'custom')} "
         f"({initialized_rows}/{len(st.session_state.condition_table)} markers fully initialized). "
         "Expected positivity and parent populations are optional."
     )
@@ -826,7 +775,7 @@ def main() -> None:
                     sample_id=st.session_state.loaded_sample_id,
                     adata_path=loaded_paths["adata"],
                     condition_table=edited,
-                    strategy_path=loaded_paths["strategy"],
+                    strategy_path=None,
                     output_dir=loaded_paths["output"],
                     layer=layer_choice.strip() or None,
                     diagnostics=cached_diagnostics,
