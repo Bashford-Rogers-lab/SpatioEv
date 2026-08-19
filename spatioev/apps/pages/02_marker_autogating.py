@@ -92,20 +92,41 @@ def optional_path(text: str) -> Path | None:
 
 
 def validate_paths(
-    paths: dict[str, Path | None], *, require_condition_source: bool
+    paths: dict[str, Path | None],
+    *,
+    require_condition_source: bool,
+    require_strategy: bool = False,
 ) -> list[str]:
+    """Check the loaded paths.
+
+    The gating strategy profile is optional: gates can be computed without
+    one. It is only required when the condition table is seeded from the HCC
+    Phenocycler template, which reads it. Everything else treats a blank
+    strategy field as 'no profile'.
+    """
     errors = []
-    # adata and the strategy profile must be files; the image may be a single
-    # OME-TIFF or a folder of per-FOV images, so only its existence matters.
-    for key in ["adata", "strategy"]:
-        path = paths.get(key)
-        if path is None:
-            errors.append(f"{key} path is not set")
-        elif not path.is_file():
+    adata = paths.get("adata")
+    if adata is None:
+        errors.append("AnnData path is not set")
+    elif not adata.is_file():
+        errors.append(
+            f"AnnData is not a file: {adata}"
+            + (" (this is a directory)" if adata.is_dir() else "")
+        )
+
+    strategy = paths.get("strategy")
+    if strategy is None:
+        if require_strategy:
             errors.append(
-                f"{key} path is not a file: {path}"
-                + (" (this is a directory)" if path.is_dir() else "")
+                "gating strategy profile is required for the HCC Phenocycler "
+                "template; choose another condition source to run without one"
             )
+    elif not strategy.is_file():
+        errors.append(
+            f"gating strategy profile is not a file: {strategy}"
+            + (" (this is a directory)" if strategy.is_dir() else "")
+        )
+
     image = paths.get("image")
     if image is None:
         errors.append("image path is not set")
@@ -539,8 +560,13 @@ def main() -> None:
         "strategy": optional_path(strategy_text),
     }
     require_source = source == "Current sample CSV"
+    require_strategy = source == "HCC Phenocycler template (example)"
     if st.button("Load sample", type="primary", icon=":material/folder_open:"):
-        errors = validate_paths(paths, require_condition_source=require_source)
+        errors = validate_paths(
+            paths,
+            require_condition_source=require_source,
+            require_strategy=require_strategy,
+        )
         if errors:
             for error in errors:
                 st.error(error)
