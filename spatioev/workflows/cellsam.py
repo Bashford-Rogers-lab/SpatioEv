@@ -159,6 +159,31 @@ def image_channel_names(image_path: Path) -> list[str]:
     return [node.attrib.get("Name", f"C{index}") for index, node in enumerate(channels)]
 
 
+def display_channel_names(image_path: Path) -> list[str]:
+    """One display name per *physical* image plane, with repeats disambiguated.
+
+    ``adata.uns["all_markers"]`` is consumed by ``scimap.pl.image_viewer``,
+    which asserts one name per channel present in the image::
+
+        AssertionError: number of channel names (17) must match
+        number of channels (18)
+
+    ``var_names`` holds one entry per *distinct* marker, so the two diverge as
+    soon as an image repeats a channel name -- routine in cyclic imaging. This
+    returns a name per plane so they line up again, suffixing repeats
+    (``DAPI``, ``DAPI (2)``) to keep napari layers distinguishable.
+    """
+    seen: dict[str, int] = {}
+    display: list[str] = []
+    for name in image_channel_names(image_path):
+        canonical = canonical_name(name)
+        seen[canonical] = seen.get(canonical, 0) + 1
+        display.append(
+            canonical if seen[canonical] == 1 else f"{canonical} ({seen[canonical]})"
+        )
+    return display
+
+
 def canonical_name(name: str) -> str:
     clean = str(name).strip()
     return CHANNEL_ALIASES.get(clean, clean)
@@ -748,7 +773,11 @@ def build_anndata(
         adata.obsm["spatial"] = adata.obs[["X_centroid", "Y_centroid"]].to_numpy(
             dtype=float
         )
-    adata.uns["all_markers"] = np.asarray(output_markers, dtype=str)
+    # One name per *image plane*, not per marker: scimap.pl.image_viewer
+    # asserts these line up with the channels in the file.
+    adata.uns["all_markers"] = np.asarray(
+        display_channel_names(plan.image_path), dtype=str
+    )
     adata.uns["cellsam_conversion"] = {
         "created_at": now(),
         "imageid": plan.imageid.strip(),

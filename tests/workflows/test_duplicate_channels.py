@@ -149,3 +149,43 @@ def test_a_channel_with_no_expression_column_is_still_an_error(tmp_path):
 
     assert any("without an expression column" in e for e in report["errors"])
     assert any("PANCK" in e for e in report["errors"])
+
+
+def test_all_markers_has_one_entry_per_image_plane(tmp_path):
+    """scimap.pl.image_viewer asserts len(all_markers) == number of channels.
+
+    var_names holds one entry per distinct marker, so with a repeated channel
+    name the two diverge and napari review failed with:
+
+        AssertionError: number of channel names (17) must match
+        number of channels (18)
+    """
+    from spatioev.workflows.cellsam import image_channel_names
+
+    plan = _project(
+        tmp_path,
+        channels=["DAPI_INIT", "DAPI_INIT", "CD8", "PANCK"],
+        csv_markers=["DAPI_INIT", "CD8", "PANCK"],
+    )
+    adata = _as_adata(build_anndata(plan))
+
+    n_planes = len(image_channel_names(plan.image_path))
+    assert n_planes == 4
+    assert adata.n_vars == 3, "markers are deduped"
+    assert len(adata.uns["all_markers"]) == n_planes, (
+        "all_markers must have one entry per image plane, not per marker"
+    )
+
+
+def test_repeated_channel_display_names_are_distinguishable(tmp_path):
+    """napari layer names must not collide."""
+    plan = _project(
+        tmp_path,
+        channels=["DAPI", "DAPI", "DAPI", "CD8"],
+        csv_markers=["DAPI", "CD8"],
+    )
+    adata = _as_adata(build_anndata(plan))
+
+    names = list(adata.uns["all_markers"])
+    assert names == ["DAPI", "DAPI (2)", "DAPI (3)", "CD8"]
+    assert len(names) == len(set(names))
