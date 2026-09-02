@@ -44,6 +44,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   marker whose key hits more than one column is an error rather than a guess.
 
 ### Fixed
+- `dask[array]` was missing from the `dev` extra, but
+  `workflows.marker_gating_review` imports it at module level. `pip install -e
+  ".[dev]" && pytest` — what CI runs — therefore died collecting
+  `test_gate_range.py`, and a collection error aborts the whole session, so the
+  entire test job failed rather than one file. Present since the gate-slider
+  work of 19 August, which also meant the Streamlit AppTest suite had not
+  actually run in CI since then.
 - Both converters now write the H5AD to a temporary file and move it into
   place. Writing straight to the destination left a truncated file there when
   a run was interrupted; HDF5 keeps its superblock, so the file still looked

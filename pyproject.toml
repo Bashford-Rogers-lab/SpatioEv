@@ -51,10 +51,13 @@ dev = [
     "pytest>=7.4",
     "pytest-cov>=4.1",
     # Needed by the workflow tests: spatioev.workflows.{cellsam,marker_gating,
-    # scimap_phenotyping} import these at module level. Without them the test
-    # session aborts during collection rather than skipping.
+    # marker_gating_review,scimap_phenotyping} import these at module level.
+    # Without them the test session aborts during collection rather than
+    # skipping. dask was the one omission, so test_gate_range.py took the whole
+    # CI test job down with a collection error rather than failing alone.
     "tifffile>=2025.1",
     "zarr>=3.1,<4",
+    "dask[array]>=2024.1",
     # tomllib is stdlib only from 3.11; tests parse pyproject.toml on 3.10 too.
     "tomli>=2.0; python_version < '3.11'",
     # Streamlit AppTest drives the interface regression tests. Without it in
