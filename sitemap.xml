@@ -2,106 +2,94 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/data_policy/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/function_catalog/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/install/</loc>
-         <lastmod>2026-07-03</lastmod>
-    </url>
-    <url>
-         <loc>https://bashford-rogers-lab.github.io/SpatioEv/notebook_compatibility_audit/</loc>
-         <lastmod>2026-07-03</lastmod>
-    </url>
-    <url>
-         <loc>https://bashford-rogers-lab.github.io/SpatioEv/panin_pdac_evolution_literature_workflow_review/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/quickstart/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/release_checklist/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/testing/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
-         <loc>https://bashford-rogers-lab.github.io/SpatioEv/trajectory_biology_exploration_plan/</loc>
-         <lastmod>2026-07-03</lastmod>
-    </url>
-    <url>
-         <loc>https://bashford-rogers-lab.github.io/SpatioEv/xenium_pseudotime_handoff/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <loc>https://bashford-rogers-lab.github.io/SpatioEv/workflow_apps/</loc>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/functions/helper_functions/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/functions/plotting/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/functions/preprocessing/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/functions/tools_density_interaction/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/functions/tools_ecm_cell/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/functions/tools_niche_pseudotime/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/functions/tools_spatial_statistics/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/functions/xenium/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/methods/ecm_cell_model/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/methods/morphology_topology_features/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/methods/niche_graph_pseudotime/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/methods/spatial_statistics/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/publication/reproducibility/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/tutorials/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
     <url>
          <loc>https://bashford-rogers-lab.github.io/SpatioEv/tutorials/md/spatial_evolution_spatioev/</loc>
-         <lastmod>2026-07-03</lastmod>
+         <lastmod>2026-09-02</lastmod>
     </url>
 </urlset>
