@@ -173,6 +173,42 @@ def manifest_marker_order(plan: ConversionPlan) -> list[str] | None:
     return order
 
 
+def resolve_marker_columns(
+    marker_order: list[str], header: list[str]
+) -> tuple[dict[str, str], list[str], list[tuple[str, list[str]]]]:
+    """Map each marker name onto the cell-table column that supplies it.
+
+    An exact name wins; otherwise the match is made on the normalised key, so a
+    manifest that says ``NAKATPASE`` still finds a ``NaKATPase`` column. The
+    single-image path has always matched this way, and requiring an exact string
+    here made the two conversion paths disagree about the very same pair of
+    files.
+
+    Returns the resolved mapping, the markers absent from the table, and any
+    marker whose normalised key hits more than one column -- those cannot be
+    resolved without guessing.
+    """
+    by_key: dict[str, list[str]] = {}
+    for column in header:
+        by_key.setdefault(marker_key(column), []).append(column)
+
+    resolved: dict[str, str] = {}
+    missing: list[str] = []
+    ambiguous: list[tuple[str, list[str]]] = []
+    for marker in marker_order:
+        if marker in header:
+            resolved[marker] = marker
+            continue
+        candidates = by_key.get(marker_key(marker), [])
+        if len(candidates) == 1:
+            resolved[marker] = candidates[0]
+        elif not candidates:
+            missing.append(marker)
+        else:
+            ambiguous.append((marker, candidates))
+    return resolved, missing, ambiguous
+
+
 def read_header(path: Path) -> list[str]:
     with path.open("r", encoding="utf-8-sig", newline="") as handle:
         return next(csv.reader(handle))

@@ -344,3 +344,86 @@ def test_tma_and_single_image_agree_on_the_same_manifest(tmp_path):
     single_result = ad.read_h5ad(single_plan.output_path)
 
     assert list(tma_result.var_names) == list(single_result.var_names) == order
+
+
+# --------------------------------------------------------------------------
+# Marker names are matched to cell-table columns the same way in both paths
+# --------------------------------------------------------------------------
+
+
+def _tma_plan_with_columns(tmp_path, table_columns, manifest_names):
+    """A TMA batch whose column spellings differ from the marker order CSV."""
+    table_dir = tmp_path / "ark_wdir_1" / "segmentation" / "cell_table"
+    table_dir.mkdir(parents=True)
+    frame = pd.DataFrame(
+        {
+            "label": [1, 2],
+            "area": [100.0, 110.0],
+            "centroid-0": [20.0, 40.0],
+            "centroid-1": [30.0, 50.0],
+            "fov": ["fov1", "fov1"],
+            "mask_type": ["whole_cell", "whole_cell"],
+        }
+    )
+    for index, column in enumerate(table_columns):
+        frame[column] = [(index + 1) * 10, (index + 1) * 10]
+    frame.to_csv(table_dir / "primary.csv", index=False)
+    frame.to_csv(table_dir / "secondary.csv", index=False)
+    image_dir = tmp_path / "dearray"
+    image_dir.mkdir()
+    _write_image(image_dir / "1.ome.tif", None, planes=len(table_columns))
+    manifest = _write_manifest(image_dir / "markers.csv", manifest_names)
+    return TMAConversionPlan(
+        project_root=tmp_path,
+        image_dir=image_dir,
+        marker_manifest=manifest,
+        dataset_id="TMA1",
+        output_path=tmp_path / "tma.h5ad",
+        primary_filename="primary.csv",
+        secondary_filename="secondary.csv",
+        make_qc=False,
+    )
+
+
+def test_tma_matches_marker_names_case_insensitively(tmp_path):
+    """The single-image path always did; requiring an exact string here made
+    the two paths disagree about the same pair of files."""
+    table = ["DAPI", "NaKATPase", "CX43", "CX43_2"]
+    plan = _tma_plan_with_columns(
+        tmp_path, table, ["DAPI", "NAKATPASE", "CX43", "CX43_2"]
+    )
+    report = inspect_tma(plan)
+    assert any("matched case-insensitively" in w for w in report["warnings"])
+    build_tma_anndata(plan)
+    result = ad.read_h5ad(plan.output_path)
+    # var_names keep the CSV spelling; source_column records where each came from.
+    assert list(result.var_names) == ["DAPI", "NAKATPASE", "CX43", "CX43_2"]
+    assert list(result.var["source_column"]) == table
+    np.testing.assert_allclose(result.X[0], [10, 20, 30, 40])
+
+
+def test_tma_case_matched_column_does_not_also_land_in_obs(tmp_path):
+    # Excluding the manifest spelling instead of the resolved column would
+    # leave NaKATPase in .obs as well as .X.
+    table = ["DAPI", "NaKATPase"]
+    plan = _tma_plan_with_columns(tmp_path, table, ["DAPI", "NAKATPASE"])
+    build_tma_anndata(plan)
+    result = ad.read_h5ad(plan.output_path)
+    assert not set(table) & set(result.obs.columns)
+
+
+def test_tma_still_reports_a_marker_absent_from_the_table(tmp_path):
+    plan = _tma_plan_with_columns(tmp_path, ["DAPI", "CD3"], ["DAPI", "GHOST"])
+    with pytest.raises(ValueError, match="missing markers"):
+        inspect_tma(plan)
+
+
+def test_suffixed_repeat_markers_do_not_collide(tmp_path):
+    # A cyclic panel re-images markers as CX43 and CX43_2; these must stay
+    # distinct rather than normalising onto one another.
+    table = ["CX43", "CX43_2", "CLDN11", "CLDN11_2"]
+    plan = _tma_plan_with_columns(tmp_path, table, table)
+    build_tma_anndata(plan)
+    result = ad.read_h5ad(plan.output_path)
+    assert list(result.var_names) == table
+    np.testing.assert_allclose(result.X[0], [10, 20, 30, 40])

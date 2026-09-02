@@ -34,6 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `read_marker_manifest` is shared by both paths (defined in
   `workflows.cellsam`, re-exported from `workflows.cellsam_tma`), so the two
   cannot drift apart on what a marker order CSV means.
+- The TMA path now matches marker names to cell-table columns on the same
+  normalised key the single-image path has always used, via the shared
+  `resolve_marker_columns`. Requiring an exact string there meant a marker CSV
+  saying `NAKATPASE` failed against a `NaKATPase` column on one path and
+  succeeded on the other, for the same pair of files. `var_names` keep the CSV
+  spelling, `var["source_column"]` records the column each marker came from,
+  and a name matched only after normalisation is reported as a warning. A
+  marker whose key hits more than one column is an error rather than a guess.
 
 ### Fixed
 - Expression columns with no matching image channel were moved to `.obs` with

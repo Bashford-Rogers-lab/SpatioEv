@@ -19,6 +19,7 @@ import pandas as pd
 from spatioev.workflows.cellsam import (
     now,
     read_marker_manifest,
+    resolve_marker_columns,
     write_json,
     write_qc,
 )
@@ -133,9 +134,16 @@ def inspect_tma(plan: TMAConversionPlan) -> dict:
             raise ValueError(
                 f"Cell-table columns differ across ARK batches at {pair['batch']}"
             )
-        missing_markers = [
-            marker for marker in marker_order if marker not in primary_header
-        ]
+        resolved, missing_markers, ambiguous = resolve_marker_columns(
+            marker_order, primary_header
+        )
+        if ambiguous:
+            raise ValueError(
+                f"Marker names are ambiguous in {pair['batch']}: "
+                + "; ".join(
+                    f"{marker!r} matches {columns}" for marker, columns in ambiguous
+                )
+            )
         required = [
             column
             for column in ["label", "fov", "mask_type"]
@@ -144,6 +152,17 @@ def inspect_tma(plan: TMAConversionPlan) -> dict:
         if missing_markers or required:
             raise ValueError(
                 f"Invalid columns in {pair['batch']}: missing markers={missing_markers}; missing metadata={required}"
+            )
+        renamed = {
+            marker: column for marker, column in resolved.items() if marker != column
+        }
+        if renamed:
+            warnings.append(
+                f"These marker names differ from the cell-table column spelling "
+                f"in {pair['batch']} and were matched case-insensitively: "
+                + ", ".join(
+                    f"{marker!r} -> {column!r}" for marker, column in renamed.items()
+                )
             )
         summary = pd.read_csv(primary, usecols=["fov", "mask_type"])
         selected = summary["mask_type"].astype(str).eq(plan.mask_type)
@@ -190,6 +209,9 @@ def inspect_tma(plan: TMAConversionPlan) -> dict:
         "n_markers": len(marker_order),
         "n_cells": int(sum(row["selected_cells"] for row in batch_rows)),
         "marker_order": marker_order,
+        # Marker name -> cell-table column. Every batch is checked against the
+        # same reference header above, so the last resolution covers them all.
+        "marker_columns": resolved,
         "warnings": warnings,
         "marker_manifest": str(Path(plan.marker_manifest).expanduser().resolve()),
         "image_dir": str(Path(plan.image_dir).expanduser().resolve()),
@@ -313,7 +335,10 @@ def build_tma_anndata(
     secondary = secondary.loc[primary_key].reset_index(drop=True)
 
     update("assemble", "Assembling multi-FOV AnnData", 0.50)
-    marker_set = set(marker_order)
+    # Exclude the columns the markers actually came from. Using the manifest
+    # spellings would leave a case-differing column in .obs as well as .X.
+    marker_columns = [report["marker_columns"][marker] for marker in marker_order]
+    marker_set = set(marker_columns)
     obs_columns = [column for column in primary.columns if column not in marker_set]
     obs = primary[obs_columns].copy()
     if "cell_size" in obs and "area" in obs:
@@ -351,8 +376,9 @@ def build_tma_anndata(
     var = marker_manifest.set_index("marker_name").loc[marker_order].copy()
     var.index.name = "marker"
     var["marker_order"] = np.arange(len(var), dtype=int)
-    x = primary[marker_order].to_numpy(dtype=np.float32, copy=True)
-    layer = secondary[marker_order].to_numpy(dtype=np.float32, copy=True)
+    var["source_column"] = marker_columns
+    x = primary[marker_columns].to_numpy(dtype=np.float32, copy=True)
+    layer = secondary[marker_columns].to_numpy(dtype=np.float32, copy=True)
     adata = ad.AnnData(X=x, obs=obs, var=var)
     adata.layers[plan.layer_name] = layer
     adata.obsm["spatial"] = obs[["X_centroid", "Y_centroid"]].to_numpy(dtype=np.float32)
@@ -387,8 +413,10 @@ def build_tma_anndata(
         update("qc", "Generating combined marker and spatial QC", 0.88)
         qc_outputs = write_qc(adata, output_path)
 
-    counts = adata.obs["imageid"].value_counts().reindex(
-        sorted(adata.obs["imageid"].astype(str).unique(), key=natural_key)
+    counts = (
+        adata.obs["imageid"]
+        .value_counts()
+        .reindex(sorted(adata.obs["imageid"].astype(str).unique(), key=natural_key))
     )
     counts_path = output_path.with_name(f"{output_path.stem}_cells_per_fov.csv")
     counts.rename_axis("imageid").reset_index(name="n_cells").to_csv(
@@ -419,12 +447,8 @@ def parser() -> argparse.ArgumentParser:
     cli.add_argument("--marker-manifest", type=Path, required=True)
     cli.add_argument("--dataset-id", required=True)
     cli.add_argument("--output", type=Path, required=True)
-    cli.add_argument(
-        "--primary-filename", default="cell_table_arcsinh_transformed.csv"
-    )
-    cli.add_argument(
-        "--secondary-filename", default="cell_table_size_normalized.csv"
-    )
+    cli.add_argument("--primary-filename", default="cell_table_arcsinh_transformed.csv")
+    cli.add_argument("--secondary-filename", default="cell_table_size_normalized.csv")
     cli.add_argument("--layer-name", default="size_normalized")
     cli.add_argument("--mask-type", default="whole_cell")
     cli.add_argument("--no-qc", action="store_true")
