@@ -44,6 +44,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   marker whose key hits more than one column is an error rather than a guess.
 
 ### Fixed
+- Both converters now write the H5AD to a temporary file and move it into
+  place. Writing straight to the destination left a truncated file there when
+  a run was interrupted; HDF5 keeps its superblock, so the file still looked
+  openable and only failed later in the clustering page with h5py's `KeyError:
+  'Unable to synchronously open object (unable to determine object type)'`. An
+  interrupted run now leaves the previous good file, or nothing.
+- The clustering page checks the H5AD is readable before loading it and says
+  what is wrong -- truncated, empty, or not HDF5 at all (an undownloaded cloud
+  placeholder) -- instead of surfacing an h5py traceback.
 - Expression columns with no matching image channel were moved to `.obs` with
   no error and no warning, silently yielding fewer markers than the table
   offered. They are now named in a warning.

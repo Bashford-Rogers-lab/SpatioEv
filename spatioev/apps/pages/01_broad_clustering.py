@@ -9,8 +9,14 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "spatioev_clustering_app_matplotlib"))
-os.environ.setdefault("NUMBA_CACHE_DIR", str(Path(tempfile.gettempdir()) / "spatioev_clustering_app_numba"))
+os.environ.setdefault(
+    "MPLCONFIGDIR",
+    str(Path(tempfile.gettempdir()) / "spatioev_clustering_app_matplotlib"),
+)
+os.environ.setdefault(
+    "NUMBA_CACHE_DIR",
+    str(Path(tempfile.gettempdir()) / "spatioev_clustering_app_numba"),
+)
 Path(os.environ["MPLCONFIGDIR"]).mkdir(parents=True, exist_ok=True)
 Path(os.environ["NUMBA_CACHE_DIR"]).mkdir(parents=True, exist_ok=True)
 
@@ -21,6 +27,7 @@ import streamlit as st
 from spatioev.apps._common import default_project_root, module_command
 from spatioev.workflows import marker_gating as mgq
 from spatioev.workflows._io import read_json, write_json
+from spatioev.workflows.cellsam import describe_unreadable_h5ad
 from spatioev.workflows.image_collection import natural_key, resolve_image
 
 PROJECT_ROOT_DEFAULT = default_project_root()
@@ -34,7 +41,18 @@ JOB_STAGE_PROGRESS = {
     "write": 0.90,
     "complete": 1.0,
 }
-CORE_MARKERS = ["HOECHST2", "CD39", "CD34", "LYVE1", "CD45", "CD68", "aSMA", "panCK", "EpCAM", "HNF4a"]
+CORE_MARKERS = [
+    "HOECHST2",
+    "CD39",
+    "CD34",
+    "LYVE1",
+    "CD45",
+    "CD68",
+    "aSMA",
+    "panCK",
+    "EpCAM",
+    "HNF4a",
+]
 FINAL_LABELS = [
     "",
     "immune",
@@ -86,7 +104,10 @@ def sample_metadata(adata_path: str, image_path: str) -> dict[str, object]:
         )
         imageid_counts = {
             str(imageid): int(count)
-            for imageid, count in adata.obs["imageid"].astype(str).value_counts().items()
+            for imageid, count in adata.obs["imageid"]
+            .astype(str)
+            .value_counts()
+            .items()
         }
     else:
         imageid_counts = {}
@@ -100,8 +121,12 @@ def sample_metadata(adata_path: str, image_path: str) -> dict[str, object]:
     resolved_image = resolve_image(Path(image_path), imageids[0] if imageids else None)
     channels = mgq.canonical_channel_names(resolved_image, metadata["markers"])
     metadata["image_channels"] = channels
-    metadata["missing_image_channels"] = sorted(set(metadata["markers"]) - set(channels))
-    metadata["has_coordinates"] = {"X_centroid", "Y_centroid"}.issubset(metadata["obs_columns"])
+    metadata["missing_image_channels"] = sorted(
+        set(metadata["markers"]) - set(channels)
+    )
+    metadata["has_coordinates"] = {"X_centroid", "Y_centroid"}.issubset(
+        metadata["obs_columns"]
+    )
     metadata["imageids"] = imageids
     metadata["imageid_counts"] = imageid_counts
     metadata["default_image_path"] = str(resolved_image)
@@ -115,11 +140,9 @@ def recommended_defaults(sample_id: str, markers: list[str]) -> tuple[list[str],
     return selected, 0.4
 
 
-
-
-
-
-def start_worker(action: str, config_path: Path, status_path: Path, log_path: Path) -> int:
+def start_worker(
+    action: str, config_path: Path, status_path: Path, log_path: Path
+) -> int:
     status_path.unlink(missing_ok=True)
     write_json(
         status_path,
@@ -141,7 +164,9 @@ def start_worker(action: str, config_path: Path, status_path: Path, log_path: Pa
     )
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with log_path.open("ab") as log:
-        process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+        process = subprocess.Popen(
+            command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True
+        )
     return process.pid
 
 
@@ -165,7 +190,9 @@ def launch_napari(
     if imageid is not None:
         command.extend(["--imageid", imageid])
     with log_path.open("ab") as log:
-        process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+        process = subprocess.Popen(
+            command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True
+        )
     return process.pid, log_path
 
 
@@ -204,8 +231,12 @@ def _render_running_job(status_path: Path, *, label: str) -> None:
     if updated_at:
         try:
             timestamp = datetime.fromisoformat(str(updated_at).replace("Z", "+00:00"))
-            age_seconds = max(0.0, (datetime.now(timezone.utc) - timestamp).total_seconds())
-            st.caption(f"Last worker update: {int(age_seconds):,} seconds ago. Refreshing automatically.")
+            age_seconds = max(
+                0.0, (datetime.now(timezone.utc) - timestamp).total_seconds()
+            )
+            st.caption(
+                f"Last worker update: {int(age_seconds):,} seconds ago. Refreshing automatically."
+            )
         except ValueError:
             pass
 
@@ -214,7 +245,11 @@ def _render_running_job(status_path: Path, *, label: str) -> None:
             f"No worker update for more than {STALE_JOB_SECONDS // 60} minutes. "
             "Check the worker log before rerunning the job."
         )
-        st.button("Refresh status", key=f"refresh_{status_path.name}", icon=":material/refresh:")
+        st.button(
+            "Refresh status",
+            key=f"refresh_{status_path.name}",
+            icon=":material/refresh:",
+        )
 
 
 def render_job(status_path: Path, *, label: str) -> dict | None:
@@ -249,7 +284,13 @@ def mapping_editor(
         existing["cluster"] = existing["cluster"].astype(str)
         base["cluster"] = base["cluster"].astype(str)
         base = base.drop(columns=["annotation", "custom_annotation"]).merge(
-            existing[[column for column in ["cluster", "annotation", "custom_annotation"] if column in existing]],
+            existing[
+                [
+                    column
+                    for column in ["cluster", "annotation", "custom_annotation"]
+                    if column in existing
+                ]
+            ],
             on="cluster",
             how="left",
         )
@@ -264,13 +305,25 @@ def mapping_editor(
         width="stretch",
         num_rows="fixed",
         column_config={
-            "cluster": st.column_config.TextColumn("Cluster", disabled=True, width="small"),
-            "n_cells": st.column_config.NumberColumn("Cells", disabled=True, format="%d", width="small"),
-            "fraction": st.column_config.NumberColumn("Fraction", disabled=True, format="percent", width="small"),
-            "top_markers": st.column_config.TextColumn("Top markers", disabled=True, width="medium"),
-            "annotation": st.column_config.SelectboxColumn("Annotation", options=options, required=True, width="medium"),
+            "cluster": st.column_config.TextColumn(
+                "Cluster", disabled=True, width="small"
+            ),
+            "n_cells": st.column_config.NumberColumn(
+                "Cells", disabled=True, format="%d", width="small"
+            ),
+            "fraction": st.column_config.NumberColumn(
+                "Fraction", disabled=True, format="percent", width="small"
+            ),
+            "top_markers": st.column_config.TextColumn(
+                "Top markers", disabled=True, width="medium"
+            ),
+            "annotation": st.column_config.SelectboxColumn(
+                "Annotation", options=options, required=True, width="medium"
+            ),
             "custom_annotation": st.column_config.TextColumn(
-                "Custom label", help="Used instead of Annotation when non-empty", width="medium"
+                "Custom label",
+                help="Used instead of Annotation when non-empty",
+                width="medium",
             ),
         },
     )
@@ -278,9 +331,15 @@ def mapping_editor(
 
 def final_mapping(editor: pd.DataFrame) -> pd.DataFrame:
     output = editor[["cluster", "annotation", "custom_annotation"]].copy()
-    output["annotation"] = output["custom_annotation"].fillna("").astype(str).str.strip().where(
-        output["custom_annotation"].fillna("").astype(str).str.strip().ne(""),
-        output["annotation"].fillna("").astype(str).str.strip(),
+    output["annotation"] = (
+        output["custom_annotation"]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+        .where(
+            output["custom_annotation"].fillna("").astype(str).str.strip().ne(""),
+            output["annotation"].fillna("").astype(str).str.strip(),
+        )
     )
     return output
 
@@ -306,7 +365,9 @@ def main() -> None:
         unsafe_allow_html=True,
     )
     st.title("01 Unsupervised clustering and broad phenotyping")
-    st.caption("Identify broad tissue populations before marker autogating and prior-knowledge phenotyping.")
+    st.caption(
+        "Identify broad tissue populations before marker autogating and prior-knowledge phenotyping."
+    )
 
     st.subheader("1. Sample setup")
     if "cluster_sample_id" not in st.session_state:
@@ -336,9 +397,13 @@ def main() -> None:
     p1, p2 = st.columns(2)
     with p1:
         adata_text = st.text_input("AnnData (.h5ad)", key="cluster_adata_input")
-        output_text = st.text_input("Workflow output directory", key="cluster_output_input")
+        output_text = st.text_input(
+            "Workflow output directory", key="cluster_output_input"
+        )
     with p2:
-        image_text = st.text_input("OME-TIFF image or FOV image folder", key="cluster_image_input")
+        image_text = st.text_input(
+            "OME-TIFF image or FOV image folder", key="cluster_image_input"
+        )
 
     adata_path = Path(adata_text).expanduser()
     image_path = Path(image_text).expanduser()
@@ -355,6 +420,13 @@ def main() -> None:
                 f"AnnData is not a file: {adata_path}"
                 + (" (this is a directory)" if adata_path.is_dir() else "")
             )
+        else:
+            # A H5AD left behind by an interrupted step 1 still opens far
+            # enough to reach the root group, then fails with h5py's "unable to
+            # determine object type". Say what is wrong instead.
+            unreadable = describe_unreadable_h5ad(adata_path)
+            if unreadable:
+                errors.append(unreadable)
         if not image_text.strip():
             errors.append("Image path is not set")
         elif not image_path.exists():
@@ -369,7 +441,9 @@ def main() -> None:
                 if not metadata["has_coordinates"]:
                     st.error("AnnData is missing X_centroid or Y_centroid")
                 elif metadata["missing_image_channels"]:
-                    st.error(f"Markers missing from image: {', '.join(metadata['missing_image_channels'])}")
+                    st.error(
+                        f"Markers missing from image: {', '.join(metadata['missing_image_channels'])}"
+                    )
                 else:
                     st.session_state.cluster_metadata = metadata
                     st.session_state.cluster_loaded_sample = sample_id
@@ -380,7 +454,9 @@ def main() -> None:
                         "project_root": str(project_root),
                     }
                     st.session_state.pop("level0_mapping_saved", None)
-                    st.success(f"Loaded {sample_id}: {metadata['cells']:,} cells and {len(metadata['markers'])} markers.")
+                    st.success(
+                        f"Loaded {sample_id}: {metadata['cells']:,} cells and {len(metadata['markers'])} markers."
+                    )
             except Exception as exc:
                 st.exception(exc)
 
@@ -389,7 +465,9 @@ def main() -> None:
         return
 
     metadata = st.session_state.cluster_metadata
-    loaded_paths = {key: Path(value) for key, value in st.session_state.cluster_loaded_paths.items()}
+    loaded_paths = {
+        key: Path(value) for key, value in st.session_state.cluster_loaded_paths.items()
+    }
     sample_id = st.session_state.cluster_loaded_sample
     output_dir = loaded_paths["output"]
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -431,14 +509,18 @@ def main() -> None:
         )
 
     st.subheader("2. Level-0 clustering")
-    recommended_markers, recommended_resolution = recommended_defaults(sample_id, metadata["markers"])
+    recommended_markers, recommended_resolution = recommended_defaults(
+        sample_id, metadata["markers"]
+    )
     preset = st.selectbox(
         "Marker preset",
         ["Notebook-informed recommendation", "Core lineage panel", "Custom"],
         help="The recommendation reproduces the marker choices used in the reference notebooks.",
     )
     if preset == "Core lineage panel":
-        default_markers = [marker for marker in CORE_MARKERS if marker in metadata["markers"]]
+        default_markers = [
+            marker for marker in CORE_MARKERS if marker in metadata["markers"]
+        ]
     else:
         default_markers = recommended_markers
     marker_key = f"level0_markers_{sample_id}_{preset}"
@@ -450,7 +532,9 @@ def main() -> None:
     )
     q1, q2, q3, q4 = st.columns(4)
     with q1:
-        resolution = st.number_input("Leiden resolution", 0.1, 2.0, recommended_resolution, 0.1)
+        resolution = st.number_input(
+            "Leiden resolution", 0.1, 2.0, recommended_resolution, 0.1
+        )
     with q2:
         n_neighbors = st.number_input("Neighbors", 3, 100, 10, 1)
     with q3:
@@ -462,7 +546,12 @@ def main() -> None:
     level0_status_path = output_dir / f"{scoped_id}_level0_status.json"
     level0_log_path = output_dir / f"{scoped_id}_level0_worker.log"
     run_disabled = len(selected_markers) < 3
-    if st.button("Run Level-0 clustering", type="primary", disabled=run_disabled, icon=":material/hub:"):
+    if st.button(
+        "Run Level-0 clustering",
+        type="primary",
+        disabled=run_disabled,
+        icon=":material/hub:",
+    ):
         config = {
             "sample_id": sample_id,
             "adata_path": str(loaded_paths["adata"]),
@@ -476,22 +565,33 @@ def main() -> None:
             "cluster_imageid": cluster_imageid,
         }
         write_json(level0_config_path, config)
-        pid = start_worker("level0", level0_config_path, level0_status_path, level0_log_path)
+        pid = start_worker(
+            "level0", level0_config_path, level0_status_path, level0_log_path
+        )
         st.success(f"Level-0 worker started (process {pid}).")
 
     level0_status = render_job(level0_status_path, label="Level-0")
     if not level0_status or level0_status.get("state") != "complete":
         return
-    level0_outputs = {key: Path(value) if isinstance(value, str) else value for key, value in level0_status["outputs"].items()}
+    level0_outputs = {
+        key: Path(value) if isinstance(value, str) else value
+        for key, value in level0_status["outputs"].items()
+    }
     st.caption(
         f"Checkpoint: {level0_outputs['n_cells']:,} cells, {level0_outputs['n_clusters']} clusters. "
         f"Worker log: {level0_log_path}"
     )
     qc1, qc2 = st.columns(2)
     with qc1:
-        st.image(str(level0_outputs["umap_png"]), caption="Level-0 UMAP", width="stretch")
+        st.image(
+            str(level0_outputs["umap_png"]), caption="Level-0 UMAP", width="stretch"
+        )
     with qc2:
-        st.image(str(level0_outputs["heatmap_png"]), caption="Cluster marker heatmap", width="stretch")
+        st.image(
+            str(level0_outputs["heatmap_png"]),
+            caption="Cluster marker heatmap",
+            width="stretch",
+        )
     if st.button("Launch Level-0 napari review", icon=":material/open_in_new:"):
         pid, log_path = launch_napari(
             level0_outputs["clustered_h5ad"],
@@ -503,7 +603,9 @@ def main() -> None:
         st.success(f"Napari launched (process {pid}). Log: {log_path}")
 
     st.subheader("3. Assign broad cluster labels")
-    st.caption("Use UMAP, the marker heatmap, and napari spatial context together. Mixed labels can be selected for later refinement.")
+    st.caption(
+        "Use UMAP, the marker heatmap, and napari spatial context together. Mixed labels can be selected for later refinement."
+    )
     level0_mapping_path = output_dir / f"{scoped_id}_level0_annotation_mapping.csv"
     level0_summary = pd.read_csv(level0_outputs["summary_csv"], dtype={"cluster": str})
     level0_editor = mapping_editor(
@@ -515,8 +617,14 @@ def main() -> None:
     level0_mapping = final_mapping(level0_editor)
     missing_level0 = incomplete_mapping(level0_mapping)
     if missing_level0:
-        st.warning(f"Annotations still required for clusters: {', '.join(missing_level0)}")
-    if st.button("Save Level-0 annotations", disabled=bool(missing_level0), icon=":material/save:"):
+        st.warning(
+            f"Annotations still required for clusters: {', '.join(missing_level0)}"
+        )
+    if st.button(
+        "Save Level-0 annotations",
+        disabled=bool(missing_level0),
+        icon=":material/save:",
+    ):
         level0_mapping.to_csv(level0_mapping_path, index=False)
         st.session_state.level0_mapping_saved = True
         st.success(f"Saved: {level0_mapping_path}")
@@ -544,7 +652,12 @@ def main() -> None:
                 )
             with r2:
                 parent_resolution = st.number_input(
-                    "Resolution", 0.1, 2.0, 0.8, 0.1, key=f"refine_resolution_{scoped_id}_{parent}"
+                    "Resolution",
+                    0.1,
+                    2.0,
+                    0.8,
+                    0.1,
+                    key=f"refine_resolution_{scoped_id}_{parent}",
                 )
             refinements.append(
                 {
@@ -560,7 +673,9 @@ def main() -> None:
     refinement_config_path = output_dir / f"{scoped_id}_refinement_config.json"
     refinement_status_path = output_dir / f"{scoped_id}_refinement_status.json"
     refinement_log_path = output_dir / f"{scoped_id}_refinement_worker.log"
-    if refine_parents and st.button("Run selected refinements", type="primary", icon=":material/account_tree:"):
+    if refine_parents and st.button(
+        "Run selected refinements", type="primary", icon=":material/account_tree:"
+    ):
         config = {
             "sample_id": sample_id,
             "adata_path": str(loaded_paths["adata"]),
@@ -572,10 +687,19 @@ def main() -> None:
             "cluster_imageid": cluster_imageid,
         }
         write_json(refinement_config_path, config)
-        pid = start_worker("refine", refinement_config_path, refinement_status_path, refinement_log_path)
+        pid = start_worker(
+            "refine",
+            refinement_config_path,
+            refinement_status_path,
+            refinement_log_path,
+        )
         st.success(f"Refinement worker started (process {pid}).")
 
-    refinement_status = render_job(refinement_status_path, label="Refinement") if refine_parents else None
+    refinement_status = (
+        render_job(refinement_status_path, label="Refinement")
+        if refine_parents
+        else None
+    )
     refinement_outputs = {}
     if refine_parents:
         if not refinement_status or refinement_status.get("state") != "complete":
@@ -595,8 +719,14 @@ def main() -> None:
         with x1:
             st.image(result["umap_png"], caption=f"{parent} UMAP", width="stretch")
         with x2:
-            st.image(result["heatmap_png"], caption=f"{parent} marker heatmap", width="stretch")
-        if st.button(f"Launch napari: {parent}", key=f"napari_refine_{scoped_id}_{parent}"):
+            st.image(
+                result["heatmap_png"],
+                caption=f"{parent} marker heatmap",
+                width="stretch",
+            )
+        if st.button(
+            f"Launch napari: {parent}", key=f"napari_refine_{scoped_id}_{parent}"
+        ):
             pid, log_path = launch_napari(
                 Path(result["clustered_h5ad"]),
                 review_image,
@@ -605,7 +735,9 @@ def main() -> None:
                 review_imageid,
             )
             st.success(f"Napari launched (process {pid}). Log: {log_path}")
-        mapping_path = output_dir / f"{scoped_id}_refine_{parent}_annotation_mapping.csv"
+        mapping_path = (
+            output_dir / f"{scoped_id}_refine_{parent}_annotation_mapping.csv"
+        )
         summary = pd.read_csv(result["summary_csv"], dtype={"cluster": str})
         editor = mapping_editor(
             summary,
@@ -641,7 +773,12 @@ def main() -> None:
     export_status_path = output_dir / f"{scoped_id}_export_status.json"
     export_log_path = output_dir / f"{scoped_id}_export_worker.log"
     export_disabled = bool(refine_parents) and not all_refinement_mappings_ready
-    if st.button("Export broad phenotyping", type="primary", disabled=export_disabled, icon=":material/save:"):
+    if st.button(
+        "Export broad phenotyping",
+        type="primary",
+        disabled=export_disabled,
+        icon=":material/save:",
+    ):
         level0_config = read_json(level0_config_path)
         config = {
             "sample_id": sample_id,
@@ -655,7 +792,9 @@ def main() -> None:
             "cluster_imageid": cluster_imageid,
         }
         write_json(export_config_path, config)
-        pid = start_worker("export", export_config_path, export_status_path, export_log_path)
+        pid = start_worker(
+            "export", export_config_path, export_status_path, export_log_path
+        )
         st.success(f"Export worker started (process {pid}).")
 
     export_status = render_job(export_status_path, label="Export")
@@ -669,7 +808,9 @@ def main() -> None:
             f"Annotations: {outputs['annotation_csv']}\n"
             f"Manifest: {outputs['manifest_json']}"
         )
-        st.info("Next workflow: 02 Marker autogating. Use the original expression matrix with these broad labels in obs.")
+        st.info(
+            "Next workflow: 02 Marker autogating. Use the original expression matrix with these broad labels in obs."
+        )
 
 
 if __name__ == "__main__":

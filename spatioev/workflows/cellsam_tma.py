@@ -20,6 +20,7 @@ from spatioev.workflows.cellsam import (
     now,
     read_marker_manifest,
     resolve_marker_columns,
+    write_h5ad_atomically,
     write_json,
     write_qc,
 )
@@ -407,7 +408,7 @@ def build_tma_anndata(
     output_path = Path(plan.output_path).expanduser().resolve()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     update("write", "Writing compressed multi-FOV H5AD", 0.72)
-    adata.write_h5ad(output_path, compression="gzip")
+    write_h5ad_atomically(adata, output_path)
     qc_outputs = {}
     if plan.make_qc:
         update("qc", "Generating combined marker and spatial QC", 0.88)

@@ -173,6 +173,73 @@ def manifest_marker_order(plan: ConversionPlan) -> list[str] | None:
     return order
 
 
+def write_h5ad_atomically(adata: ad.AnnData, output_path: Path) -> None:
+    """Write an H5AD via a temporary file, then move it into place.
+
+    Writing straight to the destination leaves a truncated file there if the
+    run is interrupted -- a killed worker, a full disk, a laptop suspending
+    mid-write. HDF5 keeps its superblock, so the file still looks openable and
+    only fails later with "unable to determine object type" when something
+    tries to read the root group. Writing beside the target and renaming means
+    an interrupted run leaves either the previous good file or nothing at all.
+    """
+    output_path = Path(output_path).expanduser().resolve()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    # Same directory, so os.replace stays on one filesystem and is atomic.
+    handle, temporary_name = tempfile.mkstemp(
+        dir=output_path.parent, prefix=f".{output_path.stem}.", suffix=".h5ad.partial"
+    )
+    os.close(handle)
+    temporary = Path(temporary_name)
+    try:
+        adata.write_h5ad(temporary, compression="gzip")
+        os.replace(temporary, output_path)
+    except BaseException:
+        temporary.unlink(missing_ok=True)
+        raise
+
+
+def describe_unreadable_h5ad(path: Path) -> str | None:
+    """Explain why an H5AD cannot be opened, or ``None`` if it reads fine.
+
+    The underlying h5py errors ("unable to determine object type") say nothing
+    about what a user should do next.
+    """
+    path = Path(path).expanduser()
+    if not path.exists():
+        return f"{path} does not exist."
+    size = path.stat().st_size
+    if size == 0:
+        return (
+            f"{path.name} is empty (0 bytes). The conversion that should have "
+            "written it did not finish. Re-run step 1."
+        )
+    try:
+        with open(path, "rb") as handle:
+            signature = handle.read(8)
+    except OSError as error:
+        return f"{path.name} could not be read: {error}"
+    if signature != b"\x89HDF\r\n\x1a\n":
+        return (
+            f"{path.name} is not an HDF5 file (it does not start with the HDF5 "
+            "signature). If it came from cloud storage, it may be a placeholder "
+            "that has not downloaded yet; open the folder and let it sync."
+        )
+    try:
+        import h5py
+
+        with h5py.File(path, "r") as handle:
+            handle["/"].attrs  # noqa: B018 - touching the root proves it reads
+    except Exception:
+        return (
+            f"{path.name} is a truncated or corrupted H5AD ({size:,} bytes): the "
+            "file starts like HDF5 but its contents are incomplete, so the "
+            "conversion that wrote it was interrupted. Delete it and re-run "
+            "step 1."
+        )
+    return None
+
+
 def resolve_marker_columns(
     marker_order: list[str], header: list[str]
 ) -> tuple[dict[str, str], list[str], list[tuple[str, list[str]]]]:
@@ -955,7 +1022,7 @@ def build_anndata(
     output_path = Path(plan.output_path).expanduser().resolve()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     update("write", "Writing compressed H5AD", 0.78)
-    adata.write_h5ad(output_path, compression="gzip")
+    write_h5ad_atomically(adata, output_path)
 
     qc_outputs: dict[str, str] = {}
     if plan.make_qc:
