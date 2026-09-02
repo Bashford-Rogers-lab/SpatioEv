@@ -101,18 +101,19 @@ class ConversionPlan:
 StatusCallback = Callable[[str, str, float], None]
 
 
-
-
-
-
 def read_marker_manifest(path: Path) -> pd.DataFrame:
     """Read a marker order CSV, whose *row order* defines the channel order.
 
-    Row 1 is the first image plane, row 2 the second, and so on. A
-    ``channel_number`` column is optional metadata that must agree with that
-    row order: an image whose OME channel names were lost cannot arbitrate
-    between the two, so a manifest that disagrees with itself is rejected
-    rather than silently resolved in one direction.
+    Row 1 is the first image plane, row 2 the second, and so on.
+
+    ``channel_number`` is optional metadata and is interpreted by what it
+    contains. Unique values are a *global* plane index, so they must ascend
+    with the rows -- a manifest that contradicts itself there is rejected
+    rather than silently resolved in one direction, because an image whose OME
+    channel names were lost cannot arbitrate between the two. Repeated values
+    mean the column counts channels *within* an imaging cycle (a cycle-based
+    CODEX/PhenoCycler panel restarts at 1 every round), which says nothing
+    about global order; it is then kept as metadata and the row order stands.
     """
     manifest = pd.read_csv(Path(path).expanduser().resolve())
     if "marker_name" not in manifest:
@@ -125,18 +126,26 @@ def read_marker_manifest(path: Path) -> pd.DataFrame:
         raise ValueError(f"Marker manifest contains duplicated names: {duplicated}")
     if "channel_number" in manifest:
         numbers = pd.to_numeric(manifest["channel_number"], errors="raise")
-        out_of_order = [
-            f"row {index + 2} ({name}, channel_number={number})"
-            for index, (name, number, previous) in enumerate(
-                zip(
-                    manifest["marker_name"][1:],
-                    numbers[1:],
-                    numbers[:-1],
-                    strict=True,
+        # Repeats mean the column is cycle-local (1, 2, 3, 1, 2, 3, ...) rather
+        # than a global plane index, so it carries no claim about global order
+        # and must not be checked against the row order.
+        cycle_local = bool(numbers.duplicated().any())
+        out_of_order = (
+            []
+            if cycle_local
+            else [
+                f"row {index + 2} ({name}, channel_number={number})"
+                for index, (name, number, previous) in enumerate(
+                    zip(
+                        manifest["marker_name"][1:],
+                        numbers[1:],
+                        numbers[:-1],
+                        strict=True,
+                    )
                 )
-            )
-            if number <= previous
-        ]
+                if number <= previous
+            ]
+        )
         if out_of_order:
             raise ValueError(
                 "Marker order CSV row order disagrees with its own "

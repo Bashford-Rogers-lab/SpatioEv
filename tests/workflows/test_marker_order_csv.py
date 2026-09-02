@@ -96,6 +96,52 @@ def test_manifest_disagreeing_with_its_own_channel_number_is_rejected(tmp_path):
         read_marker_manifest(path)
 
 
+def test_cycle_local_channel_numbers_are_not_a_global_index(tmp_path):
+    """A CODEX/PhenoCycler panel restarts channel_number every cycle.
+
+    Repeated values count channels *within* a round, so they make no claim
+    about global order and must not be validated against the row order. Reading
+    them as a global index rejected real panels outright.
+    """
+    order = [
+        "DAPI",
+        "AR",
+        "VIM",
+        "SOX9",
+        "HSD3B1",
+        "CYP17A1",
+        "INSL3",
+        "WT1",
+        "AMH",
+    ]
+    path = _write_manifest(
+        tmp_path / "m.csv", order, channel_numbers=[1, 2, 3, 1, 2, 3, 1, 2, 3]
+    )
+    manifest = read_marker_manifest(path)
+    assert manifest["marker_name"].tolist() == order
+    # The column survives as metadata; it just does not reorder anything.
+    assert manifest["channel_number"].tolist() == [1, 2, 3, 1, 2, 3, 1, 2, 3]
+
+
+def test_cycle_local_numbers_may_descend_between_cycles(tmp_path):
+    # Real panels skip and repeat channels unevenly across rounds, so a plain
+    # "must not decrease" rule is wrong once the column is cycle-local.
+    order = ["DMRT1", "STAR", "MAGEA4", "SYCP3"]
+    path = _write_manifest(tmp_path / "m.csv", order, channel_numbers=[3, 2, 3, 1])
+    assert read_marker_manifest(path)["marker_name"].tolist() == order
+
+
+def test_unique_channel_numbers_are_still_validated(tmp_path):
+    # Unique values *are* a global index, so a shuffle is still a real mistake.
+    path = _write_manifest(
+        tmp_path / "m.csv",
+        ["PanCK", "CD3", "DAPI", "CD8"],
+        channel_numbers=[4, 2, 1, 3],
+    )
+    with pytest.raises(ValueError, match="disagrees with its own"):
+        read_marker_manifest(path)
+
+
 def test_manifest_rejects_duplicate_marker_names(tmp_path):
     path = _write_manifest(tmp_path / "m.csv", ["DAPI", "CD3", "DAPI"])
     with pytest.raises(ValueError, match="duplicated names"):
@@ -148,7 +194,9 @@ def test_single_image_unnamed_channels_uses_manifest_order(tmp_path):
     result = ad.read_h5ad(plan.output_path)
     assert list(result.var_names) == MARKERS
     assert _decode(result.X[0]) == MARKERS
-    assert result.uns["cellsam_conversion"]["channel_order_source"] == "marker order CSV"
+    assert (
+        result.uns["cellsam_conversion"]["channel_order_source"] == "marker order CSV"
+    )
 
 
 def test_single_image_follows_manifest_row_order_not_alphabet_or_table(tmp_path):
