@@ -43,7 +43,7 @@ The left of your prompt should now show `(spatioev_env)`.
 ### Step 4. Download SpatioEv
 
 ```bash
-cd ~ && git clone --depth 1 --single-branch -b reorganize-and-optimize https://github.com/Bashford-Rogers-lab/SpatioEv.git
+cd ~ && git clone --depth 1 https://github.com/Bashford-Rogers-lab/SpatioEv.git
 ```
 
 This takes about 1–2 minutes.
@@ -86,7 +86,7 @@ conda activate spatioev_env
 ```
 
 ```bash
-cd ~/SpatioEv && git fetch origin && git checkout reorganize-and-optimize && git pull
+cd ~/SpatioEv && git remote set-branches origin main && git fetch origin main && git checkout main && git pull
 ```
 
 ```bash
@@ -99,6 +99,11 @@ python -c "import spatioev; print(spatioev.__version__)"
 
 > If `git checkout` complains about local changes, run `git stash` first, then
 > repeat the command.
+>
+> The command above also moves you onto `main`. Earlier installs were made
+> from a working branch called `reorganize-and-optimize`, which has now been
+> merged; `main` is the right place from here on. You only need this once —
+> after it succeeds, the same command keeps working every time.
 
 ---
 
@@ -156,7 +161,8 @@ pwd && conda env list && python -c "import spatioev; print(spatioev.__version__)
   scanpy, Streamlit.
 - `-e` installs in *editable* mode, so after `git pull` the new code is picked
   up immediately — no reinstall needed unless dependencies changed.
-- The `-b reorganize-and-optimize` flag selects the current working branch.
-  Once it is merged, drop that flag and the default branch will be correct.
+- The code lives on the default branch, `main`. Installs made before
+  September 2026 pointed at a working branch called
+  `reorganize-and-optimize`; Part 2 moves those over.
 - Interactive Napari gating is a separate optional extra:
   `pip install -e ".[gating]"`. It is not needed for the standard workflow.
