@@ -14,7 +14,14 @@ import anndata as ad
 import numpy as np
 import pandas as pd
 
-from spatioev.workflows.cellsam import now, write_json, write_qc
+# read_marker_manifest lives in cellsam so both conversion paths apply one
+# rule: the marker order CSV's row order defines the channel order.
+from spatioev.workflows.cellsam import (
+    now,
+    read_marker_manifest,
+    write_json,
+    write_qc,
+)
 from spatioev.workflows.image_collection import (
     channel_names,
     collection_manifest,
@@ -82,26 +89,6 @@ def discover_table_pairs(
     return pairs
 
 
-def read_marker_manifest(path: Path) -> pd.DataFrame:
-    manifest = pd.read_csv(Path(path).expanduser().resolve())
-    if "marker_name" not in manifest:
-        raise ValueError("Marker manifest must contain a 'marker_name' column")
-    if "channel_number" in manifest:
-        manifest["channel_number"] = pd.to_numeric(
-            manifest["channel_number"], errors="raise"
-        )
-        manifest = manifest.sort_values("channel_number", kind="stable")
-    else:
-        manifest.insert(0, "channel_number", np.arange(1, len(manifest) + 1, dtype=int))
-    manifest["marker_name"] = manifest["marker_name"].astype(str).str.strip()
-    if manifest["marker_name"].duplicated().any():
-        duplicated = manifest.loc[
-            manifest["marker_name"].duplicated(keep=False), "marker_name"
-        ].tolist()
-        raise ValueError(f"Marker manifest contains duplicated names: {duplicated}")
-    return manifest.reset_index(drop=True)
-
-
 def _header(path: Path) -> list[str]:
     return pd.read_csv(path, nrows=0).columns.tolist()
 
@@ -117,10 +104,17 @@ def inspect_tma(plan: TMAConversionPlan) -> dict:
     images = image_files(plan.image_dir)
     if not images:
         raise FileNotFoundError(f"No OME-TIFF files found under {plan.image_dir}")
+    # The marker order CSV is authoritative: TMA exports routinely lose their
+    # OME channel names, so the image cannot arbitrate its own marker order. A
+    # named image that disagrees is reported as a warning rather than a hard
+    # failure -- but a different *number* of planes is a different panel, which
+    # is never safe to reconcile silently.
+    warnings: list[str] = []
     first_channels = channel_names(images[0], fallback=marker_order)
-    if first_channels != marker_order:
+    if len(first_channels) != len(marker_order):
         raise ValueError(
-            "Marker manifest order does not match the named OME channel order"
+            f"Marker order CSV lists {len(marker_order)} markers but "
+            f"{images[0].name} has {len(first_channels)} image channels"
         )
 
     batch_rows = []
@@ -176,9 +170,17 @@ def inspect_tma(plan: TMAConversionPlan) -> dict:
     )
     for row in image_manifest:
         channels = channel_names(Path(row["image_path"]), fallback=marker_order)
-        if channels != marker_order:
+        if len(channels) != len(marker_order):
             raise ValueError(
-                f"Image panel/order differs for {row['imageid']}: {row['image_path']}"
+                f"Image panel size differs for {row['imageid']}: "
+                f"{len(channels)} channels against {len(marker_order)} markers "
+                f"in the marker order CSV ({row['image_path']})"
+            )
+        if channels != marker_order:
+            warnings.append(
+                f"The marker order CSV overrides the channel names in "
+                f"{row['imageid']}. Image order: {channels}. "
+                f"Marker order CSV: {marker_order}."
             )
 
     return {
@@ -188,6 +190,7 @@ def inspect_tma(plan: TMAConversionPlan) -> dict:
         "n_markers": len(marker_order),
         "n_cells": int(sum(row["selected_cells"] for row in batch_rows)),
         "marker_order": marker_order,
+        "warnings": warnings,
         "marker_manifest": str(Path(plan.marker_manifest).expanduser().resolve()),
         "image_dir": str(Path(plan.image_dir).expanduser().resolve()),
         "output_path": str(Path(plan.output_path).expanduser().resolve()),

@@ -27,6 +27,7 @@ import pandas as pd
 import tifffile
 
 from ._io import now, write_json
+from .image_collection import generic_channel_names
 
 CHANNEL_ALIASES = {
     "EPCAM": "EpCAM",
@@ -91,6 +92,10 @@ class ConversionPlan:
     make_qc: bool = True
     column_roles: dict[str, str] | None = None
     marker_targets: dict[str, str] | None = None
+    # Optional marker order CSV. When supplied it defines the channel order
+    # instead of the OME metadata, because TMA exports routinely lose their
+    # channel names and an unnamed image cannot arbitrate its own marker order.
+    marker_manifest: Path | None = None
 
 
 StatusCallback = Callable[[str, str, float], None]
@@ -98,6 +103,65 @@ StatusCallback = Callable[[str, str, float], None]
 
 
 
+
+
+def read_marker_manifest(path: Path) -> pd.DataFrame:
+    """Read a marker order CSV, whose *row order* defines the channel order.
+
+    Row 1 is the first image plane, row 2 the second, and so on. A
+    ``channel_number`` column is optional metadata that must agree with that
+    row order: an image whose OME channel names were lost cannot arbitrate
+    between the two, so a manifest that disagrees with itself is rejected
+    rather than silently resolved in one direction.
+    """
+    manifest = pd.read_csv(Path(path).expanduser().resolve())
+    if "marker_name" not in manifest:
+        raise ValueError("Marker manifest must contain a 'marker_name' column")
+    manifest["marker_name"] = manifest["marker_name"].astype(str).str.strip()
+    if manifest["marker_name"].duplicated().any():
+        duplicated = manifest.loc[
+            manifest["marker_name"].duplicated(keep=False), "marker_name"
+        ].tolist()
+        raise ValueError(f"Marker manifest contains duplicated names: {duplicated}")
+    if "channel_number" in manifest:
+        numbers = pd.to_numeric(manifest["channel_number"], errors="raise")
+        out_of_order = [
+            f"row {index + 2} ({name}, channel_number={number})"
+            for index, (name, number, previous) in enumerate(
+                zip(
+                    manifest["marker_name"][1:],
+                    numbers[1:],
+                    numbers[:-1],
+                    strict=True,
+                )
+            )
+            if number <= previous
+        ]
+        if out_of_order:
+            raise ValueError(
+                "Marker order CSV row order disagrees with its own "
+                f"'channel_number' column at: {out_of_order}. The row order "
+                "defines the marker order, so sort the rows by channel_number "
+                "(or delete the column) and run the conversion again."
+            )
+        manifest["channel_number"] = numbers
+    else:
+        manifest.insert(0, "channel_number", np.arange(1, len(manifest) + 1, dtype=int))
+    return manifest.reset_index(drop=True)
+
+
+def manifest_marker_order(plan: ConversionPlan) -> list[str] | None:
+    """Marker order from ``plan.marker_manifest``, or ``None`` when unset."""
+    if plan.marker_manifest is None:
+        return None
+    order = read_marker_manifest(plan.marker_manifest)["marker_name"].tolist()
+    planes = len(image_channel_names(plan.image_path))
+    if len(order) != planes:
+        raise ValueError(
+            f"Marker order CSV lists {len(order)} markers but "
+            f"{Path(plan.image_path).name} has {planes} image channels"
+        )
+    return order
 
 
 def read_header(path: Path) -> list[str]:
@@ -307,7 +371,12 @@ def inspect_inputs(plan: ConversionPlan) -> dict:
     secondary = table_schema(plan.secondary_csv)
     if primary.path == secondary.path:
         raise ValueError("Primary and secondary CSV files must be different")
-    image_channels = image_channel_names(plan.image_path)
+    file_channels = image_channel_names(plan.image_path)
+    manifest_order = manifest_marker_order(plan)
+    # The manifest replaces the OME channel names positionally: manifest row i
+    # names image plane i. Everything downstream keys off `image_channels`, so
+    # substituting here is enough to put var_names in marker-order-CSV order.
+    image_channels = manifest_order if manifest_order is not None else file_channels
     roles, targets, reasons = _automatic_roles(primary.columns, image_channels)
 
     for column, role in (plan.column_roles or {}).items():
@@ -332,6 +401,35 @@ def inspect_inputs(plan: ConversionPlan) -> dict:
 
     errors: list[str] = []
     warnings: list[str] = []
+    # Overriding a *named* image is legitimate but must never be silent: say so
+    # when the file carried real names and the manifest disagrees with them.
+    if (
+        manifest_order is not None
+        and not generic_channel_names(file_channels)
+        and [marker_key(name) for name in file_channels]
+        != [marker_key(name) for name in manifest_order]
+    ):
+        warnings.append(
+            f"The marker order CSV overrides the channel names in "
+            f"{Path(plan.image_path).name}. Image order: {file_channels}. "
+            f"Marker order CSV: {manifest_order}."
+        )
+    # A column sitting in the table's own marker block (everything before
+    # "label" in an ARK/CellSAM export) that finds no channel is dropped from .X
+    # and kept as .obs. That is a legitimate outcome, but silently returning
+    # fewer markers than the table offers reads as "my markers do not line up",
+    # so name them.
+    demoted = [
+        column
+        for column in primary.marker_columns
+        if roles.get(column) == ROLE_OBSERVATION
+    ]
+    if demoted:
+        warnings.append(
+            f"These expression columns have no matching image channel and are "
+            f"kept as .obs metadata rather than markers: {demoted}. Supply a "
+            f"marker order CSV if they should be markers."
+        )
     image_channel_keys = [marker_key(channel) for channel in image_channels]
     duplicate_image_channels = sorted(
         {
@@ -774,9 +872,15 @@ def build_anndata(
             dtype=float
         )
     # One name per *image plane*, not per marker: scimap.pl.image_viewer
-    # asserts these line up with the channels in the file.
+    # asserts these line up with the channels in the file. A marker order CSV
+    # already supplies exactly one name per plane, so it is used verbatim;
+    # otherwise the OME names are de-duplicated for the repeated-channel case.
+    manifest_order = manifest_marker_order(plan)
     adata.uns["all_markers"] = np.asarray(
-        display_channel_names(plan.image_path), dtype=str
+        manifest_order
+        if manifest_order is not None
+        else display_channel_names(plan.image_path),
+        dtype=str,
     )
     adata.uns["cellsam_conversion"] = {
         "created_at": now(),
@@ -792,7 +896,14 @@ def build_anndata(
         "x_coordinate_source": x_column,
         "y_coordinate_source": y_column,
         "cell_size_removed": cell_size_removed,
-        "channel_order_source": "OME metadata",
+        "channel_order_source": (
+            "marker order CSV" if manifest_order is not None else "OME metadata"
+        ),
+        "marker_manifest": (
+            str(Path(plan.marker_manifest).expanduser().resolve())
+            if plan.marker_manifest is not None
+            else None
+        ),
         "column_roles": roles,
     }
 
@@ -830,6 +941,12 @@ def parser() -> argparse.ArgumentParser:
     cli.add_argument("--imageid", required=True)
     cli.add_argument("--output", type=Path, required=True)
     cli.add_argument("--layer-name", default="size_normalized")
+    cli.add_argument(
+        "--marker-manifest",
+        type=Path,
+        help="Marker order CSV. Its row order defines the channel order, "
+        "overriding the OME channel names.",
+    )
     cli.add_argument("--schema-config", type=Path)
     cli.add_argument("--no-qc", action="store_true")
     cli.add_argument("--inspect-only", action="store_true")
@@ -852,6 +969,7 @@ def main() -> None:
         make_qc=not args.no_qc,
         column_roles=schema_config.get("column_roles"),
         marker_targets=schema_config.get("marker_targets"),
+        marker_manifest=args.marker_manifest,
     )
 
     def status(stage: str, message: str, progress: float) -> None:

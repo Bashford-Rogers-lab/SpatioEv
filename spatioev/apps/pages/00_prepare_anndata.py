@@ -73,6 +73,8 @@ def start_conversion(plan: ConversionPlan, status_path: Path, log_path: Path) ->
         },
     )
     command.extend(["--schema-config", str(schema_path)])
+    if plan.marker_manifest is not None:
+        command.extend(["--marker-manifest", str(plan.marker_manifest)])
     if not plan.make_qc:
         command.append("--no-qc")
     log_path.parent.mkdir(parents=True, exist_ok=True)
@@ -294,6 +296,8 @@ def render_tma() -> None:
         metrics[1].metric("FOVs", report["n_fovs"])
         metrics[2].metric("Cells", f"{report['n_cells']:,}")
         metrics[3].metric("Markers", report["n_markers"])
+        for warning in report.get("warnings", []):
+            st.warning(warning)
         batch_tab, image_tab, marker_tab = st.tabs(
             ["ARK batches", "FOV images", "Marker order"]
         )
@@ -354,6 +358,18 @@ def main() -> None:
         )
         layer_name = right.text_input("Secondary layer name", value="size_normalized")
 
+        marker_manifest_text = st.text_input(
+            "Marker order CSV (optional)",
+            value="",
+            key="single_marker_manifest",
+            help=(
+                "A CSV with a 'marker_name' column. Its row order becomes the "
+                "marker order in the AnnData, overriding the channel names in "
+                "the image. Use this when the OME-TIFF has lost its channel "
+                "names. Leave blank to take the order from the image."
+            ),
+        )
+
         with st.expander("Table assignment"):
             primary_text = st.text_input(
                 "adata.X source file", value="cell_table_arcsinh_transformed.csv"
@@ -374,6 +390,11 @@ def main() -> None:
         output_path=Path(output_text).expanduser(),
         layer_name=layer_name,
         make_qc=make_qc,
+        marker_manifest=(
+            Path(marker_manifest_text).expanduser()
+            if marker_manifest_text.strip()
+            else None
+        ),
     )
 
     inspect_column, reset_column, _ = st.columns([0.18, 0.22, 0.60])
@@ -463,6 +484,7 @@ def main() -> None:
             make_qc=automatic_plan.make_qc,
             column_roles=column_roles,
             marker_targets=marker_targets,
+            marker_manifest=automatic_plan.marker_manifest,
         )
         try:
             reviewed_report = inspect_inputs(reviewed_plan)

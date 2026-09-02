@@ -9,6 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Optional **Marker order CSV** on the single-image half of *Prepare AnnData*
+  (`--marker-manifest`, `ConversionPlan.marker_manifest`). When supplied it
+  defines the marker order instead of the OME channel names, so `var_names`
+  follows the CSV's row order. This makes single images with unnamed channels
+  convertible at all: previously they failed with "OME channels without an
+  expression column: ['C0', 'C1', ...]", because no table column can match a
+  generic plane name.
+
+### Changed
+- The marker order CSV's **row order** is now authoritative in both conversion
+  paths. `read_marker_manifest` no longer re-sorts by `channel_number`; a
+  `channel_number` column that disagrees with the row order is rejected with an
+  error naming the offending rows, rather than silently reordering the markers
+  away from the order the file shows.
+- A named OME image whose channel order disagrees with the marker order CSV is
+  now overridden with a warning instead of aborting the TMA conversion. A
+  differing number of planes is still an error — that is a different panel.
+- `read_marker_manifest` is shared by both paths (defined in
+  `workflows.cellsam`, re-exported from `workflows.cellsam_tma`), so the two
+  cannot drift apart on what a marker order CSV means.
+
+### Fixed
+- Expression columns with no matching image channel were moved to `.obs` with
+  no error and no warning, silently yielding fewer markers than the table
+  offered. They are now named in a warning.
+- `uns["all_markers"]` follows the marker order CSV when one is supplied, so it
+  no longer disagrees with `var_names` on the single-image path.
+
 ---
 
 ## [0.2.0] — 2026-08-02

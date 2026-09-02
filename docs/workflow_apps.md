@@ -39,9 +39,14 @@ also be supplied with the `SPATIOEV_PROJECT_ROOT` environment variable.
 ## Workflow order
 
 1. **Prepare AnnData** converts the two CellSAM expression tables into one H5AD.
-   OME-TIFF channels define the marker matrix and its order; unmatched table
-   columns are preserved as observation metadata regardless of their CSV
-   position. An editable schema review supports marker, cell-ID, coordinate,
+   OME-TIFF channels define the marker matrix and its order by default;
+   supplying the optional **Marker order CSV** overrides that, so the CSV's
+   row order becomes the order of `var_names`. Use it when the image has
+   lost its channel names, or when the stored names disagree with the panel
+   that was actually run. Unmatched table columns are preserved as
+   observation metadata regardless of their CSV position, and are now named
+   in a warning rather than dropped from the matrix silently.
+   An editable schema review supports marker, cell-ID, coordinate,
    FOV/group, metadata, and ignored roles plus manual marker-to-channel
    assignments. The converter removes `cell_size` only when it duplicates an
    area field, normalizes common centroid aliases to `X_centroid` and
@@ -65,7 +70,10 @@ multiple `ark_wdir*` batches and one OME-TIFF per FOV. The importer:
 - discovers complete ARK cell-table pairs across batches;
 - lets users assign the CSV used for `adata.X` and the CSV used for the named
   layer, applying those filenames to every discovered ARK batch;
-- reads channel order from a marker CSV when dearrayed OME channels are unnamed;
+- takes the channel order from the marker order CSV, whose *row* order is
+  authoritative -- a `channel_number` column that disagrees with the row
+  order is rejected, and named OME channels that disagree are overridden
+  with a warning;
 - combines paired `whole_cell` and `nuclear` rows into one cell observation;
 - creates unique cell IDs from dataset, FOV, and segmentation label;
 - sets `obs["imageid"]` to the FOV value for per-image SCIMAP rescaling;
