@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import json
 import subprocess
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -88,7 +88,7 @@ def start_worker(config: dict, output_dir: Path) -> tuple[int, Path, Path]:
             "stage": "queued",
             "message": "Starting SCIMAP worker",
             "progress": 0.01,
-            "updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "updated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         },
     )
     command = module_command(

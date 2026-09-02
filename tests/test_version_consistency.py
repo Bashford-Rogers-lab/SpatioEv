@@ -22,10 +22,8 @@ REPO_ROOT = next(
 
 
 def _pyproject() -> dict:
-    try:
-        import tomllib
-    except ModuleNotFoundError:  # pragma: no cover - Python 3.10
-        import tomli as tomllib
+    import tomllib
+
     return tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
 
 

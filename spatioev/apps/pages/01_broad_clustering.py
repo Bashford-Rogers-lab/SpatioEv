@@ -6,7 +6,7 @@ from __future__ import annotations
 import os
 import subprocess
 import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 os.environ.setdefault(
@@ -149,7 +149,7 @@ def start_worker(
         {
             "state": "queued",
             "message": f"Starting {action} worker",
-            "updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "updated_at": datetime.now(UTC).isoformat(timespec="seconds"),
             "stage": "queued",
         },
     )
@@ -232,7 +232,7 @@ def _render_running_job(status_path: Path, *, label: str) -> None:
         try:
             timestamp = datetime.fromisoformat(str(updated_at).replace("Z", "+00:00"))
             age_seconds = max(
-                0.0, (datetime.now(timezone.utc) - timestamp).total_seconds()
+                0.0, (datetime.now(UTC) - timestamp).total_seconds()
             )
             st.caption(
                 f"Last worker update: {int(age_seconds):,} seconds ago. Refreshing automatically."

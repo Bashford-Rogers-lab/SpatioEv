@@ -19,7 +19,7 @@ would change behaviour rather than remove duplication.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 __all__ = ["now", "read_json", "write_json"]
@@ -27,7 +27,7 @@ __all__ = ["now", "read_json", "write_json"]
 
 def now() -> str:
     """Current UTC time as an ISO-8601 string."""
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def write_json(path: Path, payload: dict) -> None:

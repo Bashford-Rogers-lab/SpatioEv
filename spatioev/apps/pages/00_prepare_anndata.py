@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import subprocess
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -44,7 +44,7 @@ def start_conversion(plan: ConversionPlan, status_path: Path, log_path: Path) ->
             "stage": "queued",
             "message": "Starting conversion worker",
             "progress": 0.01,
-            "updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "updated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         },
     )
     command = module_command(
@@ -96,7 +96,7 @@ def start_tma_conversion(
             "stage": "queued",
             "message": "Starting multi-FOV TMA conversion worker",
             "progress": 0.01,
-            "updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "updated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         },
     )
     command = module_command(

@@ -13,7 +13,7 @@ the rest of the page — including the FOV selector — untouched.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -84,7 +84,7 @@ def _write_status(out_dir: Path, scoped_id: str, state: str) -> None:
                 "stage": "cluster",
                 "message": "clustering",
                 "progress": 0.5,
-                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(UTC).isoformat(),
                 "outputs": {},
             }
         )

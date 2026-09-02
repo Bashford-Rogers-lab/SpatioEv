@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   generic plane name.
 
 ### Changed
+- **Python 3.10 is no longer supported**; the floor is now 3.11. The `ui`,
+  `apps` and `dev` extras pin `zarr>=3.1` because `tifffile.aszarr()` requires
+  zarr 3, and no zarr release from 3.1 onward supports 3.10 (3.2+ already
+  require 3.12). Since the pin landed on 12 August the 3.10 matrix entry could
+  not resolve its dependencies, so `requires-python = ">=3.10"` and the 3.10
+  classifier were advertising support that could not be installed. The CI
+  matrix, the ruff target and the now-dead `tomli` backport dependency follow.
 - The marker order CSV's **row order** is now authoritative in both conversion
   paths. `read_marker_manifest` no longer re-sorts by `channel_number`.
   `channel_number` is interpreted by what it contains: *unique* values are a
