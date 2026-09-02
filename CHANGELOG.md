@@ -20,10 +20,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - The marker order CSV's **row order** is now authoritative in both conversion
-  paths. `read_marker_manifest` no longer re-sorts by `channel_number`; a
-  `channel_number` column that disagrees with the row order is rejected with an
-  error naming the offending rows, rather than silently reordering the markers
-  away from the order the file shows.
+  paths. `read_marker_manifest` no longer re-sorts by `channel_number`.
+  `channel_number` is interpreted by what it contains: *unique* values are a
+  global plane index and must ascend with the rows, so a shuffled index is
+  rejected with an error naming the offending rows instead of silently
+  reordering the markers away from the order the file shows. *Repeated* values
+  are cycle-local — a CODEX/PhenoCycler panel restarts the count at 1 every
+  imaging round — so they make no claim about global order and are kept as
+  metadata while the row order stands.
 - A named OME image whose channel order disagrees with the marker order CSV is
   now overridden with a warning instead of aborting the TMA conversion. A
   differing number of planes is still an error — that is a different panel.
