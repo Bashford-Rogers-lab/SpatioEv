@@ -4,18 +4,117 @@ on:
   push:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+          cache: pip
+      - name: Install linters
+        run: python -m pip install --upgrade pip ruff black
+      - name: Ruff
+        run: ruff check spatioev tests
+      - name: Black (advisory)
+        run: black --check --diff spatioev tests
+        continue-on-error: true
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
       - name: Install package
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev]"
       - name: Run tests
-        run: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest
+        # PYTEST_DISABLE_PLUGIN_AUTOLOAD stops a napari plugin from crashing
+        # collection, but it also disables pytest-cov, so the cov plugin is
+        # loaded explicitly with -p (same pattern as -p nbmake below).
+        run: >-
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
+          python -m pytest -p pytest_cov
+          --cov=spatioev --cov-report=xml --cov-report=term-missing
+      - name: Upload coverage
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
 
+  examples:
+    # The example notebooks run on synthetic data, so they execute anywhere
+    # and act as an end-to-end check of the documented public API.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install package with notebook tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]" ipykernel
+      - name: Execute example notebooks
+        run: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest --nbmake examples/ -p nbmake
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build sdist and wheel
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build
+          python -m twine check dist/*
+      - name: Verify the wheel is installable and complete
+        run: |
+          python -m venv /tmp/vtest
+          /tmp/vtest/bin/pip install dist/*.whl
+          # Import from outside the repo so the installed wheel is exercised
+          # rather than the source tree.
+          cd /tmp && /tmp/vtest/bin/python -c "
+          import spatioev as sv
+          from spatioev.apps._common import resource_path
+          assert resource_path('hcc_phenocycler_consensus_strategy.csv').is_file()
+          assert resource_path('hcc_immune_phenotype_workflow_example.csv').is_file()
+          import spatioev._vendor.scimap as v
+          assert v.rescale and v.phenotype_cells
+          print('wheel OK:', sv.__version__)
+          "
+      - name: Ensure paper/, tools/ and scripts/ are not distributed
+        run: |
+          python - <<'PY'
+          import glob, tarfile, zipfile, sys
+          bad = []
+          for whl in glob.glob("dist/*.whl"):
+              bad += [n for n in zipfile.ZipFile(whl).namelist()
+                      if n.startswith(("paper/", "tools/", "scripts/"))]
+          for sd in glob.glob("dist/*.tar.gz"):
+              with tarfile.open(sd) as t:
+                  bad += [n for n in t.getnames()
+                          if "/paper/" in n or "/tools/" in n or "/scripts/" in n]
+          if bad:
+              print("Non-package files in distribution:", *bad[:20], sep="\n  ")
+              sys.exit(1)
+          print("distribution contains only the package")
+          PY

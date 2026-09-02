@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import os
 import json
+import os
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -9,9 +9,9 @@ import numpy as np
 import pandas as pd
 from scipy.ndimage import find_objects
 from scipy.stats import pearsonr
+from skimage import img_as_ubyte
 from skimage.draw import polygon as draw_polygon
 from skimage.exposure import rescale_intensity
-from skimage import img_as_ubyte
 from skimage.feature import graycomatrix, graycoprops
 from skimage.io import imread
 from skimage.measure import shannon_entropy

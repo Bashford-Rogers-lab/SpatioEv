@@ -1,4 +1,10 @@
-"""Helper-function API for reusable SpatioEv building blocks."""
+"""Helper-function API for reusable SpatioEv building blocks.
+
+These are the lower-level building blocks that the ``pp``/``tl``/``pl``
+namespaces are composed from. They are re-exported here so that user code can
+reach them under a single stable name without depending on which module
+currently implements them.
+"""
 
 from __future__ import annotations
 
@@ -6,29 +12,33 @@ from importlib import import_module
 from typing import Any
 
 _EXPORTS = {
-    "compute_convex_hull": "spatioev.archive.spatial.preprocessing",
-    "compute_convex_hull_area": "spatioev.archive.spatial.preprocessing",
-    "distance_to_convex_hull_boundary": "spatioev.archive.spatial.preprocessing",
-    "calculate_polarity_score": "spatioev.archive.spatial.cell_pixel_features",
-    "calculate_moment_of_inertia": "spatioev.archive.spatial.cell_pixel_features",
-    "calculate_haralick_features": "spatioev.archive.spatial.cell_pixel_features",
-    "calculate_haralick_features_rescaled": "spatioev.archive.spatial.cell_pixel_features",
-    "calculate_entropy": "spatioev.archive.spatial.cell_pixel_features",
-    "calculate_lacunarity": "spatioev.archive.spatial.cell_pixel_features",
-    "calculate_channel_correlation": "spatioev.archive.spatial.cell_pixel_features",
-    "FeatureMatrixResult": "spatioev.archive.spatial.pseudotime",
-    "zscore_series": "spatioev.archive.spatial.pseudotime",
-    "minmax_scale": "spatioev.archive.spatial.pseudotime",
-    "score_signed_feature_module": "spatioev.archive.spatial.pseudotime",
-    "assign_feature_blocks": "spatioev.archive.spatial.pseudotime",
-    "tree_edges": "spatioev.archive.spatial.pseudotime",
-    "node_graph": "spatioev.archive.spatial.pseudotime",
-    "project_tree_nodes_to_embedding": "spatioev.archive.spatial.pseudotime",
-    "benjamini_hochberg": "spatioev.archive.spatial.pseudotime_trends",
-    "add_branch_time_bins": "spatioev.archive.spatial.pseudotime_trends",
-    "branch_time_feature_matrix": "spatioev.archive.spatial.pseudotime_trends",
-    "find_branch_transition_features": "spatioev.archive.spatial.pseudotime_trends",
-    "available_feature_map": "spatioev.archive.xenium.niche_features",
+    # geometry helpers -> spatioev.pp.spatial_prep
+    "compute_convex_hull": "spatioev.pp.spatial_prep",
+    "compute_convex_hull_area": "spatioev.pp.spatial_prep",
+    "distance_to_convex_hull_boundary": "spatioev.pp.spatial_prep",
+    # per-cell pixel/morphology features -> spatioev.pp.pixel
+    "calculate_polarity_score": "spatioev.pp.pixel",
+    "calculate_moment_of_inertia": "spatioev.pp.pixel",
+    "calculate_haralick_features": "spatioev.pp.pixel",
+    "calculate_haralick_features_rescaled": "spatioev.pp.pixel",
+    "calculate_entropy": "spatioev.pp.pixel",
+    "calculate_lacunarity": "spatioev.pp.pixel",
+    "calculate_channel_correlation": "spatioev.pp.pixel",
+    # pseudotime building blocks -> spatioev.tl.pseudotime
+    "FeatureMatrixResult": "spatioev.tl.pseudotime",
+    "zscore_series": "spatioev.tl.pseudotime",
+    "minmax_scale": "spatioev.tl.pseudotime",
+    "score_signed_feature_module": "spatioev.tl.pseudotime",
+    "assign_feature_blocks": "spatioev.tl.pseudotime",
+    "tree_edges": "spatioev.tl.pseudotime",
+    "node_graph": "spatioev.tl.pseudotime",
+    "project_tree_nodes_to_embedding": "spatioev.tl.pseudotime",
+    "benjamini_hochberg": "spatioev.tl.pseudotime",
+    "add_branch_time_bins": "spatioev.tl.pseudotime",
+    "branch_time_feature_matrix": "spatioev.tl.pseudotime",
+    "find_branch_transition_features": "spatioev.tl.pseudotime",
+    # Xenium niche features -> spatioev.xe.features
+    "available_feature_map": "spatioev.xe.features",
 }
 
 __all__ = sorted(_EXPORTS)
@@ -45,4 +55,3 @@ def __getattr__(name: str) -> Any:
 
 def __dir__() -> list[str]:
     return sorted(__all__)
-

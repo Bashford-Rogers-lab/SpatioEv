@@ -36,7 +36,7 @@ Current local verification:
 
 ```bash
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest
-# 14 passed
+# 117 passed
 ```
 
 ## Notebook Compatibility Audit

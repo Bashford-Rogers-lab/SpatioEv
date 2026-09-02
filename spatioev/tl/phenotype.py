@@ -31,13 +31,21 @@ def _require_scanpy():
 
 
 def _require_scimap():
+    """Import scimap, which is only needed for the interactive Napari gater.
+
+    The two algorithmic scimap functions SpatioEv uses (``rescale`` and
+    ``phenotype_cells``) are vendored under :mod:`spatioev._vendor.scimap`
+    and need no scimap install. Only the Napari-backed gating UI still
+    requires the real package.
+    """
     try:
         import scimap as sm
     except Exception as exc:  # pragma: no cover - depends on optional runtime
         raise ImportError(
-            "Scimap prior-knowledge phenotyping requires the optional scimap "
-            "dependency. Install SpatioEv with `pip install -e '.[viewer]'` "
-            "or install `scimap[napari]`."
+            "Interactive Napari gating requires the optional scimap dependency. "
+            "Install SpatioEv with `pip install -e '.[gating]'` or install "
+            "`scimap[napari]`. Note that prior-knowledge phenotyping "
+            "(scimap_rescale / scimap_phenotype_cells) does not need this."
         ) from exc
 
     return sm
@@ -72,13 +80,17 @@ def scimap_rescale(
 ) -> ad.AnnData:
     """Rescale marker intensities with Scimap gates.
 
-    Wraps ``scimap.pp.rescale``. ``gate`` may be a manual-gates DataFrame,
-    a CSV path, or ``None`` to let Scimap use ``adata.uns["gates"]`` or its
-    fallback GMM gate estimation.
+    Wraps Scimap's ``rescale``. ``gate`` may be a manual-gates DataFrame,
+    a CSV path, or ``None`` to use ``adata.uns["gates"]`` or the fallback
+    GMM gate estimation.
+
+    Uses the vendored implementation in :mod:`spatioev._vendor.scimap`, so
+    no scimap install is required.
     """
-    sm = _require_scimap()
+    from spatioev._vendor.scimap import rescale as _rescale
+
     gate_df = None if gate is None else _read_csv_if_path(gate)
-    return sm.pp.rescale(adata, gate=gate_df, **kwargs)
+    return _rescale(adata, gate=gate_df, **kwargs)
 
 
 def scimap_phenotype_cells(
@@ -89,12 +101,16 @@ def scimap_phenotype_cells(
 ) -> ad.AnnData:
     """Run Scimap prior-knowledge hierarchical phenotyping.
 
-    Wraps ``scimap.tl.phenotype_cells`` using a phenotype workflow table.
+    Wraps Scimap's ``phenotype_cells`` using a phenotype workflow table.
     The table may be provided as a DataFrame or CSV path.
+
+    Uses the vendored implementation in :mod:`spatioev._vendor.scimap`, so
+    no scimap install is required.
     """
-    sm = _require_scimap()
+    from spatioev._vendor.scimap import phenotype_cells as _phenotype_cells
+
     phenotype_df = _read_csv_if_path(phenotype)
-    return sm.tl.phenotype_cells(adata, phenotype=phenotype_df, label=label, **kwargs)
+    return _phenotype_cells(adata, phenotype=phenotype_df, label=label, **kwargs)
 
 
 def run_scimap_prior_knowledge_phenotyping(

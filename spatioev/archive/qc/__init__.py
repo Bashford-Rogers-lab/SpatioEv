@@ -1,2 +1,0 @@
-"""Archived QC implementation modules."""
-

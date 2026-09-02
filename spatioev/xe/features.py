@@ -8,7 +8,6 @@ import pandas as pd
 
 from spatioev.tl.pseudotime import score_signed_feature_module
 
-
 DEFAULT_XENIUM_HISTOLOGY_MODULES: dict[str, list[tuple[float, tuple[str, ...]]]] = {
     "histology__ductal_integrity_score": [
         (1.0, ("duct_lumen__fraction", "duct_lumen__mean")),

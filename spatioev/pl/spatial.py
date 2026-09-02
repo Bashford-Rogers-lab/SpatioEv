@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
+if TYPE_CHECKING:  # pragma: no cover
+    import anndata as ad
+    import pandas as pd
+
 # ============================================================
 # Section 1: Cluster heatmap  (from archive/visualization/heatmap.py)
 # ============================================================
@@ -178,13 +188,14 @@ def spatial_scatter_plot(
         The figure object when *saveDir* is ``None``; ``None`` when the figure
         has been saved and closed.
     """
-    import os
     import math
+    import os
+
+    import anndata as ad
+    import matplotlib.patches as mpatches
+    import matplotlib.pyplot as plt
     import numpy as np
     import pandas as pd
-    import matplotlib.pyplot as plt
-    import matplotlib.patches as mpatches
-    import anndata as ad
 
     if isinstance(adata, str):
         adata = ad.read_h5ad(adata)
@@ -308,6 +319,18 @@ def _require_image_viewer_dependencies():
     try:
         import napari
         import scimap as sm
+    except ModuleNotFoundError as exc:  # pragma: no cover - optional runtime
+        if exc.name == "pkg_resources":
+            raise ImportError(
+                "SCIMAP's image-viewer dependency mpl-scatter-density requires "
+                "the legacy pkg_resources module. Install a compatible runtime "
+                "with `python -m pip install 'setuptools<82'`."
+            ) from exc
+        raise ImportError(
+            "inspect_clusters requires optional image viewer dependencies. "
+            "Install SpatioEv with `pip install -e '.[viewer]'` or install "
+            "`scimap[napari]`."
+        ) from exc
     except Exception as exc:  # pragma: no cover - depends on optional runtime
         raise ImportError(
             "inspect_clusters requires optional image viewer dependencies. "
@@ -382,9 +405,6 @@ def inspect_clusters(
 # Section 5: Spatial feature plots  (from archive/spatial/visualization.py)
 # ============================================================
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
 
 
 def plot_spatial_feature(

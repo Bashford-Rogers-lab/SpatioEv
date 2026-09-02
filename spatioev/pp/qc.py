@@ -6,12 +6,9 @@ produces per-image QC summary tables.
 
 from __future__ import annotations
 
+import anndata as ad
 import numpy as np
 import pandas as pd
-
-from typing import TYPE_CHECKING
-
-import anndata as ad
 
 from spatioev.config import QCConfig
 

@@ -56,7 +56,7 @@ Key conventions:
 - **Lazy imports** for any heavy optional dependency (Scanpy, ElPiGraph,
   Napari) — do not import them at module level; use `import X` inside the
   function body, or guard with `try/except ImportError`.
-- Target Python ≥ 3.10 — use `list[str]` not `List[str]`, `X | None` not
+- Target Python ≥ 3.11 — use `list[str]` not `List[str]`, `X | None` not
   `Optional[X]`.
 
 ---

@@ -167,7 +167,7 @@ _EXPORTS = {
     "spatial_enrichment_score": "spatioev.tl.ecm",
     "fiber_vectors": "spatioev.tl.ecm",
     "cell_fiber_alignment": "spatioev.tl.ecm",
-    "ecm_cross_ripleys_k": ("spatioev.tl.ecm", "cross_ripleys_k_permutation_envelope"),
+    "ecm_cross_ripleys_k": ("spatioev.tl.ecm", "cross_ripleys_k"),
     "ecm_cross_ripleys_k_permutation_envelope": (
         "spatioev.tl.ecm",
         "cross_ripleys_k_permutation_envelope",

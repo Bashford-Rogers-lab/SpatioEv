@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "spatioev"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Spatial feature extraction and spatial evolution framework for multiplexed imaging and spatial transcriptomics."
 authors = [
     { name = "Shihong Wu" },
@@ -14,7 +14,9 @@ authors = [
 ]
 readme = "README.md"
 license = "GPL-3.0-or-later"
-requires-python = ">=3.10"
+# 3.11 is the floor because tifffile's aszarr() needs zarr 3, and no zarr
+# release from 3.1 onwards supports 3.10 (3.2+ already require 3.12).
+requires-python = ">=3.11"
 keywords = [
     "spatial biology",
     "multiplexed imaging",
@@ -26,7 +28,6 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
@@ -49,6 +50,19 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4",
+    "pytest-cov>=4.1",
+    # Needed by the workflow tests: spatioev.workflows.{cellsam,marker_gating,
+    # marker_gating_review,scimap_phenotyping} import these at module level.
+    # Without them the test session aborts during collection rather than
+    # skipping. dask was the one omission, so test_gate_range.py took the whole
+    # CI test job down with a collection error rather than failing alone.
+    "tifffile>=2025.1",
+    "zarr>=3.1,<4",
+    "dask[array]>=2024.1",
+    # Streamlit AppTest drives the interface regression tests. Without it in
+    # CI those tests silently skip, which is how the FOV-selector bug reached
+    # a user in the first place.
+    "streamlit>=1.40",
     "ruff>=0.4",
     "black>=24.0",
     "nbmake>=1.5",
@@ -60,8 +74,29 @@ scanpy = [
     "igraph>=0.10",
     "leidenalg>=0.10",
 ]
+# Interactive Napari gating. This is the ONLY remaining scimap dependency:
+# the two algorithmic functions SpatioEv uses (rescale, phenotype_cells) are
+# vendored under spatioev/_vendor/scimap and need no scimap install.
+# Installing this pulls scimap's own constraint set, including zarr==2.10.3.
+gating = [
+    "scimap[napari]>=2.3,<2.4",
+    "setuptools>=68,<82",
+]
+# Backwards-compatible alias for the pre-0.2 name.
 viewer = [
-    "scimap[napari]>=2.0",
+    "spatioev[gating]",
+]
+ui = [
+    "dask[array]>=2024.1",
+    "streamlit>=1.40",
+    # tifffile's `aszarr()` requires zarr 3 from 2025 onwards: pairing a current
+    # tifffile with zarr 2 raises "zarr 2.x < 3 is not supported". anndata
+    # excludes the 3.0.* series, so the usable floor is 3.1.
+    "tifffile>=2025.1",
+    "zarr>=3.1,<4",
+]
+apps = [
+    "spatioev[scanpy,ui]",
 ]
 spatialdata = [
     "spatialdata>=0.2",
@@ -78,18 +113,29 @@ docs = [
     "pymdown-extensions>=10.0",
 ]
 all = [
-    "spatioev[dev,scanpy,trajectory,docs]",
+    "spatioev[apps,dev,spatialdata,trajectory,docs]",
 ]
+
+[project.scripts]
+spatioev = "spatioev.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/Bashford-Rogers-lab/SpatioEv"
 Repository = "https://github.com/Bashford-Rogers-lab/SpatioEv"
 Issues = "https://github.com/Bashford-Rogers-lab/SpatioEv/issues"
 
+[tool.setuptools.dynamic]
+# Single source of truth: spatioev/__init__.py
+version = { attr = "spatioev.__version__" }
+
 [tool.setuptools.packages.find]
 include = ["spatioev*"]
 exclude = [
     "tests*",
+    "paper*",
+    "examples*",
+    "tools*",
+    "scripts*",
     "notebooks*",
     "tutorials*",
     "docs*",
@@ -97,14 +143,40 @@ exclude = [
     "results*",
 ]
 
+[tool.setuptools.package-data]
+"spatioev.resources" = ["*.csv"]
+# MIT requires the copyright notice to ship with any redistribution.
+"spatioev._vendor.scimap" = ["LICENSE"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
 
 [tool.ruff]
 line-length = 88
-target-version = "py310"
+target-version = "py311"
+# Vendored third-party code is kept byte-identical to upstream where possible.
+extend-exclude = ["spatioev/_vendor", "paper"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
-ignore = ["E501"]
+ignore = [
+    "E501",  # line length; formatting is black's job
+    # The rules below are deliberately not enforced: fixing them would change
+    # runtime semantics in numerical code, which needs a scientific review
+    # rather than an automated rewrite.
+    "B905",  # zip() without strict=; adding it makes length mismatches raise
+    "B007",  # unused loop control variable
+    "E741",  # ambiguous variable name (l/I/O are conventional in this domain)
+    "E731",  # lambda assignment
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Batch entry points and Streamlit pages must configure the environment
+# (MPLCONFIGDIR, NUMBA_CACHE_DIR, matplotlib backend) before heavy imports.
+"spatioev/workflows/*.py" = ["E402"]
+"spatioev/apps/*.py" = ["E402"]
+"spatioev/apps/pages/*.py" = ["E402"]
+# pytest.importorskip must run before the import it guards, so the guarded
+# import is necessarily below it.
+"tests/workflows/*.py" = ["E402"]

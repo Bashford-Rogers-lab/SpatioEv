@@ -22,7 +22,6 @@ env/
 
 # Jupyter
 .ipynb_checkpoints/
-notebooks/results/
 tutorials/results/
 ~$*.docx
 
@@ -30,9 +29,14 @@ tutorials/results/
 data/
 background/
 results/
+outputs/
 manuscript/
 manuscript/*.docx
 manuscript/*.pptx
+
+# Manuscript documents (kept local; not part of the software package)
+*.docx
+*.pptx
 *.h5ad
 *.zarr/
 *.ome.tif
@@ -50,6 +54,9 @@ manuscript/*.pptx
 Icon?
 .vscode/
 .idea/
+.claude/settings.local.json
+# Machine-specific interpreter paths for the local app launcher.
+/.claude/launch.json
 
 # R session artifacts
 .Rhistory
@@ -64,7 +71,7 @@ Supplementary\ Table*.txt
 Supplementary\ Table*.csv
 
 # Notebooks — public API validation cache (generated)
-notebooks/public_api_validation/
+paper/notebooks/public_api_validation/
 
 # Conda environments
 *.conda
