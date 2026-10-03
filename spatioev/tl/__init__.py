@@ -22,6 +22,7 @@ ecm         ECM–cell links, spatial stats, graph niches, neighborhoods
 pseudotime  Feature matrix prep, branch annotation, trend analysis
 phenotype   Clustering, subsetting, merging, refinement
 ml          SVM classifier, feature construction, inspection
+compare     Group comparison of per-sample summaries (e.g. HPV+ vs HPV-)
 """
 
 from __future__ import annotations
@@ -38,6 +39,7 @@ _SUBMODULE_MAP = {
     "pseudotime": "spatioev.tl.pseudotime",
     "phenotype": "spatioev.tl.phenotype",
     "ml": "spatioev.tl.ml",
+    "compare": "spatioev.tl.compare",
 }
 
 # Flat function → submodule path (new locations)
@@ -129,6 +131,11 @@ _EXPORTS = {
     "build_niche_feature_table_batched": "spatioev.tl.niche",
     "summarize_niche_surrounding_context": "spatioev.tl.niche",
     "score_pdac_niche_pathology_modules": "spatioev.tl.niche",
+    "define_tissue_regions": "spatioev.tl.niche",
+    "summarize_region_composition": "spatioev.tl.niche",
+    "rasterize_tissue_regions": "spatioev.tl.niche",
+    "write_region_boundaries": "spatioev.tl.niche",
+    "read_region_boundaries": "spatioev.tl.niche",
     # --- pseudotime ---
     "prepare_pseudotime_feature_matrix": "spatioev.tl.pseudotime",
     "block_balance_feature_matrix": "spatioev.tl.pseudotime",
@@ -185,6 +192,26 @@ _EXPORTS = {
     "summarize_ecm_cell_neighborhoods": "spatioev.tl.ecm",
     "score_col6_dark_neighborhoods": "spatioev.tl.ecm",
     "add_neighborhoods_to_obs": "spatioev.tl.ecm",
+    "calculate_fiber_density": "spatioev.tl.ecm",
+    "cell_matrix_proximity": "spatioev.tl.ecm",
+    "cell_matrix_enrichment": "spatioev.tl.ecm",
+    "fiber_image_stats": "spatioev.tl.ecm",
+    "fiber_tile_stats": "spatioev.tl.ecm",
+    "fiber_region_stats": "spatioev.tl.ecm",
+    "orientation_coherence": "spatioev.tl.ecm",
+    "tile_cell_matrix_association": "spatioev.tl.ecm",
+    "anamorf_lacunarity": "spatioev.tl.ecm",
+    "architecture_by_group": "spatioev.tl.ecm",
+    "box_counting_dimension": "spatioev.tl.ecm",
+    "gliding_box_lacunarity": "spatioev.tl.ecm",
+    "hdm_threshold": "spatioev.tl.ecm",
+    "matrix_architecture": "spatioev.tl.ecm",
+    "matrix_architecture_tiled": "spatioev.tl.ecm",
+    "orientation_coherency": "spatioev.tl.ecm",
+    "fiber_skeleton_features": ("spatioev.tl.ecm", "skeleton_features"),
+    # --- group comparison ---
+    "compare_groups": "spatioev.tl.compare",
+    "aggregate_to_units": "spatioev.tl.compare",
 }
 
 __all__ = sorted([*_SUBMODULE_MAP, *_EXPORTS])

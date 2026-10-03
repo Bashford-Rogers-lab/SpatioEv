@@ -10,6 +10,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Fiber segmentation** (`spatioev.pp.fibers`, interface stage 04), adapted
+  from ark-analysis (MIT; licence shipped as `spatioev/pp/LICENSE.ark-analysis`).
+  `segment_fibers` reproduces ark's label image exactly on images that fit in
+  one tile; `segment_fibers_tiled` handles whole slides with the intensity
+  scale, Frangi `gamma` and multi-Otsu thresholds computed once over the full
+  image (on a TMA core: area fraction identical to whole-image, fiber-pixel
+  IoU 0.97). `calculate_fiber_alignment` uses a KD-tree instead of ark's
+  all-pairs distance matrix and axial angle differences by default
+  (`axial=False` restores ark's score, which rates nearly horizontal fibers as
+  misaligned). Fiber tables use SpatioEv conventions (`X_centroid` = column,
+  `orientation` in degrees from +x) and are indexed by `fiber_id`, so they
+  feed `spatioev.tl.ecm` directly.
+- **Bright matrix** (`include_bright`, optional local window and floor): adds
+  filled matrix that Frangi's ridge filter misses (cross-cut collagen, dense
+  patches) as extra objects marked `object_type = bright_matrix`. They count
+  towards matrix area; fiber counts, shape averages, alignment and orientation
+  coherence use the ridge fibers only. The brightness threshold ignores a few
+  saturated spots (it is recomputed on the clipped histogram when its top
+  class holds under 0.1% of pixels). QC images show whole-image and
+  automatically picked crops, ridge fibers in teal and bright matrix in
+  magenta.
+- **Fiber summaries** (`spatioev.tl.ecm.fiber_stats`): ark's density, tile and
+  per-image statistics for any image size, plus `area_fraction_pct`,
+  orientation coherence, `fiber_region_stats` (matrix inside each tissue
+  region), `cell_matrix_proximity` (distance to the nearest matrix pixel and
+  local matrix fraction), `cell_matrix_enrichment` (label-permutation test) and
+  `tile_cell_matrix_association` (phenotypes in dense / aligned matrix tiles).
+- **Tissue regions** (`spatioev.tl.niche.regions`, stage 05):
+  `define_tissue_regions` labels cells tumour / envelope / stroma from tumour
+  nests; `summarize_region_composition` covers every region including stroma;
+  `rasterize_tissue_regions`, and GeoJSON read/write for nest polygons. The
+  boundary grid defaults to half the median cell spacing, so nests are solid
+  in pixel as well as micrometre coordinates.
+- **Co-localisation** (stage 06): per-image cross-Ripley curves with a
+  label-permutation envelope, per-region neighbour ratios, and the cell–matrix
+  measures above.
+- **Cohort comparison** (`spatioev.tl.compare`, stage 07): per-patient
+  aggregation, Mann–Whitney U / Kruskal–Wallis with Benjamini–Hochberg q-values,
+  and the minimum achievable p-value for the group sizes.
+- Plots: `sv.pl.plot_fiber_segmentation_steps`, `plot_fiber_overlay`,
+  `plot_tissue_regions`.
+- **QuPath bridge** (`spatioev.io.qupath`, `spatioev qupath ...`, interface
+  page 03): classify cells in QuPath on SpatioEv's segmentation with one
+  import and one export per core, keyed on `cell_id`. `prepare` writes QuPath
+  cell GeoJSON with exact pixel-edge outlines, the matched nucleus, `cell_id`
+  names, deterministic object IDs and marker measurements;
+  `spatioev_import_cells.groovy` / `spatioev_export_classes.groovy` (shipped in
+  `spatioev/resources/qupath`) run per image or for a whole project; `collect`
+  builds a phenotyped AnnData per core, applying Exclude annotations. Replaces
+  hand-edited scripts that paired each cell with the nucleus of the same label
+  number (wrong for 99.7 % of cells, as the masks are numbered independently),
+  matched measurements by rounded centroid (off by a systematic 0.5 px) and
+  clamped labels to 16 bits. Tested end to end against QuPath 0.7.
+- **TWOMBLI-style matrix architecture** (`spatioev.tl.ecm.architecture`):
+  total fiber length, endpoints, branchpoints, mean branch length, curvature,
+  box-counting fractal dimension, lacunarity, alignment (structure-tensor
+  coherency) and % high-density matrix, following the definitions in TWOMBLI
+  v1, AnaMorf and IAClassLibrary (re-implemented; no TWOMBLI code used). Measured
+  from one skeleton of each image and summed per tissue region or tile, so
+  region edges do not create fiber ends. Stage 04 reports them per image and
+  tile, stage 05 per region, stage 06 relates them to phenotypes per tile, and
+  stage 07 tests them between groups. Differences from TWOMBLI, documented in
+  the module: the mask is SpatioEv's segmentation rather than Ridge Detection;
+  curvature uses every fiber path (AnaMorf's whole-image mode uses only the
+  longest); AnaMorf's lacunarity is shown to equal `|1/p - 2|` for coverage
+  `p` and is reported beside a gliding-box lacunarity; the % HDM intensity
+  range uses robust percentiles instead of the raw minimum and maximum.
 - Optional **Marker order CSV** on the single-image half of *Prepare AnnData*
   (`--marker-manifest`, `ConversionPlan.marker_manifest`). When supplied it
   defines the marker order instead of the OME channel names, so `var_names`

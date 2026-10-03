@@ -23,8 +23,15 @@ ignored for GitHub upload; see [Data Policy](docs/data_policy.md).
   pseudotime trend tables.
 - Cell-ECM neighborhood summaries and collagen/fiber interaction modules.
 - Xenium-compatible annotation, niche, DAPI, and pseudotime support.
+- ECM fiber segmentation adapted from ark-analysis, with fiber density,
+  alignment and architecture per image, tile and tissue region.
+- Tumour / envelope / stroma regions, cell–cell and cell–matrix
+  co-localisation, and group comparison of per-sample summaries.
+- A QuPath bridge: classify cells in QuPath on SpatioEv's segmentation,
+  exchanged by cell ID (`spatioev qupath prepare` / `collect`).
 - A staged interface for CellSAM-to-AnnData conversion, broad clustering,
-  marker autogating, and SCIMAP subset phenotyping, including multi-FOV TMA
+  marker autogating, SCIMAP subset phenotyping, fiber segmentation, tissue
+  regions, co-localisation and cohort comparison, including multi-FOV TMA
   projects split across multiple ARK working directories.
 
 The WGCNA-like workflow from earlier manuscript drafts is not part of the
@@ -45,7 +52,7 @@ Optional extras:
 ```bash
 pip install -e ".[scanpy]"       # clustering and Scanpy plotting
 pip install -e ".[viewer]"       # scimap/Napari interactive viewers
-pip install -e ".[apps]"         # all four interactive analysis workflows
+pip install -e ".[apps]"         # the staged analysis interface
 pip install -e ".[spatialdata]"  # SpatialData and Squidpy workflows
 pip install -e ".[trajectory]"   # UMAP and ElPiGraph trajectory notebooks
 pip install -e ".[dev]"          # tests and developer tools
@@ -110,7 +117,7 @@ All user-facing code should use the public namespaces above.
 
 ```text
 spatioev/           Python package source (the installable library)
-spatioev/apps/      Four-stage Streamlit interface
+spatioev/apps/      Staged Streamlit interface
 spatioev/workflows/ Reusable workflow engines and Napari review tools
 tests/              Test suite
 docs/               Documentation sources (MkDocs)
