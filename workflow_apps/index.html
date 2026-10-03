@@ -411,6 +411,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#classifying-cells-in-qupath-instead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Classifying cells in QuPath instead
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tma-and-multi-fov-datasets" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1358,6 +1369,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#classifying-cells-in-qupath-instead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Classifying cells in QuPath instead
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tma-and-multi-fov-datasets" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1411,9 +1433,10 @@
 
 
 <h1 id="interactive-image-analysis-workflows">Interactive image-analysis workflows<a class="headerlink" href="#interactive-image-analysis-workflows" title="Permanent link">&para;</a></h1>
-<p>SpatioEv packages four linked interfaces for taking CellSAM quantification
-tables through broad cell annotation, marker gating, and prior-knowledge subset
-phenotyping. Each stage writes ordinary CSV, JSON, PNG, and H5AD artifacts, so
+<p>SpatioEv packages linked interfaces for taking CellSAM quantification
+tables through broad cell annotation, marker gating, prior-knowledge subset
+phenotyping, ECM fiber segmentation, tissue regions, co-localisation and
+cohort comparison. Each stage writes ordinary CSV, JSON, PNG, and H5AD artifacts, so
 results remain inspectable outside the interface.</p>
 <h2 id="install-and-launch">Install and launch<a class="headerlink" href="#install-and-launch" title="Permanent link">&para;</a></h2>
 <p>Install the application dependencies from a checkout:</p>
@@ -1461,6 +1484,90 @@ also be supplied with the <code>SPATIOEV_PROJECT_ROOT</code> environment variabl
    SCIMAP phenotype workflow. It writes subset and optional full-tissue H5ADs,
    tables, publication-ready heatmaps, spatial plots, and image overlays.</li>
 </ol>
+<p>The spatial-analysis stages start from the phenotyped H5AD and the original
+OME-TIFF. Every stage writes CSV tables, PNG plots and a manifest JSON under
+<code>results/&lt;sample&gt;_&lt;stage&gt;/</code>, which the next stage and the cohort comparison
+pick up by default.</p>
+<ol>
+<li><strong>Fiber segmentation</strong> segments ECM fibers in one or more matrix channels
+   (e.g. COL1, FN) with the ark-analysis method (Angelo Lab, MIT licence):
+   blur, CLAHE, Frangi ridges, a distance-map watershed and small-object
+   removal. A crop preview shows every step for parameter tuning. Images up to
+   the processing tile size (4096 px by default) are segmented exactly as ark
+   does; whole slides are processed in overlapping tiles with the intensity
+   scale, Frangi <code>gamma</code> and Otsu thresholds computed once over the full image.
+   Outputs: a label TIFF per image and channel, one fiber table (centroid,
+   size, orientation in degrees from +x, alignment score), and whole-image and
+   tile summaries. Alignment uses axial angle differences by default; ark's
+   original score, which treats nearly horizontal fibers at +89 and -89 degrees
+   as misaligned, is available as an option. Frangi finds ridges, so filled
+   matrix (collagen cut across, dense patches) is missed; <strong>Also count bright
+   matrix</strong> adds pixels no fiber covers that are in the channel's brightest
+   multi-Otsu class or, with a local window (65 µm suits the 0.325 µm TMA
+   cores), brighter than their surroundings and above a floor. These objects
+   are marked <code>object_type = bright_matrix</code> in the fiber table and magenta in
+   the QC images; they count towards matrix area but not towards fiber counts,
+   shape or alignment. The same stage measures TWOMBLI-style
+   architecture on the fiber skeleton: total length, endpoints, branchpoints,
+   curvature, fractal dimension, lacunarity, alignment coherency and % high-
+   density matrix, per image and per summary tile. Values follow TWOMBLI's
+   definitions but use SpatioEv's segmentation, so they compare between
+   SpatioEv samples rather than with Fiji output. Fractal dimension depends on
+   the size of the area measured; compare it between images or regions of
+   similar size.</li>
+<li><strong>Tissue regions</strong> groups tumour cells into nests, outlines each nest,
+   expands it by the envelope width (µm) and labels every cell <code>tumour</code>,
+   <code>envelope</code> or <code>stroma</code> by location. It writes the phenotype composition of
+   each region and, given a fiber manifest, matrix area fraction, fiber density,
+   alignment and the TWOMBLI-style architecture inside each region, measured
+   within tissue only.</li>
+<li><strong>Co-localisation</strong> analyses each image separately. Cell–cell: cross-Ripley
+   <code>L(r) - r</code> with a 95% label-permutation envelope for each source → target
+   pair, plus per-region neighbour ratios. Cell–matrix: distance from each cell
+   to the nearest matrix pixel and the matrix fraction around it, a
+   label-permutation test per phenotype, and the association between dense or
+   aligned matrix tiles and each phenotype.</li>
+<li><strong>Cohort comparison</strong> reads a sample sheet (<code>sample_id</code>, <code>group</code>, optional
+   <code>imageid</code> for TMA cores, <code>patient_id</code>, <code>project_root</code>), collects every
+   per-sample summary, averages per patient and tests each feature between
+   groups (Mann–Whitney U or Kruskal–Wallis, Benjamini–Hochberg q-values). It
+   reports the smallest p-value the group sizes allow, so a 3 vs 3 design is
+   flagged as unable to reach p &lt; 0.05.</li>
+</ol>
+<h2 id="classifying-cells-in-qupath-instead">Classifying cells in QuPath instead<a class="headerlink" href="#classifying-cells-in-qupath-instead" title="Permanent link">&para;</a></h2>
+<p>For large cohorts (e.g. hundreds of TMA cores) cell types can be assigned in
+QuPath instead of stages 01-03, using SpatioEv's segmentation and
+quantification. Cells move between the two by <code>cell_id</code> (<code>&lt;core&gt;_&lt;label&gt;</code>),
+never by position: one import into QuPath and one export back per core. The
+<strong>QuPath bridge</strong> page runs the SpatioEv side, or from a terminal:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>spatioev<span class="w"> </span>qupath<span class="w"> </span>prepare<span class="w"> </span>/path/to/TMA_folder
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>spatioev<span class="w"> </span>qupath<span class="w"> </span>scripts<span class="w"> </span>~/QuPath/v0.7/scripts
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>spatioev<span class="w"> </span>qupath<span class="w"> </span>collect<span class="w"> </span>/path/to/TMA_folder
+</code></pre></div>
+<ol>
+<li><code>prepare</code> writes <code>&lt;core&gt;/qupath/&lt;core&gt;_cells.geojson</code> for every core folder
+   (one holding <code>segmentation/</code> and <code>quantification/</code>): each cell's exact
+   pixel-edge outline, its matched nucleus (from <code>matched_nuclear_label</code>),
+   <code>cell_id</code> as the object name, a stable object ID derived from it, and the
+   marker measurements (bare marker name = whole-cell mean, <code>&lt;marker&gt; nucleus</code>
+   = nuclear mean).</li>
+<li>In QuPath, add each core's <code>background/&lt;core&gt;.ome.tiff</code> to a project (the
+   image the fiber segmentation reads, so coordinates line up) and run
+   <code>spatioev_import_cells.groovy</code> with <em>Automate &gt; Run for project</em>. Images
+   that already hold the cells are skipped, so a second run cannot wipe
+   classifications.</li>
+<li>Classify. Derived classes such as <code>Fibroblast: WNT5A+</code> are kept.
+   Annotations whose class starts with <code>Exclude</code>, <code>Ignore</code> or <code>Artefact</code> remove
+   the cells inside them; other classified annotations are recorded per cell.</li>
+<li>Run <code>spatioev_export_classes.groovy</code> for the project, then <code>collect</code>, which
+   writes <code>&lt;core&gt;/qupath/&lt;core&gt;_phenotyped.h5ad</code> and a class-count table.
+   Re-run only these two after changing the classifier.</li>
+</ol>
+<p>Stages 04-07 then take the QuPath-phenotyped AnnData directly: set the project
+root to the TMA folder and the sample ID to the core. Use the <code>qupath_class</code>
+column to keep derived classes separate, or <code>phenotype</code> for base classes.
+QuPath reports centroids from pixel corners, 0.5 px right of and below
+SpatioEv's pixel-centre centroids; joining by <code>cell_id</code> makes this irrelevant.</p>
 <h2 id="tma-and-multi-fov-datasets">TMA and multi-FOV datasets<a class="headerlink" href="#tma-and-multi-fov-datasets" title="Permanent link">&para;</a></h2>
 <p>Choose <strong>Multi-FOV / TMA</strong> on the Prepare AnnData page when one specimen has
 multiple <code>ark_wdir*</code> batches and one OME-TIFF per FOV. The importer:</p>
@@ -1508,10 +1615,14 @@ marker-to-channel assignment, allowing the same interpretation to be audited
 or reused when CSV column order changes.</p>
 <p>The workflow engines are importable from <code>spatioev.workflows</code> and can also be
 launched as modules, for example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>-m<span class="w"> </span>spatioev.workflows.cellsam<span class="w"> </span>--help
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>python<span class="w"> </span>-m<span class="w"> </span>spatioev.workflows.cellsam_tma<span class="w"> </span>--help
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>python<span class="w"> </span>-m<span class="w"> </span>spatioev.workflows.marker_gating<span class="w"> </span>--help
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>python<span class="w"> </span>-m<span class="w"> </span>spatioev.workflows.marker_gating_review<span class="w"> </span>--help
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python<span class="w"> </span>-m<span class="w"> </span>spatioev.workflows.cellsam<span class="w"> </span>--help
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>python<span class="w"> </span>-m<span class="w"> </span>spatioev.workflows.cellsam_tma<span class="w"> </span>--help
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>python<span class="w"> </span>-m<span class="w"> </span>spatioev.workflows.marker_gating<span class="w"> </span>--help
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>python<span class="w"> </span>-m<span class="w"> </span>spatioev.workflows.marker_gating_review<span class="w"> </span>--help
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>python<span class="w"> </span>-m<span class="w"> </span>spatioev.workflows.fiber_segmentation<span class="w"> </span>--help
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>python<span class="w"> </span>-m<span class="w"> </span>spatioev.workflows.tissue_regions<span class="w"> </span>--help
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>python<span class="w"> </span>-m<span class="w"> </span>spatioev.workflows.colocalization<span class="w"> </span>--help
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>python<span class="w"> </span>-m<span class="w"> </span>spatioev.workflows.cohort_comparison<span class="w"> </span>--help
 </code></pre></div>
 
 
