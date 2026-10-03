@@ -6,6 +6,9 @@ Split by analysis stage:
     proximity      distance, fiber density, cross-type Ripley K
     moran          Moran's I over fibers and ECM-cell coupling
     regression     spatial regression, enrichment, fiber orientation
+    fiber_stats    fiber density/alignment per image, tile and tissue region
+    architecture   TWOMBLI-style metrics: length, branching, curvature, fractal
+                   dimension, lacunarity, alignment, % high-density matrix
     graph          bipartite ECM graph, niche detection, invasion score
     neighborhoods  ECM-cell neighborhood features and clustering
 
@@ -18,6 +21,27 @@ from __future__ import annotations
 # Canonical implementation lives in pp.spatial_prep; re-exported here because
 # it has always been part of this module's public surface.
 from ..preprocessing import compute_convex_hull_area
+from .architecture import (
+    anamorf_lacunarity,
+    architecture_by_group,
+    box_counting_dimension,
+    gliding_box_lacunarity,
+    hdm_threshold,
+    matrix_architecture,
+    matrix_architecture_tiled,
+    orientation_coherency,
+    skeleton_features,
+)
+from .fiber_stats import (
+    calculate_fiber_density,
+    cell_matrix_enrichment,
+    cell_matrix_proximity,
+    fiber_image_stats,
+    fiber_region_stats,
+    fiber_tile_stats,
+    orientation_coherence,
+    tile_cell_matrix_association,
+)
 from .graph import (
     assign_niches_to_fibers,
     build_ecm_bipartite_graph_per_image,
@@ -95,4 +119,21 @@ __all__ = [
     "add_neighborhoods_to_obs",
     "compute_convex_hull_area",
     "cross_ripleys_k",
+    "calculate_fiber_density",
+    "cell_matrix_proximity",
+    "cell_matrix_enrichment",
+    "fiber_image_stats",
+    "fiber_tile_stats",
+    "fiber_region_stats",
+    "orientation_coherence",
+    "tile_cell_matrix_association",
+    "anamorf_lacunarity",
+    "architecture_by_group",
+    "box_counting_dimension",
+    "gliding_box_lacunarity",
+    "hdm_threshold",
+    "matrix_architecture",
+    "matrix_architecture_tiled",
+    "orientation_coherency",
+    "skeleton_features",
 ]

@@ -82,6 +82,36 @@ def main() -> None:
             root / "results" / f"{sample}_scimap_phenotyping_interface",
             ":material/account_tree:",
         ),
+        (
+            "03 QuPath bridge (alternative to 01-03)",
+            "pages/03_qupath_bridge.py",
+            root / sample / "qupath" / f"{sample}_phenotyped.h5ad",
+            ":material/swap_horiz:",
+        ),
+        (
+            "04 Fiber segmentation",
+            "pages/04_fiber_segmentation.py",
+            root / "results" / f"{sample}_fiber_segmentation" / f"{sample}_fiber_manifest.json",
+            ":material/grain:",
+        ),
+        (
+            "05 Tissue regions",
+            "pages/05_tissue_regions.py",
+            root / "results" / f"{sample}_tissue_regions" / f"{sample}_tissue_regions_manifest.json",
+            ":material/layers:",
+        ),
+        (
+            "06 Co-localisation",
+            "pages/06_colocalization.py",
+            root / "results" / f"{sample}_colocalization" / f"{sample}_colocalization_manifest.json",
+            ":material/hub:",
+        ),
+        (
+            "07 Cohort comparison",
+            "pages/07_cohort_comparison.py",
+            root / "results" / "cohort_comparison",
+            ":material/compare_arrows:",
+        ),
     ]
 
     st.divider()

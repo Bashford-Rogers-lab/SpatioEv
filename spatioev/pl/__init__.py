@@ -18,6 +18,7 @@ Submodules
 ----------
 qc       Morphology distribution plots (area, NC ratio)
 spatial  Spatial scatter, cluster heatmaps, density overlays, niche plots
+fibers   Fiber segmentation steps and overlays, tumour/envelope/stroma maps
 """
 
 from __future__ import annotations
@@ -49,6 +50,10 @@ _EXPORTS = {
     "plot_interaction_density": "spatioev.tl.density",
     "plot_interaction_overlay": "spatioev.tl.density",
     "plot_interaction_distribution": "spatioev.tl.density",
+    # Fiber segmentation and tissue regions
+    "plot_fiber_segmentation_steps": "spatioev.pl.fibers",
+    "plot_fiber_overlay": "spatioev.pl.fibers",
+    "plot_tissue_regions": "spatioev.pl.fibers",
 }
 
 __all__ = sorted(_EXPORTS)

@@ -144,9 +144,11 @@ exclude = [
 ]
 
 [tool.setuptools.package-data]
-"spatioev.resources" = ["*.csv"]
+"spatioev.resources" = ["*.csv", "qupath/*.groovy"]
 # MIT requires the copyright notice to ship with any redistribution.
 "spatioev._vendor.scimap" = ["LICENSE"]
+# Fiber segmentation is adapted from ark-analysis (MIT); its notice ships too.
+"spatioev.pp" = ["LICENSE.ark-analysis"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

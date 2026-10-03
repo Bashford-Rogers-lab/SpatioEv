@@ -5,6 +5,7 @@ Split by analysis stage:
     boundaries  spatial component clustering and boundary geometry
     graph       cell-level spatial graph and niche subgraphs
     features    per-niche feature tables and pathology module scoring
+    regions     tumour / envelope / stroma regions, composition, rasters
 
 All names remain importable directly from this package, so
 ``from spatioev.tl.niche import build_cell_graph`` is unchanged.
@@ -38,6 +39,17 @@ from .graph import (
     extract_niche_subgraph,
 )
 
+# REGION_CODES is re-exported but not in __all__, which lists callables only.
+from .regions import REGION_CODES as REGION_CODES
+from .regions import (
+    define_tissue_regions,
+    median_cell_spacing,
+    rasterize_tissue_regions,
+    read_region_boundaries,
+    summarize_region_composition,
+    write_region_boundaries,
+)
+
 __all__ = [
     "estimate_density_adaptive_dbscan_params",
     "estimate_spatial_component_params",
@@ -58,4 +70,10 @@ __all__ = [
     "build_niche_feature_table_batched",
     "summarize_niche_surrounding_context",
     "score_pdac_niche_pathology_modules",
+    "define_tissue_regions",
+    "median_cell_spacing",
+    "summarize_region_composition",
+    "rasterize_tissue_regions",
+    "write_region_boundaries",
+    "read_region_boundaries",
 ]

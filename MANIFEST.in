@@ -5,9 +5,10 @@ include CITATION.cff
 include pyproject.toml
 
 recursive-include spatioev *.py
-recursive-include spatioev/resources *.csv
+recursive-include spatioev/resources *.csv *.groovy
 # Upstream licence for vendored third-party code (MIT requires it to ship).
 include spatioev/_vendor/scimap/LICENSE
+include spatioev/pp/LICENSE.ark-analysis
 
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]

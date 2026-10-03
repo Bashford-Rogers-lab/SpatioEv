@@ -19,6 +19,7 @@ qc           Segmentation quality control (area, NC ratio filtering, summaries)
 normalize    Marker z-score normalization and obs feature construction
 pixel        Per-cell pixel feature extraction (texture, morphology, DAPI)
 spatial_prep Spatial coordinate validation, convex hull, tissue areas, edge cells
+fibers       ECM fiber segmentation, per-fiber table and alignment (from ark-analysis)
 """
 
 from __future__ import annotations
@@ -49,6 +50,11 @@ _EXPORTS = {
     "extract_cell_pixel_features_for_fov": "spatioev.pp.pixel",
     "extract_cell_pixel_features": "spatioev.pp.pixel",
     "extract_xenium_dapi_features": "spatioev.pp.pixel",
+    # Fiber segmentation
+    "segment_fibers": "spatioev.pp.fibers",
+    "segment_fibers_tiled": "spatioev.pp.fibers",
+    "fiber_table_from_labels": "spatioev.pp.fibers",
+    "calculate_fiber_alignment": "spatioev.pp.fibers",
 }
 
 __all__ = sorted(_EXPORTS)
