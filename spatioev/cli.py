@@ -50,12 +50,77 @@ def _qupath_parser(subparsers: argparse._SubParsersAction) -> None:
     scripts.add_argument("destination", type=Path)
 
 
+def _batch_parser(subparsers: argparse._SubParsersAction) -> None:
+    parser = subparsers.add_parser(
+        "batch",
+        help="Repeat one core's fiber segmentation, tissue regions or co-localisation run for every core",
+        description="Run a stage once for one core, check it, then repeat it for every core with the same settings. "
+        "Cores that are already done are skipped, so an interrupted batch can be started again.",
+    )
+    parser.add_argument("run", type=Path, help="Output folder of the finished run (or its *_config.json)")
+    parser.add_argument("--roots", nargs="*", type=Path, default=None, help="Folders holding the core folders (default: the run's project folder)")
+    parser.add_argument("--cores", nargs="*", default=None, help="Only these core names")
+    parser.add_argument("--overwrite", action="store_true", help="Re-run cores that are already done")
+    parser.add_argument("--jobs", type=int, default=1, help="Cores to process at the same time (each needs as much memory as one run)")
+
+
+def _demo_parser(subparsers: argparse._SubParsersAction) -> None:
+    parser = subparsers.add_parser(
+        "demo",
+        help="Create synthetic practice cores in the same layout as real data",
+        description="Write synthetic TMA cores (image, segmentation masks, cell tables) and a sample sheet, "
+        "for trying every step of the workflow. Contains no real patient data.",
+    )
+    parser.add_argument("destination", type=Path, help="Folder to create the demo cores in")
+    parser.add_argument("--cores", type=int, default=6, help="Number of cores (half in group A, half in group B)")
+    parser.add_argument("--size", type=int, default=1500, help="Core image size in pixels")
+    parser.add_argument("--with-classes", action="store_true", help="Also write ready-made QuPath classes, to skip QuPath")
+    parser.add_argument("--overwrite", action="store_true", help="Replace demo cores that already exist")
+    parser.add_argument("--seed", type=int, default=0)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="spatioev")
     subparsers = parser.add_subparsers(dest="command", required=True)
     _ui_parser(subparsers)
     _qupath_parser(subparsers)
+    _batch_parser(subparsers)
+    _demo_parser(subparsers)
     return parser
+
+
+def run_batch(args: argparse.Namespace) -> int:
+    import pandas as pd
+
+    from spatioev.workflows import batch
+
+    config = {
+        "template": str(args.run),
+        "roots": [str(root) for root in args.roots] if args.roots else None,
+        "cores": args.cores,
+        "overwrite": args.overwrite,
+        "jobs": args.jobs,
+    }
+    outputs = batch.run_workflow(config, None)
+    summary = pd.read_csv(outputs["summary"]).fillna("")
+    with pd.option_context("display.width", 200, "display.max_rows", 1000, "display.max_colwidth", 80):
+        print(summary.to_string(index=False))
+    print(f"Summary: {outputs['summary']}")
+    return 1 if (summary["status"] == "failed").any() else 0
+
+
+def run_demo(args: argparse.Namespace) -> int:
+    from spatioev.io.demo import make_demo_tma
+
+    cores = make_demo_tma(
+        args.destination, n_cores=args.cores, size=args.size, seed=args.seed,
+        with_classes=args.with_classes, overwrite=args.overwrite,
+    )
+    print(f"Created {len(cores)} demo cores in {args.destination.expanduser().resolve()}:")
+    for core in cores:
+        print(f"  {core.name}")
+    print("Sample sheet: demo_sample_sheet.csv")
+    return 0
 
 
 def run_qupath(args: argparse.Namespace) -> int:
@@ -126,6 +191,10 @@ def main() -> int:
         return launch_ui(args)
     if args.command == "qupath":
         return run_qupath(args)
+    if args.command == "batch":
+        return run_batch(args)
+    if args.command == "demo":
+        return run_demo(args)
     return 2
 
 

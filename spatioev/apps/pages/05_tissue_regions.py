@@ -12,6 +12,7 @@ from spatioev.apps._common import default_project_root
 from spatioev.apps._worker import (
     path_value,
     remember_worker,
+    render_batch,
     render_worker,
     show_images,
     start_worker,
@@ -214,6 +215,7 @@ def main() -> None:
     if st.session_state.get("regions_status_path"):
         st.subheader("Tissue regions run")
         render_worker(PREFIX, render_outputs)
+        render_batch(PREFIX)
 
 
 if __name__ == "__main__":

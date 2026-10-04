@@ -11,6 +11,12 @@ a generated function catalog, workflow scripts, and manuscript source drafts.
 Large local analysis data and generated manuscript binaries are intentionally
 ignored for GitHub upload; see [Data Policy](docs/data_policy.md).
 
+> **New to SpatioEv, or to coding?** The [step-by-step guide](https://bashford-rogers-lab.github.io/SpatioEv/guide/)
+> ([source](docs/guide/index.md)) walks through installing it on a Mac,
+> organising your data, classifying cells in QuPath, and every analysis
+> stage, with screenshots. Practise first on synthetic data made by
+> `spatioev demo ~/SpatioEv_demo`.
+
 ## Main Capabilities
 
 - Segmentation QC from cell and nuclear morphology summaries.
@@ -29,6 +35,10 @@ ignored for GitHub upload; see [Data Policy](docs/data_policy.md).
   co-localisation, and group comparison of per-sample summaries.
 - A QuPath bridge: classify cells in QuPath on SpatioEv's segmentation,
   exchanged by cell ID (`spatioev qupath prepare` / `collect`).
+- "Run for every core": repeat a checked fiber segmentation, tissue regions
+  or co-localisation run for every core with the same settings
+  (`spatioev batch`, or one button in the interface).
+- Synthetic practice data in the real folder layout (`spatioev demo`).
 - A staged interface for CellSAM-to-AnnData conversion, broad clustering,
   marker autogating, SCIMAP subset phenotyping, fiber segmentation, tissue
   regions, co-localisation and cohort comparison, including multi-FOV TMA

@@ -16,6 +16,7 @@ from spatioev.apps._worker import (
     show_images,
     start_worker,
 )
+from spatioev.io.qupath import find_cores
 from spatioev.workflows.cohort_comparison import FAMILIES, read_sample_sheet
 
 PREFIX = "cohort"
@@ -87,10 +88,15 @@ def main() -> None:
     sheet_path = Path(path_value("cohort_sheet")).expanduser()
     with st.expander("Create or edit the sample sheet", icon=":material/edit_note:", expanded=not sheet_path.exists()):
         st.caption(
-            "One row per sample. For a TMA, add one row per core with its imageid so each core gets its own group and patient. "
-            "Rows sharing a patient_id are averaged into one unit."
+            "One row per sample (for a TMA, one row per core). A new sheet starts with every core folder found in the "
+            "project root: fill in group and patient_id, or edit the CSV in Excel. Rows sharing a patient_id are "
+            "averaged into one unit."
         )
-        current = read_sample_sheet(sheet_path) if sheet_path.exists() else pd.DataFrame(columns=SHEET_COLUMNS)
+        if sheet_path.exists():
+            current = read_sample_sheet(sheet_path)
+        else:
+            cores = [core.name for core in find_cores(path_value("cohort_project_root"))] if path_value("cohort_project_root") else []
+            current = pd.DataFrame({"sample_id": cores}, columns=SHEET_COLUMNS)
         current = current.reindex(columns=SHEET_COLUMNS).fillna("")
         edited = st.data_editor(current, num_rows="dynamic", width="stretch", key=f"cohort_sheet_editor_{sheet_path}")
         if st.button("Save sample sheet", icon=":material/save:", key="cohort_save_sheet"):

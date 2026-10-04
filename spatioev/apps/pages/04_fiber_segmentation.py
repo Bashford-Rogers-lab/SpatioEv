@@ -14,6 +14,7 @@ from spatioev.apps._worker import (
     parse_numbers,
     path_value,
     remember_worker,
+    render_batch,
     render_worker,
     show_images,
     start_worker,
@@ -51,10 +52,10 @@ def standard_defaults(sample_id: str, project_root: Path) -> dict[str, str]:
         project_root / f"{sample_id}_adata.h5ad",
         project_root / sample_id / f"{sample_id}_adata.h5ad",
     ]
-    adata = next((path for path in adata_candidates if path.exists()), adata_candidates[1])
+    adata = next((path for path in adata_candidates if path.exists()), None)
     return {
         "fiber_image": str(image),
-        "fiber_adata": str(adata),
+        "fiber_adata": str(adata) if adata else "",  # optional; an empty box beats a path that does not exist
         "fiber_output": str(project_root / "results" / f"{sample_id}_fiber_segmentation"),
     }
 
@@ -322,6 +323,7 @@ def main() -> None:
     if st.session_state.get("fiber_status_path"):
         st.subheader("Fiber segmentation run")
         render_worker(PREFIX, render_outputs)
+        render_batch(PREFIX)
 
 
 if __name__ == "__main__":

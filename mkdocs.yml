@@ -20,6 +20,8 @@ theme:
 
 plugins:
   - search
+  # Click a screenshot to see it full size (the step-by-step guide relies on this).
+  - glightbox
   - mkdocstrings:
       handlers:
         python:
@@ -36,6 +38,19 @@ plugins:
 
 nav:
   - Home: index.md
+  - Step-by-step guide:
+      - guide/index.md
+      - 1. Install SpatioEv: guide/install.md
+      - 2. Practise on demo data: guide/demo.md
+      - 3. Organise your data: guide/organise.md
+      - 4. Open the app: guide/app.md
+      - 5. Cell types in QuPath: guide/qupath.md
+      - 6. Matrix fibers: guide/fibers.md
+      - 7. Tissue regions: guide/regions.md
+      - 8. Co-localisation: guide/colocalisation.md
+      - 9. Compare groups: guide/cohort.md
+      - Output files explained: guide/outputs.md
+      - Troubleshooting: guide/troubleshooting.md
   - Installation: install.md
   - Quick Start: quickstart.md
   - Interactive Workflows: workflow_apps.md
@@ -66,6 +81,10 @@ nav:
 
 markdown_extensions:
   - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.keys
   - codehilite
   - pymdownx.highlight:
       anchor_linenums: true
