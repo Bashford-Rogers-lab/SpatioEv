@@ -13,6 +13,7 @@ from spatioev.apps._worker import (
     parse_numbers,
     path_value,
     remember_worker,
+    render_batch,
     render_worker,
     show_images,
     start_worker,
@@ -127,6 +128,7 @@ def main() -> None:
         if st.session_state.get("coloc_status_path"):
             st.subheader("Co-localisation run")
             render_worker(PREFIX, render_outputs)
+            render_batch(PREFIX)
         return
 
     previous = regions_manifest(path_value("coloc_adata"))
@@ -231,6 +233,7 @@ def main() -> None:
     if st.session_state.get("coloc_status_path"):
         st.subheader("Co-localisation run")
         render_worker(PREFIX, render_outputs)
+        render_batch(PREFIX)
 
 
 if __name__ == "__main__":

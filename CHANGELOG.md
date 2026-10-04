@@ -10,6 +10,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Step-by-step guide** (`docs/guide/`, a new section of the documentation
+  site) for users with no coding experience: installing on a Mac, organising
+  data, opening the app, cell typing in QuPath, every analysis stage, output
+  files and troubleshooting, with screenshots of the synthetic demo data.
+  `scripts/guide_screenshots.py` regenerates the app screenshots. Images open
+  full size on click (`mkdocs-glightbox`, added to the `docs` extra).
+- **Run for every core** (`spatioev.workflows.batch`, `spatioev batch`, and a
+  panel under each finished run on pages 04–06): repeats one core's fiber
+  segmentation, tissue regions or co-localisation run for every core folder
+  with identical settings, changing only the core name in the paths. Cores
+  with a result are skipped, so an interrupted batch resumes; cores missing
+  an input (for example no QuPath classes yet) are reported, not failed; a run
+  whose paths lack the core name is refused, since every core would write to
+  the same place.
+- **Synthetic demo data** (`spatioev.io.make_demo_tma`, `spatioev demo`):
+  multiplexed-IF TMA cores in the real folder layout (17-channel OME-TIFF,
+  whole-cell and nuclear masks, cell tables measured from them, a sample
+  sheet), with built-in differences between two groups. `--with-classes`
+  also writes QuPath-style classes so the QuPath step can be skipped.
+- The cohort page's sample sheet starts with one row per core folder found.
 - **Fiber segmentation** (`spatioev.pp.fibers`, interface stage 04), adapted
   from ark-analysis (MIT; licence shipped as `spatioev/pp/LICENSE.ark-analysis`).
   `segment_fibers` reproduces ark's label image exactly on images that fit in
@@ -86,6 +106,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   generic plane name.
 
 ### Changed
+- Interface clean-ups found while writing the guide: the QuPath bridge's
+  prepare table no longer shows each file's full path (it pushed the cell
+  counts off screen); fiber segmentation leaves *Cell AnnData* empty instead
+  of suggesting a file that does not exist; the fiber preview's last panel
+  counts ridge fibers and bright-matrix pieces separately, like the summary.
+- `FRIEND_INSTALL_INSTRUCTIONS.md` now points to the guide's install page.
 - **Python 3.10 is no longer supported**; the floor is now 3.11. The `ui`,
   `apps` and `dev` extras pin `zarr>=3.1` because `tifffile.aszarr()` requires
   zarr 3, and no zarr release from 3.1 onward supports 3.10 (3.2+ already

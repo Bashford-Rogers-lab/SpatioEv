@@ -54,7 +54,12 @@ def plot_fiber_segmentation_steps(steps: dict, title: str | None = None, figsize
         if key.endswith("labels"):
             ax.imshow(np.zeros_like(image), cmap="gray")
             ax.imshow(image, cmap=_label_colours(image), interpolation="nearest")
-            name = f"{name} ({len(np.unique(image)) - 1})"
+            count = len(np.unique(image)) - 1
+            ridge = steps.get("n_ridge_objects") if key == "labels" else None
+            if ridge is not None and count > ridge:
+                name = f"{name} ({ridge} + {count - ridge} bright matrix)"
+            else:
+                name = f"{name} ({count})"
         else:
             low, high = _display_range(np.asarray(image, dtype=float))
             ax.imshow(image, cmap="bone", vmin=low, vmax=high)

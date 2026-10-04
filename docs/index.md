@@ -1,5 +1,10 @@
 # SpatioEv
 
+!!! tip "New here?"
+    The [step-by-step guide](guide/index.md) takes you from installing
+    SpatioEv to comparing groups of patients, written for people who have
+    never used Terminal or Python.
+
 SpatioEv is a Python toolbox for spatial evolution analysis over multiplexed
 imaging and spatial-transcriptomics data. It focuses on the features that make
 static tissue images biologically dynamic: spatial statistics, morphology,

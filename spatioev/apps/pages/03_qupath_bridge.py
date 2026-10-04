@@ -41,7 +41,8 @@ def render_outputs(outputs: dict) -> None:
         summary = pd.read_csv(outputs["summary"])
         if "status" in summary and (summary["status"] == "failed").any():
             st.error("Some cores failed; see the error column.", icon=":material/error:")
-        st.dataframe(summary, hide_index=True, width="stretch", height=min(400, 38 * len(summary) + 40))
+        # Files sit at <core>/qupath/; the full path only pushes the counts off screen.
+        st.dataframe(summary.drop(columns=["path"], errors="ignore"), hide_index=True, width="stretch", height=min(400, 38 * len(summary) + 40))
     counts_path = outputs.get("class_counts")
     if counts_path and Path(counts_path).exists() and Path(counts_path).stat().st_size > 30:
         counts = pd.read_csv(counts_path)

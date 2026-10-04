@@ -5,6 +5,9 @@ installable `spatioev` package.
 
 ## Tutorial and Documentation
 
+- `guide_screenshots.py` regenerates the app screenshots of the step-by-step
+  guide (`docs/guide/images/`) from the synthetic demo data, using Playwright
+  and the installed Google Chrome; see its docstring.
 - `write_tutorial_notebooks.py` regenerates the tutorial notebook series and
   the public function catalog in `docs/`.
 - `audit_notebook_compatibility.py` validates historical notebooks without
