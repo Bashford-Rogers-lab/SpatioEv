@@ -21,6 +21,8 @@ from spatioev.apps._worker import (
 )
 from spatioev.workflows.fiber_segmentation import (
     DEFAULT_PARAMETERS,
+    PLAUSIBLE_CELL_DIAMETER_UM,
+    implausible_cell_diameter_um,
     inspect_inputs,
     preview_steps,
 )
@@ -191,6 +193,32 @@ def parameter_inputs(report: dict) -> dict:
     }
 
 
+def pixel_size_warning(report: dict) -> None:
+    """Warn when the pixel size gives cells of an implausible size."""
+    pixel_size = float(st.session_state.get("fiber_pixel_size") or 0)
+    if not pixel_size:
+        return
+    cell_diameter_px = report.get("median_cell_diameter_px")
+    diameter_um = implausible_cell_diameter_um(pixel_size, cell_diameter_px)
+    low, high = PLAUSIBLE_CELL_DIAMETER_UM
+    if diameter_um is not None:
+        direction = "large" if diameter_um > high else "small"
+        st.warning(
+            f"**Check the pixel size.** At {pixel_size:g} µm/px the cells in the AnnData are {diameter_um:.1f} µm across "
+            f"(median), but most cells are {low:g}–{high:g} µm, so this pixel size looks too {direction}. Some scanners "
+            "write a wrong pixel size into the OME-TIFF. Type your scan's real pixel size: fiber areas, densities and "
+            "every µm setting below depend on it.",
+            icon=":material/straighten:",
+        )
+    elif cell_diameter_px is None and pixel_size == 1.0 and report.get("pixel_size_um") == 1.0:
+        st.warning(
+            "**Check the pixel size.** The image says 1 µm/px, which some tools write when they do not know the real "
+            "size. Compare it with your scanner's settings, or add the cell AnnData above so SpatioEv can check it "
+            "against cell sizes.",
+            icon=":material/straighten:",
+        )
+
+
 def render_preview(report: dict, channels: list[str], parameters: dict) -> None:
     st.subheader("Preview on a crop")
     images = [row["imageid"] for row in report["images"]]
@@ -298,6 +326,7 @@ def main() -> None:
         )
         st.session_state.setdefault("fiber_pixel_size", report.get("pixel_size_um") or 0.0)
         right.number_input("Pixel size (µm / px)", 0.0, 100.0, step=0.001, format="%.4f", key="fiber_pixel_size")
+        pixel_size_warning(report)
         parameters = parameter_inputs(report)
         render_preview(report, channels, parameters)
 

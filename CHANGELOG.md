@@ -200,6 +200,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   cell table and warns which have no image, the FOV pickers on pages 01–03
   list the FOVs with one, and image QC and overlays are skipped (with a
   note) for a FOV without one. No matching image at all is still an error.
+- **Pixel-size check on Fiber segmentation (page 04).** With a cell AnnData,
+  the page warns when the pixel size makes the median cell smaller than 4 µm
+  or larger than 20 µm across. Without one, it warns when the image says
+  exactly 1 µm/px, a common placeholder. A real TMA scanned at 0.325 µm/px
+  recorded 1 µm/px, which made its cells look 23 µm across instead of 7.6 µm.
 
 ### Changed
 

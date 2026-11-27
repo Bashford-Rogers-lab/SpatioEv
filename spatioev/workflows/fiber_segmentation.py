@@ -238,6 +238,44 @@ def adata_imageids(adata_path: str | None) -> list[str] | None:
         adata.file.close()
 
 
+# Median diameter of segmented cells (a circle of the same area). Nuclei are
+# about 5-10 µm and whole cells about 7-20 µm, so a median outside these bounds
+# means the pixel size is wrong; a scanner that writes 1 µm/px for a
+# 0.325 µm/px scan makes cells look about 3 times too large.
+PLAUSIBLE_CELL_DIAMETER_UM = (4.0, 20.0)
+CELL_AREA_COLUMNS = ("area", "cell_area_px2", "cell_size")
+
+
+def median_cell_diameter_px(adata_path: str | None) -> float | None:
+    """Median cell diameter in pixels, from the cell areas in the AnnData.
+
+    Returns None when there is no AnnData or it has no area column.
+    """
+    if not adata_path or not Path(adata_path).expanduser().exists():
+        return None
+    import anndata as ad
+
+    adata = ad.read_h5ad(Path(adata_path).expanduser(), backed="r")
+    try:
+        column = next((name for name in CELL_AREA_COLUMNS if name in adata.obs), None)
+        if column is None:
+            return None
+        area = pd.to_numeric(adata.obs[column], errors="coerce")
+        area = area[area > 0]
+        return float(2 * np.sqrt(area.median() / np.pi)) if len(area) else None
+    finally:
+        adata.file.close()
+
+
+def implausible_cell_diameter_um(pixel_size_um: float | None, cell_diameter_px: float | None) -> float | None:
+    """The median cell diameter in µm if it is outside :data:`PLAUSIBLE_CELL_DIAMETER_UM`, else None."""
+    if not pixel_size_um or not cell_diameter_px:
+        return None
+    diameter_um = float(pixel_size_um) * float(cell_diameter_px)
+    low, high = PLAUSIBLE_CELL_DIAMETER_UM
+    return None if low <= diameter_um <= high else diameter_um
+
+
 def inspect_inputs(config: dict) -> dict:
     """Describe the images the worker would process (used by the UI)."""
     imageids = adata_imageids(config.get("adata_path"))
@@ -253,6 +291,7 @@ def inspect_inputs(config: dict) -> dict:
         "first_shape": shape,
         "pixel_size_um": physical_pixel_size(Path(images[0]["path"])),
         "imageids_from_adata": imageids is not None,
+        "median_cell_diameter_px": median_cell_diameter_px(config.get("adata_path")),
     }
 
 
