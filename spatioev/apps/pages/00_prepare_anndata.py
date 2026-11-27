@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -11,11 +10,12 @@ import pandas as pd
 import streamlit as st
 
 from spatioev.apps._common import default_project_root, module_command
-from spatioev.workflows._io import read_json
+from spatioev.workflows._io import read_json, run_files, start_logged_process
 from spatioev.workflows.cellsam import (
     ROLE_LABELS,
     ROLE_MARKER,
     ConversionPlan,
+    find_marker_csv,
     inspect_inputs,
     preflight,
     write_json,
@@ -28,6 +28,28 @@ EXAMPLE_IMAGE = EXAMPLE_ROOT / "sample.ome.tif"
 AUTO_REFRESH_SECONDS = 2.0
 
 
+def conversion_run_files(output_path: Path) -> tuple[Path, Path, Path]:
+    """Schema/config, status and log files for a conversion, under ``logs/``."""
+    output_path = Path(output_path).expanduser().resolve()
+    return run_files(output_path.parent, f"{output_path.stem}_conversion")
+
+
+def describe_marker_csv(report: dict) -> None:
+    """Say which marker order CSV defines the channel order, and how it was found."""
+    path = report.get("marker_manifest")
+    if not path:
+        st.info(
+            "No marker order CSV: the channel order comes from the OME-TIFF "
+            "channel names.",
+            icon=":material/info:",
+        )
+        return
+    how = "found automatically" if report.get("marker_manifest_source") == "auto-detected" else "chosen"
+    st.info(
+        f"Marker order CSV ({how}): `{path}`. Its row order defines the column "
+        "order of adata.X and names the image planes.",
+        icon=":material/format_list_numbered:",
+    )
 
 
 def table_path(directory: Path, value: str) -> Path:
@@ -64,7 +86,7 @@ def start_conversion(plan: ConversionPlan, status_path: Path, log_path: Path) ->
         "--status",
         str(status_path),
     )
-    schema_path = plan.output_path.with_suffix(".conversion_schema.json")
+    schema_path, _, _ = conversion_run_files(plan.output_path)
     write_json(
         schema_path,
         {
@@ -75,14 +97,11 @@ def start_conversion(plan: ConversionPlan, status_path: Path, log_path: Path) ->
     command.extend(["--schema-config", str(schema_path)])
     if plan.marker_manifest is not None:
         command.extend(["--marker-manifest", str(plan.marker_manifest)])
+    elif not plan.auto_marker_manifest:
+        command.append("--no-auto-marker-csv")
     if not plan.make_qc:
         command.append("--no-qc")
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    with log_path.open("ab") as log:
-        process = subprocess.Popen(
-            command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True
-        )
-    return process.pid
+    return start_logged_process(command, log_path)
 
 
 def start_tma_conversion(
@@ -105,8 +124,6 @@ def start_tma_conversion(
         str(plan.project_root),
         "--image-dir",
         str(plan.image_dir),
-        "--marker-manifest",
-        str(plan.marker_manifest),
         "--dataset-id",
         plan.dataset_id,
         "--output",
@@ -122,17 +139,11 @@ def start_tma_conversion(
         "--status",
         str(status_path),
     )
+    if plan.marker_manifest is not None:
+        command.extend(["--marker-manifest", str(plan.marker_manifest)])
     if not plan.make_qc:
         command.append("--no-qc")
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    with log_path.open("ab") as log:
-        process = subprocess.Popen(
-            command,
-            stdout=log,
-            stderr=subprocess.STDOUT,
-            start_new_session=True,
-        )
-    return process.pid
+    return start_logged_process(command, log_path)
 
 
 @st.fragment(run_every=AUTO_REFRESH_SECONDS)
@@ -195,7 +206,6 @@ def render_status(status_path: Path, log_path: Path) -> None:
 def render_tma() -> None:
     st.subheader("Multi-FOV / TMA setup")
     default_image_dir = EXAMPLE_ROOT / "dearray"
-    default_manifest = default_image_dir / f"{EXAMPLE_ROOT.name}_markers.csv"
     with st.container(border=True):
         left, right = st.columns(2)
         project_text = left.text_input(
@@ -208,9 +218,14 @@ def render_tma() -> None:
         )
         left, right = st.columns(2)
         manifest_text = left.text_input(
-            "Marker order CSV",
-            value=str(default_manifest),
+            "Marker order CSV (blank = find automatically)",
+            value="",
             key="tma_marker_manifest",
+            help=(
+                "Leave blank to use background/markers_bs.csv (or marker_bs.csv / "
+                "markers.csv) from the project folder. Its row order defines the "
+                "column order of adata.X and the image-plane names."
+            ),
         )
         dataset_id = right.text_input(
             "Dataset ID", value=EXAMPLE_ROOT.name, key="tma_dataset_id"
@@ -247,7 +262,9 @@ def render_tma() -> None:
     plan = TMAConversionPlan(
         project_root=Path(project_text).expanduser(),
         image_dir=Path(image_text).expanduser(),
-        marker_manifest=Path(manifest_text).expanduser(),
+        marker_manifest=(
+            Path(manifest_text.strip()).expanduser() if manifest_text.strip() else None
+        ),
         dataset_id=dataset_id,
         output_path=Path(output_text).expanduser(),
         primary_filename=primary_filename,
@@ -276,8 +293,7 @@ def render_tma() -> None:
             report = inspect_tma(plan)
             output_path = Path(plan.output_path).expanduser().resolve()
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            status_path = output_path.with_suffix(".conversion_status.json")
-            log_path = output_path.with_suffix(".conversion.log")
+            _, status_path, log_path = conversion_run_files(output_path)
             pid = start_tma_conversion(plan, status_path, log_path)
             st.session_state["tma_status_path"] = str(status_path)
             st.session_state["tma_log_path"] = str(log_path)
@@ -296,6 +312,7 @@ def render_tma() -> None:
         metrics[1].metric("FOVs", report["n_fovs"])
         metrics[2].metric("Cells", f"{report['n_cells']:,}")
         metrics[3].metric("Markers", report["n_markers"])
+        describe_marker_csv(report)
         for warning in report.get("warnings", []):
             st.warning(warning)
         batch_tab, image_tab, marker_tab = st.tabs(
@@ -311,8 +328,12 @@ def render_tma() -> None:
             st.dataframe(
                 pd.DataFrame(
                     {
-                        "channel": range(1, len(report["marker_order"]) + 1),
+                        "image plane": range(len(report["marker_order"])),
                         "marker": report["marker_order"],
+                        "in adata.X": [
+                            marker not in set(report.get("removed_markers", []))
+                            for marker in report["marker_order"]
+                        ],
                     }
                 ),
                 hide_index=True,
@@ -334,10 +355,12 @@ def main() -> None:
         layout="wide",
     )
     st.title("CellSAM quantification to AnnData")
+    # A project folder with dearray/ and ark_wdir*/ batches is a TMA.
+    looks_like_tma = (EXAMPLE_ROOT / "dearray").is_dir() and any(EXAMPLE_ROOT.glob("ark_wdir*"))
     mode = st.segmented_control(
         "Dataset layout",
         ["Single image", "Multi-FOV / TMA"],
-        default="Single image",
+        default="Multi-FOV / TMA" if looks_like_tma else "Single image",
     )
     if mode == "Multi-FOV / TMA":
         render_tma()
@@ -358,17 +381,31 @@ def main() -> None:
         )
         layer_name = right.text_input("Secondary layer name", value="size_normalized")
 
-        marker_manifest_text = st.text_input(
-            "Marker order CSV (optional)",
+        left, right = st.columns([3, 1])
+        marker_manifest_text = left.text_input(
+            "Marker order CSV (blank = find automatically)",
             value="",
             key="single_marker_manifest",
             help=(
                 "A CSV with a 'marker_name' column. Its row order becomes the "
-                "marker order in the AnnData, overriding the channel names in "
-                "the image. Use this when the OME-TIFF has lost its channel "
-                "names. Leave blank to take the order from the image."
+                "column order of adata.X and names the image planes, overriding "
+                "the channel names in the image. Leave blank to use "
+                "background/markers_bs.csv (or marker_bs.csv / markers.csv) "
+                "next to the data when there is one."
             ),
         )
+        auto_marker_csv = right.toggle(
+            "Find automatically",
+            value=True,
+            key="single_auto_marker_csv",
+            help="Off: without a CSV above, take the order from the OME channel names.",
+        )
+        if not marker_manifest_text.strip() and auto_marker_csv:
+            detected = find_marker_csv(table_dir, Path(image_text).expanduser())
+            st.caption(
+                f"Will use `{detected}`" if detected else
+                "No markers_bs.csv found near the data; the OME channel names will be used."
+            )
 
         with st.expander("Table assignment"):
             primary_text = st.text_input(
@@ -391,10 +428,11 @@ def main() -> None:
         layer_name=layer_name,
         make_qc=make_qc,
         marker_manifest=(
-            Path(marker_manifest_text).expanduser()
+            Path(marker_manifest_text.strip()).expanduser()
             if marker_manifest_text.strip()
             else None
         ),
+        auto_marker_manifest=auto_marker_csv,
     )
 
     inspect_column, reset_column, _ = st.columns([0.18, 0.22, 0.60])
@@ -435,6 +473,7 @@ def main() -> None:
         metric1.metric("Markers", report["n_markers"])
         metric2.metric("Observation columns", report["n_obs_columns"])
         metric3.metric("Issues", len(report["errors"]))
+        describe_marker_csv(report)
         st.caption(
             "Image channels define the expression matrix. Other columns are preserved as observation metadata unless you change their role."
         )
@@ -485,6 +524,7 @@ def main() -> None:
             column_roles=column_roles,
             marker_targets=marker_targets,
             marker_manifest=automatic_plan.marker_manifest,
+            auto_marker_manifest=automatic_plan.auto_marker_manifest,
         )
         try:
             reviewed_report = inspect_inputs(reviewed_plan)
@@ -510,8 +550,7 @@ def main() -> None:
             preflight_report = preflight(reviewed_plan)
             output_path = Path(reviewed_plan.output_path).expanduser().resolve()
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            status_path = output_path.with_suffix(".conversion_status.json")
-            log_path = output_path.with_suffix(".conversion.log")
+            _, status_path, log_path = conversion_run_files(output_path)
             pid = start_conversion(reviewed_plan, status_path, log_path)
             st.session_state["cellsam_status_path"] = str(status_path)
             st.session_state["cellsam_log_path"] = str(log_path)

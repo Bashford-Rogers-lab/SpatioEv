@@ -18,6 +18,7 @@ from spatioev.apps._worker import (
     start_worker,
 )
 from spatioev.workflows._io import read_json
+from spatioev.workflows.marker_gating import stage_output_dirs
 from spatioev.workflows.tissue_regions import inspect_inputs
 
 PREFIX = "regions"
@@ -25,7 +26,7 @@ PREFIX = "regions"
 
 def standard_defaults(sample_id: str, project_root: Path) -> dict[str, str]:
     sample_id = sample_id.strip()
-    phenotyping = project_root / "results" / f"{sample_id}_scimap_phenotyping_interface"
+    phenotyping = stage_output_dirs(sample_id, project_root)["phenotyping"]
     phenotyped = sorted(phenotyping.glob(f"{sample_id}_broad_plus_*_phenotyped.h5ad"), key=lambda p: p.stat().st_mtime)
     fiber_manifest = project_root / "results" / f"{sample_id}_fiber_segmentation" / f"{sample_id}_fiber_manifest.json"
     qupath = project_root / sample_id / "qupath" / f"{sample_id}_phenotyped.h5ad"  # QuPath bridge

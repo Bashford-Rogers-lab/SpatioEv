@@ -4,15 +4,11 @@
 from __future__ import annotations
 
 import hashlib
-import os
-import subprocess
-import tempfile
 from pathlib import Path
 
-os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "spatioev_marker_gating_app_matplotlib"))
-os.environ.setdefault("NUMBA_CACHE_DIR", str(Path(tempfile.gettempdir()) / "spatioev_marker_gating_app_numba"))
-Path(os.environ["MPLCONFIGDIR"]).mkdir(parents=True, exist_ok=True)
-Path(os.environ["NUMBA_CACHE_DIR"]).mkdir(parents=True, exist_ok=True)
+from spatioev.workflows._io import configure_caches
+
+configure_caches()
 
 import anndata as ad
 import numpy as np
@@ -21,7 +17,14 @@ import streamlit as st
 
 from spatioev.apps._common import default_project_root, module_command, resource_path
 from spatioev.workflows import marker_gating as mgq
-from spatioev.workflows.image_collection import natural_key, resolve_image
+from spatioev.workflows._io import now, run_files, start_logged_process, write_json
+from spatioev.workflows.cellsam import marker_order_warning
+from spatioev.workflows.image_collection import (
+    imageids_with_images,
+    natural_key,
+    plane_marker_names,
+    resolve_image,
+)
 
 PROJECT_ROOT_DEFAULT = default_project_root()
 REQUIRED_CONDITION_COLUMNS = [
@@ -65,8 +68,13 @@ DISTRIBUTION_DISPLAY_COLUMNS = [
 
 def standard_paths(sample_id: str, project_root: Path) -> dict[str, Path]:
     paths = mgq.default_sample_paths(sample_id, project_root)
+    # Gate the AnnData that step 01 exported when there is one: it carries the
+    # broad labels in .obs next to every marker, so the gates, the broad
+    # populations and step 03 all work on one file.
+    clustering_dir = mgq.stage_output_dirs(sample_id, project_root)["clustering"]
+    phenotyped = clustering_dir / f"{sample_id}_phenotyped.h5ad"
     return {
-        "adata": paths.adata_path,
+        "adata": phenotyped if phenotyped.exists() else paths.adata_path,
         "image": paths.image_path,
         "conditions": paths.marker_condition_path,
         "output": paths.output_dir,
@@ -125,9 +133,13 @@ def sample_metadata(adata_path: str, image_path: str) -> dict[str, object]:
             adata.obs["imageid"].dropna().astype(str).unique().tolist(),
             key=natural_key,
         )
+    planes = plane_marker_names(adata)
+    order_warning = marker_order_warning(adata)
     adata.file.close()
-    resolved_image = resolve_image(Path(image_path), imageids[0] if imageids else None)
-    channels = mgq.canonical_channel_names(resolved_image, markers)
+    # A TMA image folder may hold images for only some FOVs.
+    with_image = imageids_with_images(image_path, imageids)
+    resolved_image = resolve_image(Path(image_path), with_image[0] if with_image else None)
+    channels = mgq.canonical_channel_names(resolved_image, planes)
     nuclear_markers = {"HOECHST", "HOECHST2", "DAPI", "DNA_1"}
     review_markers = [
         marker for marker in markers if marker.upper() not in nuclear_markers
@@ -140,7 +152,9 @@ def sample_metadata(adata_path: str, image_path: str) -> dict[str, object]:
         "channels": channels,
         "missing_in_image": sorted(set(review_markers) - set(channels)),
         "imageids": imageids,
+        "imageids_with_image": with_image,
         "default_image_path": str(resolved_image),
+        "marker_order_warning": order_warning,
     }
 
 
@@ -214,6 +228,37 @@ def prepare_condition_table(
     ]
 
 
+def starting_condition_table(
+    markers: list[str], *, output_dir: Path, sample_id: str, project_root: Path
+) -> tuple[pd.DataFrame, Path | None]:
+    """The questionnaire a freshly loaded sample starts from.
+
+    Answers saved by the last gating run come first, then a
+    ``marker_condition_for_gating`` file at the standard place in ``data/``.
+    Markers the file does not list stay blank; a file that cannot be read is
+    skipped. With neither, the questionnaire starts blank.
+    """
+    candidates = [
+        mgq.gate_table_paths(output_dir, sample_id)["conditions"],
+        mgq.default_sample_paths(sample_id, project_root).marker_condition_path,
+    ]
+    for path in dict.fromkeys(candidates):
+        if not path.is_file():
+            continue
+        try:
+            table = prepare_condition_table(
+                markers,
+                source="Saved answers",
+                condition_path=path,
+                project_root=project_root,
+                strategy_path=path,
+            )
+        except (OSError, ValueError):
+            continue
+        return table, path
+    return blank_condition_table(markers), None
+
+
 def table_hash(table: pd.DataFrame) -> str:
     normalized = table.fillna("").to_csv(index=False)
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
@@ -277,7 +322,8 @@ def analyze_distributions(
         max_fit_cells=None,
         random_state=0,
     )
-    output_path = output_dir / f"{sample_id}_marker_distribution_diagnostics_web.csv"
+    output_path = output_dir / "details" / f"{sample_id}_marker_distribution_diagnostics.csv"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     diagnostics.to_csv(output_path, index=False)
     return diagnostics, output_path
 
@@ -293,12 +339,18 @@ def calculate_gates(
     diagnostics: pd.DataFrame | None = None,
 ) -> dict[str, Path]:
     output_dir.mkdir(parents=True, exist_ok=True)
-    condition_path = output_dir / f"{sample_id}_marker_conditions_web.csv"
-    candidate_path = output_dir / f"{sample_id}_marker_gate_candidates_web.csv"
-    selected_path = output_dir / f"{sample_id}_selected_marker_gates_web.csv"
-    scimap_path = output_dir / f"{sample_id}_scimap_manual_gates_web.csv"
-    histogram_path = output_dir / f"{sample_id}_marker_histograms_candidate_gates_web.png"
-    summary_path = output_dir / f"{sample_id}_selected_gate_summary_web.png"
+    files = mgq.gate_table_paths(output_dir, sample_id)
+    files["details"].mkdir(parents=True, exist_ok=True)
+    files["qc"].mkdir(parents=True, exist_ok=True)
+    condition_path = files["conditions"]
+    candidate_path = files["details"] / f"{sample_id}_marker_gate_candidates.csv"
+    selected_path = files["selected"]
+    scimap_path = files["scimap"]
+    histogram_path = files["qc"] / f"{sample_id}_marker_histograms_candidate_gates.png"
+    summary_path = files["qc"] / f"{sample_id}_selected_gate_summary.png"
+    # Re-calculating must not silently discard gates tuned in the napari review.
+    mgq.keep_previous(selected_path, files["details"])
+    mgq.keep_previous(scimap_path, files["details"])
 
     conditions = conditions_for_engine(condition_table)
     conditions.to_csv(condition_path, index=False)
@@ -321,6 +373,21 @@ def calculate_gates(
     mgq.write_scimap_manual_gates(selected, scimap_path)
     mgq.save_histogram_qc(method_plan, adata, histogram_path, layer=layer)
     mgq.save_gate_summary_qc(selected, summary_path)
+    # Step 03 reads gate_layer from here: the gates are log1p values of that
+    # layer (or of .X when it is null), and must be applied to the same data.
+    write_json(
+        files["manifest"],
+        {
+            "sample_id": sample_id,
+            "created_at": now(),
+            "adata_path": str(adata_path),
+            "gate_layer": layer,
+            "gate_source": "calculated in the web page",
+            "selected_gates": str(selected_path),
+            "scimap_manual_gates": str(scimap_path),
+            "marker_conditions": str(condition_path),
+        },
+    )
     return {
         "conditions": condition_path,
         "candidates": candidate_path,
@@ -348,16 +415,18 @@ def generate_spatial_qc(
     gated = mgq.apply_selected_gates(adata, selected, layer=layer)
     if imageid is not None:
         gated = gated[gated.obs["imageid"].astype(str).eq(str(imageid))].copy()
+    channel_markers = plane_marker_names(adata)
+    qc_dir = mgq.gate_table_paths(output_dir, sample_id)["qc"]
+    qc_dir.mkdir(parents=True, exist_ok=True)
     grayscale, overlay = mgq.save_image_overviews(
         image_path,
         conditions,
-        output_dir,
+        qc_dir,
         sample_id=sample_id,
-        channel_markers=list(adata.var_names.astype(str)),
+        channel_markers=channel_markers,
     )
-    channel_markers = list(adata.var_names.astype(str))
     windows, _ = mgq.choose_crop_windows(image_path, channel_markers=channel_markers)
-    crop_boxes = output_dir / f"{sample_id}_selected_crop_boxes_web.png"
+    crop_boxes = qc_dir / f"{sample_id}_selected_crop_boxes.png"
     mgq.save_crop_box_overview(
         image_path, windows, crop_boxes, channel_markers=channel_markers
     )
@@ -366,7 +435,7 @@ def generate_spatial_qc(
         selected,
         image_path,
         selected["marker"].astype(str).tolist(),
-        output_dir,
+        qc_dir,
         sample_id=sample_id,
         windows=windows,
     )
@@ -413,15 +482,8 @@ def launch_napari(
         command.extend(["--layer", layer])
     if imageid is not None:
         command.extend(["--imageid", imageid])
-    log_path = output_dir / f"{sample_id}_napari_gate_review.log"
-    with log_path.open("ab") as log:
-        process = subprocess.Popen(
-            command,
-            stdout=log,
-            stderr=subprocess.STDOUT,
-            start_new_session=True,
-        )
-    return process.pid, log_path
+    _, _, log_path = run_files(output_dir, f"{sample_id}_napari_gate_review")
+    return start_logged_process(command, log_path), log_path
 
 
 def render_option_guide() -> None:
@@ -490,8 +552,10 @@ def main() -> None:
     project_root = Path(project_root_text).expanduser()
     defaults = standard_paths(sample_id, project_root)
     with top_c:
-        # The questionnaire now starts blank and is seeded from the data's own
-        # distribution diagnostics, so there is nothing to choose here.
+        # The questionnaire starts from saved answers when there are any
+        # (starting_condition_table), otherwise blank; expression shape is
+        # inferred from the data's own distributions, so there is nothing to
+        # choose here.
         fill_standard_paths = st.button("Fill standard sample paths", icon=":material/refresh:")
 
     path_state = {
@@ -533,7 +597,12 @@ def main() -> None:
                 if metadata["missing_in_image"]:
                     st.error(f"Markers missing from image: {', '.join(metadata['missing_in_image'])}")
                 else:
-                    table = blank_condition_table(metadata["review_markers"])
+                    table, answers_path = starting_condition_table(
+                        metadata["review_markers"],
+                        output_dir=paths["output"] or mgq.stage_output_dirs(sample_id, project_root)["gating"],
+                        sample_id=sample_id,
+                        project_root=project_root,
+                    )
                     st.session_state.loaded_metadata = metadata
                     st.session_state.condition_table = table
                     st.session_state.loaded_paths = {key: str(value) for key, value in paths.items()}
@@ -545,8 +614,13 @@ def main() -> None:
                     st.session_state.pop("distribution_context", None)
                     st.session_state.pop("spatial_qc_outputs", None)
                     diagnostics_path = (
+                        paths["output"] / "details" / f"{sample_id}_marker_distribution_diagnostics.csv"
+                    )
+                    legacy_diagnostics = (
                         paths["output"] / f"{sample_id}_marker_distribution_diagnostics_web.csv"
                     )
+                    if not diagnostics_path.exists() and legacy_diagnostics.exists():
+                        diagnostics_path = legacy_diagnostics
                     if diagnostics_path.exists():
                         cached = pd.read_csv(diagnostics_path)
                         if set(DISTRIBUTION_DISPLAY_COLUMNS).issubset(cached.columns):
@@ -557,6 +631,13 @@ def main() -> None:
                                 "layer": layer_choice.strip() or None,
                             }
                     st.success(f"Loaded {sample_id}: {metadata['cells']:,} cells and {len(metadata['review_markers'])} markers.")
+                    if answers_path is not None:
+                        st.info(
+                            f"Questionnaire answers loaded from {answers_path}.",
+                            icon=":material/history:",
+                        )
+                    if metadata.get("marker_order_warning"):
+                        st.warning(metadata["marker_order_warning"], icon=":material/warning:")
             except Exception as exc:
                 st.exception(exc)
 
@@ -579,7 +660,9 @@ def main() -> None:
     if metadata["imageids"]:
         review_imageid = st.selectbox(
             "FOV used for image QC and gate review",
-            metadata["imageids"],
+            metadata.get("imageids_with_image") or metadata["imageids"],
+            help="Gates are calculated from every cell of every FOV; this FOV is "
+            "only the one shown on its image. Only FOVs with an image are listed.",
             key=f"gating_review_imageid_{st.session_state.loaded_sample_id}",
         )
         review_image = resolve_image(loaded_paths["image"], review_imageid)
@@ -936,7 +1019,11 @@ def main() -> None:
             )
 
     st.subheader("5. Review on the original image")
-    st.caption("Launches the napari viewer with the newly calculated table. Slider adjustments are saved separately from the calculated values.")
+    st.caption(
+        "Launches the napari viewer with the newly calculated table. Slider positions are "
+        "saved as you go (details/); 'Export reviewed gates' replaces the gate tables and "
+        "keeps the calculated ones in details/ as *_previous.csv."
+    )
     if st.button(
         "Launch napari gate review",
         type="primary",

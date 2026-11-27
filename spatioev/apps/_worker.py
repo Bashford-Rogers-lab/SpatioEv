@@ -7,7 +7,6 @@ runs inside a fragment so widget changes made while a job runs are kept.
 
 from __future__ import annotations
 
-import subprocess
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
@@ -15,7 +14,12 @@ from pathlib import Path
 import streamlit as st
 
 from spatioev.apps._common import module_command
-from spatioev.workflows._io import read_json, write_json
+from spatioev.workflows._io import (
+    read_json,
+    run_files,
+    start_logged_process,
+    write_json,
+)
 
 AUTO_REFRESH_SECONDS = 2.0
 
@@ -24,9 +28,7 @@ def start_worker(module: str, config: dict, output_dir: Path, prefix: str) -> tu
     """Launch ``module`` on ``config``; return its PID, status and log paths."""
     output_dir.mkdir(parents=True, exist_ok=True)
     stem = f"{config.get('sample_id') or config.get('comparison_name') or 'run'}_{prefix}"
-    config_path = output_dir / f"{stem}_config.json"
-    status_path = output_dir / f"{stem}_status.json"
-    log_path = output_dir / f"{stem}_worker.log"
+    config_path, status_path, log_path = run_files(output_dir, stem)
     write_json(config_path, config)
     write_json(status_path, {
         "state": "queued",
@@ -36,9 +38,7 @@ def start_worker(module: str, config: dict, output_dir: Path, prefix: str) -> tu
         "updated_at": datetime.now(UTC).isoformat(timespec="seconds"),
     })
     command = module_command(module, "--config", str(config_path), "--status", str(status_path))
-    with log_path.open("ab") as log:
-        process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
-    return process.pid, status_path, log_path
+    return start_logged_process(command, log_path), status_path, log_path
 
 
 @st.fragment(run_every=AUTO_REFRESH_SECONDS)

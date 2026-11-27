@@ -59,9 +59,11 @@ rarely need this.
 
 !!! note "Stages 00–03 are an alternative to QuPath"
     *Prepare AnnData*, *Broad clustering*, *Marker autogating* and *Subset
-    phenotyping* assign cell types inside SpatioEv by clustering and gating.
-    This guide assigns cell types in QuPath instead
-    ([step 5](qupath.md)), so you can skip those four pages.
+    phenotyping* assign cell types inside SpatioEv: clustering finds the
+    tissue structures, gating finds each marker's positive cells, and
+    marker rules turn both into cell types. [Step 5b](clustering_gating.md)
+    walks through them on a demo TMA. If you assign cell types in QuPath
+    ([step 5](qupath.md)), skip those four pages.
 
 ## Pages share one pattern
 

@@ -5,18 +5,14 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
-import tempfile
 import traceback
+import warnings
 from pathlib import Path
 
-os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "spatioev_clustering_matplotlib"))
-os.environ.setdefault("NUMBA_CACHE_DIR", str(Path(tempfile.gettempdir()) / "spatioev_clustering_numba"))
-if not os.environ.get("LOKY_MAX_CPU_COUNT"):
-    os.environ["LOKY_MAX_CPU_COUNT"] = str(os.cpu_count() or 1)
-Path(os.environ["MPLCONFIGDIR"]).mkdir(parents=True, exist_ok=True)
-Path(os.environ["NUMBA_CACHE_DIR"]).mkdir(parents=True, exist_ok=True)
+from spatioev.workflows._io import configure_caches
+
+configure_caches()
 
 import anndata as ad
 import matplotlib.pyplot as plt
@@ -24,11 +20,27 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from scipy import sparse
+from scipy.spatial import cKDTree
 
 import spatioev as se
 from spatioev.config import ClusteringConfig
 
 from ._io import now, write_json
+from .cellsam import write_h5ad_atomically
+
+
+def output_folders(output_dir: Path) -> tuple[Path, Path]:
+    """``qc/`` (figures, cluster summaries) and ``checkpoints/`` (clustered H5ADs).
+
+    The results a user opens -- the annotation mappings they edit, the final
+    phenotyped H5AD and annotation table -- stay at the top of the output
+    folder; intermediate files go one level down.
+    """
+    qc_dir = Path(output_dir) / "qc"
+    checkpoint_dir = Path(output_dir) / "checkpoints"
+    qc_dir.mkdir(parents=True, exist_ok=True)
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    return qc_dir, checkpoint_dir
 
 
 def update_status(path: Path, state: str, message: str, **extra) -> None:
@@ -49,6 +61,130 @@ def slugify(value: str) -> str:
 def cluster_imageid(config: dict) -> str | None:
     value = config.get("cluster_imageid")
     return str(value).strip() if value is not None and str(value).strip() else None
+
+
+def scale_groupby(config: dict) -> str | None:
+    """``"imageid"`` when markers are z-scored within each FOV, else ``None``."""
+    return "imageid" if bool(config.get("scale_within_image", False)) else None
+
+
+def zscore(source: ad.AnnData, config: dict) -> ad.AnnData:
+    groupby = scale_groupby(config)
+    if groupby is not None and groupby not in source.obs:
+        raise KeyError("AnnData has no 'imageid' column, so markers cannot be z-scored within each FOV")
+    return se.zscore_normalize(source, groupby=groupby)
+
+
+CENTROID_COLUMNS = ("X_centroid", "Y_centroid")
+# Fewer cells than this per neighbourhood, on average, means the radius holds
+# little more than the cell itself: usually a pixel size that is too large.
+MIN_MEAN_CELLS_AVERAGED = 2.0
+
+
+def neighbourhood_radius_px(config: dict) -> float | None:
+    """The averaging radius in pixels, or ``None`` when markers stay per cell."""
+    radius_um = float(config.get("neighbourhood_um") or 0)
+    if radius_um <= 0:
+        return None
+    pixel_size_um = float(config.get("pixel_size_um") or 0)
+    if pixel_size_um <= 0:
+        raise ValueError(
+            "Averaging markers over neighbouring cells needs the pixel size "
+            "of the scan (µm per pixel)"
+        )
+    return radius_um / pixel_size_um
+
+
+def neighbourhood_means(
+    values: np.ndarray, coords: np.ndarray, groups: np.ndarray, radius: float
+) -> tuple[np.ndarray, np.ndarray]:
+    """Mean of each cell and every cell within ``radius`` of it, per group.
+
+    Neighbours are looked for only within a cell's own group (FOV), since
+    pixel coordinates of different FOVs overlap. Missing values are skipped.
+    Returns the means and, for every cell, how many cells were averaged.
+    """
+    values = np.asarray(values, dtype=float)
+    means = np.full_like(values, np.nan)
+    counts = np.zeros(len(values), dtype=int)
+    for group in pd.unique(groups):
+        index = np.flatnonzero(groups == group)
+        pairs = cKDTree(coords[index]).query_pairs(radius, output_type="ndarray")
+        diagonal = np.arange(len(index))
+        rows = np.concatenate([pairs[:, 0], pairs[:, 1], diagonal])
+        cols = np.concatenate([pairs[:, 1], pairs[:, 0], diagonal])
+        neighbours = sparse.csr_matrix(
+            (np.ones(len(rows)), (rows, cols)), shape=(len(index), len(index))
+        )
+        block = values[index]
+        finite = np.isfinite(block)
+        sums = neighbours @ np.where(finite, block, 0.0)
+        n_finite = neighbours @ finite.astype(float)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            means[index] = sums / n_finite
+        counts[index] = np.diff(neighbours.indptr)
+    return means, counts
+
+
+def average_over_neighbours(source: ad.AnnData, config: dict) -> tuple[ad.AnnData, float | None]:
+    """Replace each clustering marker by its mean over the cell's neighbourhood.
+
+    Clusters of averaged markers follow tissue structures rather than single
+    cells, which can help when a structure's own cells lack a reliable marker
+    (most interstitial cells in a testis, for example). Markers listed in
+    ``per_cell_markers`` keep each cell's own value: a structure one cell
+    thick, such as the smooth-muscle wall around a tubule, would otherwise be
+    smeared into the cells on both sides of it.
+
+    Returns the clustering markers of ``source`` (averaged, unless averaging
+    is off) and the mean number of cells averaged per cell (``None`` if off).
+    """
+    radius = neighbourhood_radius_px(config)
+    if radius is None:
+        return source, None
+    markers = list(config["markers"])
+    per_cell = list(config.get("per_cell_markers") or [])
+    unknown = sorted(set(per_cell) - set(markers))
+    if unknown:
+        raise ValueError(f"Markers kept per cell are not clustering markers: {unknown}")
+    missing = [column for column in CENTROID_COLUMNS if column not in source.obs]
+    if missing:
+        raise KeyError(f"AnnData has no {', '.join(missing)} column, so markers cannot be averaged over neighbours")
+
+    work = source[:, markers].copy()
+    groups = (
+        work.obs["imageid"].astype(str).to_numpy()
+        if "imageid" in work.obs
+        else np.zeros(work.n_obs, dtype=int)
+    )
+    coords = work.obs[list(CENTROID_COLUMNS)].to_numpy(dtype=float)
+    x = dense_matrix(work.X).astype(float)
+    averaged = [position for position, marker in enumerate(markers) if marker not in per_cell]
+    means, counts = neighbourhood_means(x[:, averaged], coords, groups, radius)
+    x[:, averaged] = means
+    work.X = x.astype(np.float32)
+    return work, float(counts.mean())
+
+
+def remove_cell_brightness(source: ad.AnnData, markers: list[str]) -> ad.AnnData:
+    """Subtract each cell's mean over ``markers`` from its z-scored markers.
+
+    Big, bright or tightly packed cells (and their neighbours' spill-over)
+    raise every marker together, so clusters split cells by brightness instead
+    of by which markers stand out. What is left after subtracting the mean is
+    the cell's marker profile. Missing values are skipped. Returns the
+    ``markers`` of ``source`` only.
+    """
+    if len(markers) < 2:
+        raise ValueError("Removing each cell's overall brightness needs at least two markers")
+    work = source[:, list(markers)].copy()
+    x = dense_matrix(work.X).astype(float)
+    with np.errstate(invalid="ignore"), warnings.catch_warnings():
+        # A cell with every marker missing has no mean; it stays missing.
+        warnings.simplefilter("ignore", category=RuntimeWarning)
+        x = x - np.nanmean(x, axis=1, keepdims=True)
+    work.X = x.astype(np.float32)
+    return work
 
 
 def subset_for_clustering(source: ad.AnnData, config: dict) -> ad.AnnData:
@@ -137,6 +273,12 @@ def save_umap(clustered: ad.AnnData, path: Path, *, title: str, max_points: int 
     plt.close(fig)
 
 
+# Colour limit of z-scored heatmaps. A small cluster of cells with an empty
+# channel can average -7 or less; scaled to it, the differences that name the
+# other clusters (around +-1) all look white. Values beyond stay printed.
+HEATMAP_Z_LIMIT = 3.0
+
+
 def save_heatmap(clustered: ad.AnnData, path: Path, *, title: str, scaled: bool = True) -> None:
     labels = clustered.obs["leiden"].astype(str)
     x = pd.DataFrame(dense_matrix(clustered.X), columns=clustered.var_names, index=clustered.obs_names)
@@ -147,10 +289,15 @@ def save_heatmap(clustered: ad.AnnData, path: Path, *, title: str, scaled: bool 
     heatmap_options = {
         "cmap": "vlag" if scaled else "viridis",
         "ax": ax,
-        "cbar_kws": {"label": "Mean z-score" if scaled else "Mean expression"},
+        "annot": True,
+        "fmt": ".1f",
+        "annot_kws": {"fontsize": 7},
+        "cbar_kws": {
+            "label": f"Mean z-score (colour capped at ±{HEATMAP_Z_LIMIT:g})" if scaled else "Mean expression"
+        },
     }
     if scaled:
-        heatmap_options["center"] = 0
+        heatmap_options.update(center=0, vmin=-HEATMAP_Z_LIMIT, vmax=HEATMAP_Z_LIMIT)
     sns.heatmap(means, **heatmap_options)
     ax.set_title(title)
     ax.set_xlabel("Marker")
@@ -182,10 +329,21 @@ def run_level0(config: dict, status_path: Path) -> dict:
     if missing:
         raise ValueError(f"Clustering markers missing from AnnData: {missing}")
 
+    radius_um = float(config.get("neighbourhood_um") or 0)
+    if radius_um > 0:
+        update_status(
+            status_path,
+            "running",
+            f"Averaging markers over neighbouring cells within {radius_um:g} µm",
+            stage="normalize",
+        )
+    source, mean_cells_averaged = average_over_neighbours(source, config)
+
     scale = bool(config.get("scale", True))
     if scale:
-        update_status(status_path, "running", "Z-score normalizing marker expression", stage="normalize")
-        work = se.zscore_normalize(source)
+        within = " within each FOV" if scale_groupby(config) else ""
+        update_status(status_path, "running", f"Z-score normalizing marker expression{within}", stage="normalize")
+        work = zscore(source, config)
     else:
         update_status(status_path, "running", "Using unscaled marker expression", stage="normalize")
         work = source.copy()
@@ -193,20 +351,21 @@ def run_level0(config: dict, status_path: Path) -> dict:
     clustered = se.cluster_cells(work, clustering_config(config))
 
     scoped_id = scoped_sample_id(sample_id, config)
-    stem = output_dir / f"{scoped_id}_level0"
-    clustered_path = Path(f"{stem}_clustered.h5ad")
-    summary_path = Path(f"{stem}_cluster_summary.csv")
-    umap_path = Path(f"{stem}_umap.png")
-    heatmap_path = Path(f"{stem}_heatmap.png")
+    qc_dir, checkpoint_dir = output_folders(output_dir)
+    clustered_path = checkpoint_dir / f"{scoped_id}_level0_clustered.h5ad"
+    summary_path = qc_dir / f"{scoped_id}_level0_cluster_summary.csv"
+    umap_path = qc_dir / f"{scoped_id}_level0_umap.png"
+    heatmap_path = qc_dir / f"{scoped_id}_level0_heatmap.png"
     update_status(status_path, "running", "Writing Level-0 checkpoint and QC", stage="write")
-    clustered.write_h5ad(clustered_path)
+    write_h5ad_atomically(clustered, clustered_path)
     summary = cluster_summary(clustered)
     summary.to_csv(summary_path, index=False)
     save_umap(clustered, umap_path, title=f"{scoped_id} Level-0 clusters")
+    averaged_note = f" (averaged over {radius_um:g} µm)" if mean_cells_averaged is not None else ""
     save_heatmap(
         clustered,
         heatmap_path,
-        title=f"{scoped_id} Level-0 marker profile",
+        title=f"{scoped_id} Level-0 marker profile{averaged_note}",
         scaled=scale,
     )
     outputs = {
@@ -217,6 +376,9 @@ def run_level0(config: dict, status_path: Path) -> dict:
         "n_cells": int(clustered.n_obs),
         "n_clusters": int(clustered.obs["leiden"].nunique()),
         "cluster_imageid": cluster_imageid(config),
+        "scale_within_image": bool(scale and scale_groupby(config)),
+        "neighbourhood_um": radius_um if mean_cells_averaged is not None else 0.0,
+        "mean_cells_averaged": mean_cells_averaged,
     }
     update_status(status_path, "complete", "Level-0 clustering complete", stage="complete", outputs=outputs)
     return outputs
@@ -269,28 +431,37 @@ def run_refinement(config: dict, status_path: Path) -> dict:
             current_annotation=annotation,
         )
         scale = bool(refinement.get("scale", True))
+        remove_brightness = bool(refinement.get("remove_brightness", False))
+        if remove_brightness and not scale:
+            raise ValueError(
+                f"Refinement of {annotation!r}: removing each cell's overall brightness "
+                "needs z-scored markers"
+            )
         if scale and scaled_source is None:
             update_status(status_path, "running", "Z-score normalizing marker expression", stage="normalize")
-            scaled_source = se.zscore_normalize(source)
+            scaled_source = zscore(source, config)
         clustering_source = scaled_source if scale else source
         subset = clustering_source[clustering_source.obs["annotation"].astype(str) == annotation].copy()
         if subset.n_obs == 0:
             raise ValueError(f"No cells found for refinement annotation {annotation!r}")
+        if remove_brightness:
+            subset = remove_cell_brightness(subset, list(refinement["markers"]))
         clustered = se.cluster_cells(subset, clustering_config(refinement))
         slug = slugify(annotation)
         scoped_id = scoped_sample_id(sample_id, config)
-        stem = output_dir / f"{scoped_id}_refine_{slug}"
-        clustered_path = Path(f"{stem}_clustered.h5ad")
-        summary_path = Path(f"{stem}_cluster_summary.csv")
-        umap_path = Path(f"{stem}_umap.png")
-        heatmap_path = Path(f"{stem}_heatmap.png")
-        clustered.write_h5ad(clustered_path)
+        qc_dir, checkpoint_dir = output_folders(output_dir)
+        clustered_path = checkpoint_dir / f"{scoped_id}_refine_{slug}_clustered.h5ad"
+        summary_path = qc_dir / f"{scoped_id}_refine_{slug}_cluster_summary.csv"
+        umap_path = qc_dir / f"{scoped_id}_refine_{slug}_umap.png"
+        heatmap_path = qc_dir / f"{scoped_id}_refine_{slug}_heatmap.png"
+        write_h5ad_atomically(clustered, clustered_path)
         cluster_summary(clustered).to_csv(summary_path, index=False)
         save_umap(clustered, umap_path, title=f"{scoped_id}: refine {annotation}")
+        brightness_note = " (cell brightness removed)" if remove_brightness else ""
         save_heatmap(
             clustered,
             heatmap_path,
-            title=f"{scoped_id}: {annotation} marker profile",
+            title=f"{scoped_id}: {annotation} marker profile{brightness_note}",
             scaled=scale,
         )
         outputs[annotation] = {
@@ -300,6 +471,7 @@ def run_refinement(config: dict, status_path: Path) -> dict:
             "heatmap_png": str(heatmap_path),
             "n_cells": int(clustered.n_obs),
             "n_clusters": int(clustered.obs["leiden"].nunique()),
+            "remove_brightness": remove_brightness,
         }
     update_status(status_path, "complete", "Refinement clustering complete", stage="complete", outputs=outputs)
     return outputs
@@ -339,7 +511,7 @@ def run_export(config: dict, status_path: Path) -> dict:
     manifest_path = output_dir / f"{scoped_id}_clustering_manifest.json"
     update_status(status_path, "running", "Writing final full-marker AnnData", stage="write")
     source.obs[["leiden_level0", "annotation", "annotation_level2"]].to_csv(annotation_path)
-    source.write_h5ad(phenotyped_path)
+    write_h5ad_atomically(source, phenotyped_path)
     manifest = {
         "sample_id": sample_id,
         "cluster_imageid": cluster_imageid(config),

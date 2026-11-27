@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -28,6 +29,83 @@ def _require_scanpy():
         ) from exc
 
     return sc
+
+
+# Below this many cells scanpy finds euclidean neighbours exactly; from here on
+# it uses pynndescent's approximate search.
+APPROXIMATE_KNN_MIN_CELLS = 8192
+
+
+def trimmed_knn_graph(graph, n_neighbors: int):
+    """A k-nearest-neighbour distance graph that scanpy 1.11 can read.
+
+    Returns a ``scipy.sparse.csr_matrix`` in which every row keeps its
+    ``n_neighbors`` nearest entries, the cell itself first. ``graph`` is what a
+    neighbour transformer returns: one row per cell, holding the cell itself
+    and its ``n_neighbors`` nearest cells, so one entry more than scanpy keeps.
+
+    pynndescent 0.7 returns that graph as a ``csr_array``, which scanpy 1.11.5
+    reads with ``getnnz`` (absent from ``csr_array``: ``AttributeError``). It
+    then drops the extra entry by slicing, and umap-learn 0.6 rejects the
+    sliced, non-contiguous result (numba ``TypingError``). Doing both steps
+    here avoids both errors and gives the neighbours scanpy would keep.
+    A graph whose rows hold different numbers of entries is only converted.
+    """
+    import numpy as np
+    import scipy.sparse
+
+    graph = scipy.sparse.csr_matrix(graph)
+    per_row = np.diff(graph.indptr)
+    if per_row.size == 0 or per_row.min() != per_row.max() or per_row[0] <= n_neighbors:
+        return graph
+    n_obs, width = graph.shape[0], int(per_row[0])
+    data = graph.data.reshape(n_obs, width)
+    indices = graph.indices.reshape(n_obs, width)
+    # Nearest first. The stable sort keeps the cell itself ahead of an exact
+    # duplicate of it (both at distance 0), where scanpy expects it.
+    order = np.argsort(data, axis=1, kind="stable")[:, :n_neighbors]
+    return scipy.sparse.csr_matrix(
+        (
+            np.take_along_axis(data, order, axis=1).ravel(),
+            np.take_along_axis(indices, order, axis=1).ravel(),
+            np.arange(0, n_obs * n_neighbors + 1, n_neighbors),
+        ),
+        shape=graph.shape,
+    )
+
+
+def knn_transformer(n_obs: int, n_neighbors: int, random_state: int = 0):
+    """The neighbour search to give ``sc.pp.neighbors``.
+
+    ``None`` (scanpy's own exact search) below
+    :data:`APPROXIMATE_KNN_MIN_CELLS` cells. Above it, the same pynndescent
+    search with the settings scanpy itself uses, but returning
+    :func:`trimmed_knn_graph`. Without this, clustering any sample with more
+    than 8,192 cells failed with scanpy 1.11.5, pynndescent 0.7 and
+    umap-learn 0.6, the versions a new install gets.
+    """
+    if n_obs < APPROXIMATE_KNN_MIN_CELLS:
+        return None
+    import numpy as np
+    from pynndescent import PyNNDescentTransformer
+
+    class TrimmedPyNNDescentTransformer(PyNNDescentTransformer):
+        def fit_transform(self, X, y=None, **kwargs):
+            return trimmed_knn_graph(super().fit_transform(X, y, **kwargs), self.n_neighbors)
+
+        def transform(self, X):
+            return trimmed_knn_graph(super().transform(X), self.n_neighbors)
+
+    sc = _require_scanpy()
+    # As in scanpy, which copies umap's defaults.
+    return TrimmedPyNNDescentTransformer(
+        n_neighbors=n_neighbors,
+        metric="euclidean",
+        random_state=random_state,
+        n_jobs=sc.settings.n_jobs,
+        n_trees=min(64, 5 + round(n_obs**0.5 / 20.0)),
+        n_iters=max(5, round(np.log2(n_obs))),
+    )
 
 
 def _require_scimap():
@@ -165,20 +243,42 @@ def cluster_cells(
     markers = config.markers
 
     adata_sub = adata[:, markers].copy()
+    if adata_sub.n_vars < 2:
+        raise ValueError("Clustering needs at least two markers")
 
-    sc.tl.pca(adata_sub)
+    # PCA cannot return more components than markers - 1, and asking the
+    # neighbour graph for more PCs than exist raises deep inside scanpy. With a
+    # small broad-clustering panel (say 8 markers and the default 15 PCs) that
+    # is the common case, so use every available component instead.
+    n_pcs = max(1, min(int(config.n_pcs), adata_sub.n_vars - 1, adata_sub.n_obs - 1))
+    sc.tl.pca(adata_sub, n_comps=n_pcs, random_state=0)
     sc.pp.neighbors(
         adata_sub,
         n_neighbors=config.n_neighbors,
-        n_pcs=config.n_pcs,
+        n_pcs=n_pcs,
+        random_state=0,
+        transformer=knn_transformer(adata_sub.n_obs, config.n_neighbors),
     )
 
-    sc.tl.umap(adata_sub)
+    sc.tl.umap(adata_sub, random_state=0)
 
-    sc.tl.leiden(
-        adata_sub,
-        resolution=config.resolution,
-    )
+    with warnings.catch_warnings():
+        # scanpy warns on every call that its default Leiden backend will
+        # change. Keep the current backend (so results stay reproducible) and
+        # keep that warning out of every clustering log.
+        warnings.filterwarnings("ignore", category=FutureWarning, message=".*leiden.*")
+        sc.tl.leiden(
+            adata_sub,
+            resolution=config.resolution,
+            random_state=0,
+        )
+    adata_sub.uns["clustering_parameters"] = {
+        "markers": list(markers),
+        "resolution": float(config.resolution),
+        "n_neighbors": int(config.n_neighbors),
+        "n_pcs_requested": int(config.n_pcs),
+        "n_pcs_used": int(n_pcs),
+    }
 
     return adata_sub
 

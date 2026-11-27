@@ -104,8 +104,124 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   convertible at all: previously they failed with "OME channels without an
   expression column: ['C0', 'C1', ...]", because no table column can match a
   generic plane name.
+- **The marker order CSV is found automatically** in both conversion modes:
+  `markers_bs.csv`, `marker_bs.csv` or `markers.csv` in a `background/`
+  folder or beside the data, searched from the cell-table folder, the images
+  and the project folder up to three levels (`find_marker_csv`). A TMA
+  requires one; for a single image `--no-auto-marker-csv` falls back to the
+  OME channel names. Its row order defines `adata.X`, so
+  column *n* is image plane *n*. An optional `remove` column keeps a plane out
+  of `adata.X`, and `adata.var["channel_index"]` records each marker's plane.
+  The page shows which file was used and a plane-by-plane table before
+  building. `marker_order_warning` recognises AnnData files from 0.2.0 and
+  earlier, which sorted a cycle-based panel by its cycle-local
+  `channel_number` and so paired most markers with the wrong plane; the
+  clustering and gating pages ask for those to be rebuilt.
+- **Per-image gates for SCIMAP phenotyping** (stage 03): the gate CSV may hold
+  `markers,gates` or one column per image ID (`markers,fov1,fov2,...`), on
+  `adata.X` or a named **Gate layer** (stage 02 records the layer it gated and
+  stage 03 fills it in). Images without a gate stop the run with the missing
+  marker/image pairs, take the marker's median gate, or use scimap's GMM
+  estimate. Workflow marker names that differ only in a numeric suffix or case
+  (`CLDN11_1` for `CLDN11_2`) are matched and reported, and the run can be
+  limited to chosen image IDs. Phenotyping runs can be chained: a second
+  population is phenotyped on the first run's full-tissue H5AD.
+- Stage 03 explains two scimap behaviours that silently changed results:
+  `workflow_rule_notes` flags rows where a lone `pos`/`neg` marker is only
+  averaged into the score (so cells that break it can still win; use
+  `allpos`/`allneg`), and the per-image minimum cell count
+  (**Minimum cells per phenotype per image**, now allowed to be 0) reports how
+  many cells of which phenotypes it turned into `Unknown`.
+- **Synthetic testis TMA** (`spatioev.io.demo_testis.make_demo_testis_tma`,
+  `spatioev demo <folder> --kind testis`): six FOVs over three ARK working
+  directories, unnamed image planes, a cycle-based `markers_bs.csv`,
+  alphabetical cell-table columns with nuclear rows, FOV-to-FOV staining
+  differences, phenotype workflows, a partial per-FOV gate table, staining
+  answers and the true cell type, compartment and tubule of every cell. An
+  end-to-end test runs stages 00–03 on it and checks the result against the
+  truth (structures 100 %, cell types ≥ 95 %; 99 % in practice). NaKATPase
+  stains tubule cells four times as strongly as interstitial cells, as on
+  real cores.
+- Guide page **5b. Cell types by clustering and gating**
+  (`docs/guide/clustering_gating.md`): stages 00–03, tubule detection and
+  composition, and co-localisation on the testis demo, with an output-file
+  section and troubleshooting rows.
+- The gating page loads saved questionnaire answers: those of the last
+  gating run, else `data/<sample>_marker_condition_for_gating.csv`.
+- **Z-score within each FOV** (page 01, `scale_within_image` in the clustering
+  config, `zscore_normalize(adata, groupby=...)`): scales every marker
+  separately in each FOV before clustering. On a 28-core testis TMA, scaling
+  over all cells gave large clusters drawn mostly from one or two cores (81 %
+  of a 7,700-cell cluster from two FOVs) and called many cells inside tubules
+  myoid. Scaled within each FOV, no cluster over 2,000 cells drew more than
+  29 % of its cells from one FOV, and the myoid calls lay on the SMA rings.
+- **Average markers over neighbouring cells** (page 01; `neighbourhood_um`,
+  `pixel_size_um` and `per_cell_markers` in the Level-0 config): each
+  clustering marker is replaced by its mean over the cells within a radius in
+  the same FOV, so clusters follow tissue structures rather than single cells.
+  Markers of one-cell-thick structures (SMA, MYH11 suggested) can stay per
+  cell. Off by default. The page asks for the pixel size, since some scanners
+  write a wrong one into the OME-TIFF, and warns when cells had almost no
+  neighbour within the radius. Refinement and export use each cell's own
+  values. 0.1 s for 104,000 cells. On five imaged cores of a 28-core testis
+  TMA, it improved the structure map in some cores and not in others, so it
+  is an option to compare, not a default.
+- **Testis structures marker preset** (page 01): GFRA1, PIWIL4, NaKATPase,
+  AMH, SOX9, MAGEA4, MYH11, SMA, CYP17A1 and STAR, matched ignoring `_1`/`_2`
+  suffixes, and chosen automatically for a panel holding most of them. They
+  were picked from the images of five cores of a 28-core prepubertal testis
+  TMA: GFRA1, PIWIL4, NaKATPase and AMH stain only inside tubules in every
+  core. DMRT1 (Sertoli and germ cells alike), SYCP3 and Acrosin (no meiotic
+  cells before puberty) and broad stains (Vimentin, NF2F2, CD45, CD68) are
+  left out; the help text says to add SYCP3 and Acrosin for pubertal or adult
+  testes. On the demo, with SYCP3 and Acrosin added, 100 % of cells get the
+  right structure and 99.3 % the right type (98.2 % without them).
+- **Testis refinements** (page 01): refining `Tubule` starts from SOX9,
+  MAGEA4, GFRA1, PIWIL4, AMH and DMRT1, and refining `Interstitium` from SMA,
+  MYH11, CYP17A1, STAR, CYP11A1 and CD68, both at resolution 0.5, when the
+  panel has at least three of them. On the real TMA, naming Myoid and Leydig
+  straight from Level-0 put 43 % of hand-gated myoid cells in Leydig-like
+  clusters. Naming Tubule/Interstitium first matched hand gates for 86 % of
+  cells, and refining the interstitium put Leydig and myoid cells in separate
+  clusters. The annotation drop-downs gain `Interstitium`, `Sertoli`,
+  `Spermatogonia`, `Spermatocyte`, `Spermatid`, `Myoid`, `Leydig` and
+  `Other interstitium` next to `Tubule`.
+- **Remove each cell's overall brightness** (page 01 refinements;
+  `remove_brightness` in a refinement's config,
+  `clustering.remove_cell_brightness`): subtracts each cell's mean over the
+  refinement markers after z-scoring, so clusters follow which markers stand
+  out rather than how bright a cell is. On the real TMA one shared factor
+  made up 42 % of the variation across the preset's markers. It raised the
+  best-case Sertoli/spermatogonia split from 81 % to 89 % (balanced, against
+  hand gates). On by default only for a testis `Tubule` refinement; it needs
+  z-scored markers.
+- Only some FOVs need an image. A TMA's images are about 1 GB each, so often
+  only a few are copied locally: Prepare AnnData converts every FOV from its
+  cell table and warns which have no image, the FOV pickers on pages 01–03
+  list the FOVs with one, and image QC and overlays are skipped (with a
+  note) for a FOV without one. No matching image at all is still an error.
 
 ### Changed
+
+- Cluster heatmaps (page 01) print every cluster mean and cap the colours of
+  z-scored ones at ±3. On a real TMA, three clusters of 15–130 cells with an
+  empty channel averaged −7 and stretched the scale until the ±1 differences
+  that name the other clusters looked white.
+- **Tidier output folders.** Every stage writes its run bookkeeping
+  (`*_config.json`, `*_status.json`, the worker log, now `<run>.log`) to a
+  `logs/` folder inside its output folder, figures to `qc/`, and
+  intermediate tables and checkpoints to `details/` and `checkpoints/`. The
+  top of each folder holds only the results the next stage reads. Older runs'
+  files are still found where they are. Gate calculation and napari export
+  write one canonical set of gate tables and keep the replaced ones as
+  `details/*_previous.csv` instead of adding `_web` / `_interactive` copies.
+  The conversion schema moved to `logs/<h5ad name>_conversion_config.json`.
+- Stage folder names are defined once (`marker_gating.stage_output_dirs`), so
+  the home page, the tissue-regions page and the phenotyping page agree on
+  where stage 01–03 results live. Co-localisation and tissue regions start
+  from the newest phenotyping result when there is no other input.
+- *Prepare AnnData* opens in *Multi-FOV / TMA* mode for a project folder with
+  `ark_wdir*` folders and a `dearray/` folder.
 - Interface clean-ups found while writing the guide: the QuPath bridge's
   prepare table no longer shows each file's full path (it pushed the cell
   counts off screen); fiber segmentation leaves *Cell AnnData* empty instead
@@ -142,8 +258,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   spelling, `var["source_column"]` records the column each marker came from,
   and a name matched only after normalisation is reported as a warning. A
   marker whose key hits more than one column is an error rather than a guess.
+- **Automatic gates no longer call a marker's main population positive.** When
+  the 3-component GMM "high" gate would call more than half of a marker's
+  cells positive, the upper-tail q75 gate is used instead, and the marker is
+  flagged `3GMM_high_is_majority` for review
+  (`marker_gating.GMM3_HIGH_MAX_POSITIVE_FRACTION`). On a 28-core testis TMA
+  the old choice called 69 % of cells CD68-positive (0.65 % by hand) and 80 %
+  GFRA1-positive (13 % by hand). Across the four hand-gated cores, the share of
+  cells on which the automatic gates agreed with the hand-set ones rose from
+  82 % to 94 %. An upper-tail gate calls at most about a quarter of cells
+  positive, so a marker that really is in most cells (AMH and Vimentin in that
+  TMA) is now called too rarely: move its gate in napari review. A strategy
+  profile that names `3component_gmm_high` still gets that gate.
 
 ### Fixed
+- The home page looked for the stage 00 AnnData of a TMA project in the
+  single-image location, so it always showed *Not started*.
+- Spatial QC on a TMA showed every FOV's cells over one FOV's image; it now
+  overlays only the chosen FOV. Crop windows on images smaller than the crop
+  size no longer get negative offsets.
+- Spatial scatter plots size their points by the number of cells per panel,
+  so small FOVs are no longer drawn with near-invisible dots.
+- Warnings that buried the logs are fixed at the source rather than hidden:
+  pandas dtype and chained-assignment warnings in the vendored scimap
+  `rescale` and `phenotype_cells` (marked as modified from upstream), and
+  scanpy's Leiden-backend `FutureWarning`. Results are unchanged.
 - `dask[array]` was missing from the `dev` extra, but
   `workflows.marker_gating_review` imports it at module level. `pip install -e
   ".[dev]" && pytest` — what CI runs — therefore died collecting
@@ -165,6 +304,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   offered. They are now named in a warning.
 - `uns["all_markers"]` follows the marker order CSV when one is supplied, so it
   no longer disagrees with `var_names` on the single-image path.
+- Clustering failed on every sample with more than 8,192 cells, i.e. every real
+  TMA, with `AttributeError: 'csr_array' object has no attribute 'getnnz'`
+  (then, past that, a numba `TypingError` from umap). scanpy 1.11.5 switches to
+  pynndescent above that size and cannot read what pynndescent 0.7 returns, nor
+  pass its trimmed result to umap-learn 0.6; these are the versions a new
+  install gets. `cluster_cells` now runs the same pynndescent search itself and
+  hands scanpy the graph in the form it expects. The demo data was too small
+  to show it; a regression test now clusters 8,292 cells.
 
 ---
 

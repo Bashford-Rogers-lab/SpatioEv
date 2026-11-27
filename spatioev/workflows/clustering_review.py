@@ -4,14 +4,11 @@
 from __future__ import annotations
 
 import argparse
-import os
-import tempfile
 from pathlib import Path
 
-os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "spatioev_clustering_review_matplotlib"))
-os.environ.setdefault("NUMBA_CACHE_DIR", str(Path(tempfile.gettempdir()) / "spatioev_clustering_review_numba"))
-Path(os.environ["MPLCONFIGDIR"]).mkdir(parents=True, exist_ok=True)
-Path(os.environ["NUMBA_CACHE_DIR"]).mkdir(parents=True, exist_ok=True)
+from spatioev.workflows._io import configure_caches
+
+configure_caches()
 
 import anndata as ad
 

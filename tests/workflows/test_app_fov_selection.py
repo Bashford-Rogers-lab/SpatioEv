@@ -36,18 +36,33 @@ FOVS = ["fov1", "fov2", "fov3", "fov4", "fov5"]
 MARKERS = ["DAPI", "CD8", "Ki67", "PANCK"]
 
 
+TESTIS_MARKERS = [
+    "DAPI", "SOX9", "AMH", "DMRT1", "GFRA1", "PIWIL4", "NaKATPase", "MAGEA4", "SYCP3",
+    "Acrosin", "SMA", "MYH11_2", "CYP17A1", "STAR", "CYP11A1", "CD68", "CD45",
+]
+
+
 @pytest.fixture
 def tma_project(tmp_path: Path) -> Path:
+    return _make_project(tmp_path, MARKERS)
+
+
+@pytest.fixture
+def testis_project(tmp_path: Path) -> Path:
+    return _make_project(tmp_path, TESTIS_MARKERS)
+
+
+def _make_project(tmp_path: Path, markers: list[str]) -> Path:
     """A small multi-FOV project: one OME-TIFF per FOV plus a matching AnnData."""
     rng = np.random.default_rng(0)
     images = tmp_path / "images"
     images.mkdir()
     for fov in FOVS:
-        data = rng.integers(0, 255, (len(MARKERS), 16, 16), dtype=np.uint16)
+        data = rng.integers(0, 255, (len(markers), 16, 16), dtype=np.uint16)
         tifffile.imwrite(
             images / f"{fov}.ome.tif",
             data,
-            metadata={"axes": "CYX", "Channel": {"Name": MARKERS}},
+            metadata={"axes": "CYX", "Channel": {"Name": markers}},
             ome=True,
         )
 
@@ -66,8 +81,8 @@ def tma_project(tmp_path: Path) -> Path:
             )
         )
     obs = pd.concat(frames, ignore_index=True)
-    adata = anndata.AnnData(X=rng.lognormal(0, 1, (len(obs), len(MARKERS))))
-    adata.var_names = MARKERS
+    adata = anndata.AnnData(X=rng.lognormal(0, 1, (len(obs), len(markers))))
+    adata.var_names = markers
     adata.obs = obs
     adata.obs_names = [f"c{i}" for i in range(len(obs))]
     adata.write_h5ad(tmp_path / "tma.h5ad")
@@ -185,3 +200,171 @@ def test_running_job_does_not_block_the_page(tma_project: Path):
 
     assert not at.exception
     assert _fov(at).options == FOVS
+
+
+def test_within_fov_scaling_is_offered_only_for_several_fovs(tma_project: Path):
+    at = _loaded_app(tma_project)
+
+    def within():
+        matches = [w for w in at.checkbox if w.label == "Z-score within each FOV"]
+        assert matches, "within-FOV scaling checkbox was not rendered"
+        return matches[0]
+
+    assert within().value is False
+    assert within().disabled is False
+    _scope(at).set_value("Selected FOV only")
+    at.run()
+    assert within().disabled is True
+
+
+def _checkbox(at: AppTest, label: str):
+    matches = [w for w in at.checkbox if w.label == label]
+    assert matches, f"checkbox {label!r} was not rendered"
+    return matches[0]
+
+
+def _multiselect(at: AppTest, label: str):
+    matches = [w for w in at.multiselect if w.label == label]
+    assert matches, f"multiselect {label!r} was not rendered"
+    return matches[0]
+
+
+def _run_button(at: AppTest):
+    return next(b for b in at.button if b.label == "Run Level-0 clustering")
+
+
+def test_neighbourhood_averaging_needs_a_pixel_size(tma_project: Path):
+    at = _loaded_app(tma_project)
+    _multiselect(at, "Markers used for broad clustering").set_value(MARKERS)
+    at.run()
+    average = "Average markers over neighbouring cells"
+
+    assert _checkbox(at, average).value is False
+    assert not [w for w in at.number_input if w.label == "Pixel size (µm / px)"]
+    assert _run_button(at).disabled is False
+
+    _checkbox(at, average).check()
+    at.run()
+    assert _run_button(at).disabled is True
+    assert any("pixel size" in str(w.value) for w in at.warning)
+
+    next(w for w in at.number_input if w.label == "Pixel size (µm / px)").set_value(0.325)
+    at.run()
+    assert _run_button(at).disabled is False
+    assert not at.exception
+
+
+def test_testis_panel_starts_from_the_testis_structure_markers(testis_project: Path):
+    at = _loaded_app(testis_project)
+
+    preset = next(w for w in at.selectbox if w.label == "Marker preset")
+    assert preset.value == "Testis structures"
+    # Panel suffixes such as MYH11_2 are matched; broad stains stay out.
+    # SYCP3, Acrosin and DMRT1 are in the panel but stay out: no meiotic cells
+    # before puberty, and DMRT1 stains Sertoli and germ cells alike.
+    assert _multiselect(at, "Markers used for broad clustering").value == [
+        "GFRA1", "PIWIL4", "NaKATPase", "AMH", "SOX9", "MAGEA4", "MYH11_2", "SMA", "CYP17A1", "STAR",
+    ]
+    average = _checkbox(at, "Average markers over neighbouring cells")
+    assert average.value is False
+    average.check()
+    at.run()
+    assert _multiselect(at, "Markers kept per cell").value == ["MYH11_2", "SMA"]
+
+
+def _complete_level0(project: Path, annotations: dict[str, str]) -> None:
+    """A finished Level-0 run on the whole sample, with saved cluster labels."""
+    out = project / "out"
+    plt = pytest.importorskip("matplotlib.pyplot")
+    images = {}
+    for name in ("umap", "heatmap"):
+        images[name] = out / f"tma_level0_{name}.png"
+        plt.imsave(images[name], np.zeros((4, 4)))
+    clusters = list(annotations)
+    summary = out / "tma_level0_cluster_summary.csv"
+    pd.DataFrame(
+        {"cluster": clusters, "n_cells": 10, "fraction": 1 / len(clusters), "top_markers": "SOX9"}
+    ).to_csv(summary, index=False)
+    pd.DataFrame(
+        {"cluster": clusters, "annotation": list(annotations.values()), "custom_annotation": ""}
+    ).to_csv(out / "tma_level0_annotation_mapping.csv", index=False)
+    (out / "logs").mkdir(exist_ok=True)
+    (out / "logs" / "tma_level0_status.json").write_text(
+        json.dumps(
+            {
+                "state": "complete",
+                "stage": "complete",
+                "message": "Level-0 clustering complete",
+                "progress": 1.0,
+                "updated_at": datetime.now(UTC).isoformat(),
+                "outputs": {
+                    "clustered_h5ad": str(out / "tma_level0_clustered.h5ad"),
+                    "summary_csv": str(summary),
+                    "umap_png": str(images["umap"]),
+                    "heatmap_png": str(images["heatmap"]),
+                    "n_cells": 100,
+                    "n_clusters": len(clusters),
+                },
+            }
+        )
+    )
+
+
+def _refinement_widgets(at: AppTest, parent: str):
+    markers = next(w for w in at.multiselect if w.key == f"refine_markers_tma_{parent}")
+    resolution = next(w for w in at.number_input if w.key == f"refine_resolution_tma_{parent}")
+    brightness = next(w for w in at.checkbox if w.key == f"refine_brightness_tma_{parent}")
+    return markers, resolution, brightness
+
+
+def test_testis_refinements_start_from_their_own_markers(testis_project: Path):
+    _complete_level0(testis_project, {"0": "Tubule", "1": "Interstitium", "2": "artifact"})
+    at = _loaded_app(testis_project)
+    _multiselect(at, "Broad or mixed populations to recluster").set_value(
+        ["Interstitium", "Tubule", "artifact"]
+    )
+    at.run()
+    assert not at.exception
+
+    markers, resolution, brightness = _refinement_widgets(at, "Tubule")
+    assert markers.value == ["SOX9", "MAGEA4", "GFRA1", "PIWIL4", "AMH", "DMRT1"]
+    assert resolution.value == 0.5
+    assert brightness.value is True
+
+    markers, resolution, brightness = _refinement_widgets(at, "Interstitium")
+    assert markers.value == ["SMA", "MYH11_2", "CYP17A1", "STAR", "CYP11A1", "CD68"]
+    assert resolution.value == 0.5
+    assert brightness.value is False
+
+    # Any other label starts from the Level-0 markers, as before.
+    markers, resolution, brightness = _refinement_widgets(at, "artifact")
+    assert markers.value == _multiselect(at, "Markers used for broad clustering").value
+    assert resolution.value == 0.8
+    assert brightness.value is False
+
+
+def _page_module():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("_clustering_page", PAGE)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_testis_labels_are_offered_for_annotation():
+    page = _page_module()
+    testis = ["Tubule", "Interstitium", "Sertoli", "Spermatogonia", "Spermatocyte", "Spermatid",
+              "Myoid", "Leydig", "Other interstitium", "artifact"]
+    for options in (page.FINAL_LABELS, page.LEVEL0_LABELS):
+        assert set(testis) <= set(options)
+
+
+def test_refinement_defaults_need_most_of_the_testis_markers():
+    page = _page_module()
+    level0 = ["A", "B", "C"]
+    # Only two interstitium markers in the panel: fall back to the Level-0 set.
+    assert page.refinement_defaults("Interstitium", ["SMA", "STAR", "A"], level0) == (level0, 0.8, False)
+    assert page.refinement_defaults(" tubule ", ["sox9", "MAGEA4_1", "AMH", "X"], level0) == (
+        ["sox9", "MAGEA4_1", "AMH"], 0.5, True,
+    )

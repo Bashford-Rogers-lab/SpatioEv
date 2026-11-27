@@ -18,13 +18,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
-import tempfile
 import traceback
 from pathlib import Path
 
-os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "spatioev_cohort_matplotlib"))
-Path(os.environ["MPLCONFIGDIR"]).mkdir(parents=True, exist_ok=True)
+from spatioev.workflows._io import configure_caches
+
+configure_caches()
 
 import matplotlib
 

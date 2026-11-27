@@ -19,6 +19,7 @@ from spatioev.apps._worker import (
     start_worker,
 )
 from spatioev.workflows._io import read_json
+from spatioev.workflows.marker_gating import stage_output_dirs
 from spatioev.workflows.tissue_regions import inspect_inputs
 
 PREFIX = "coloc"
@@ -26,10 +27,18 @@ PREFIX = "coloc"
 
 def standard_defaults(sample_id: str, project_root: Path) -> dict[str, str]:
     sample_id = sample_id.strip()
-    regions = project_root / "results" / f"{sample_id}_tissue_regions"
+    regions = project_root / "results" / f"{sample_id}_tissue_regions" / f"{sample_id}_tissue_regions.h5ad"
     fiber_manifest = project_root / "results" / f"{sample_id}_fiber_segmentation" / f"{sample_id}_fiber_manifest.json"
+    adata = regions
+    if not regions.exists():
+        # Tissue regions are optional (they are tumour / envelope / stroma):
+        # fall back to the newest step-03 result, then the QuPath bridge's.
+        phenotyping = stage_output_dirs(sample_id, project_root)["phenotyping"]
+        phenotyped = sorted(phenotyping.glob(f"{sample_id}_broad_plus_*_phenotyped.h5ad"), key=lambda p: p.stat().st_mtime)
+        qupath = project_root / sample_id / "qupath" / f"{sample_id}_phenotyped.h5ad"
+        adata = phenotyped[-1] if phenotyped else qupath if qupath.exists() else regions
     return {
-        "coloc_adata": str(regions / f"{sample_id}_tissue_regions.h5ad"),
+        "coloc_adata": str(adata),
         "coloc_fiber_manifest": str(fiber_manifest) if fiber_manifest.exists() else "",
         "coloc_output": str(project_root / "results" / f"{sample_id}_colocalization"),
     }

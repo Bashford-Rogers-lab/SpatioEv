@@ -3,32 +3,35 @@
 
 from __future__ import annotations
 
-import os
-import subprocess
-import tempfile
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 
-os.environ.setdefault(
-    "MPLCONFIGDIR",
-    str(Path(tempfile.gettempdir()) / "spatioev_clustering_app_matplotlib"),
-)
-os.environ.setdefault(
-    "NUMBA_CACHE_DIR",
-    str(Path(tempfile.gettempdir()) / "spatioev_clustering_app_numba"),
-)
-Path(os.environ["MPLCONFIGDIR"]).mkdir(parents=True, exist_ok=True)
-Path(os.environ["NUMBA_CACHE_DIR"]).mkdir(parents=True, exist_ok=True)
+from spatioev.workflows._io import configure_caches
+
+configure_caches()
 
 import anndata as ad
 import pandas as pd
 import streamlit as st
 
 from spatioev.apps._common import default_project_root, module_command
+from spatioev.workflows import clustering
 from spatioev.workflows import marker_gating as mgq
-from spatioev.workflows._io import read_json, write_json
-from spatioev.workflows.cellsam import describe_unreadable_h5ad
-from spatioev.workflows.image_collection import natural_key, resolve_image
+from spatioev.workflows._io import (
+    find_run_file,
+    read_json,
+    run_files,
+    start_logged_process,
+    write_json,
+)
+from spatioev.workflows.cellsam import describe_unreadable_h5ad, marker_order_warning
+from spatioev.workflows.image_collection import (
+    imageids_with_images,
+    natural_key,
+    plane_marker_names,
+    resolve_image,
+)
 
 PROJECT_ROOT_DEFAULT = default_project_root()
 AUTO_REFRESH_SECONDS = 2.0
@@ -53,8 +56,59 @@ CORE_MARKERS = [
     "EpCAM",
     "HNF4a",
 ]
+# Markers that separate the testis structures, chosen from the images of a
+# prepubertal (8-14 year) TMA: GFRA1, PIWIL4, NaKATPase and AMH stain only
+# inside tubules in every core, SOX9 marks Sertoli cells and MAGEA4
+# spermatogonia; SMA and MYH11 mark the peritubular wall; CYP17A1 and STAR
+# Leydig cells. DMRT1 is left out because it stains Sertoli and germ cells
+# alike. SYCP3 (meiotic) and Acrosin (post-meiotic) are left out because no
+# such cells exist before puberty, so they would add only noise: add them for
+# pubertal or adult testes. Broad or nonspecific stains (Vimentin, NF2F2,
+# CD45, CD68) are left out on purpose.
+TESTIS_PRESET = "Testis structures"
+TESTIS_STRUCTURE_MARKERS = [
+    "GFRA1",
+    "PIWIL4",
+    "NaKATPase",
+    "AMH",
+    "SOX9",
+    "MAGEA4",
+    "MYH11",
+    "SMA",
+    "CYP17A1",
+    "STAR",
+]
+# Starting points for refining the two broad testis labels. Leydig cells and
+# the peritubular myoid cells fall into separate clusters on these markers;
+# clusters with none of them are the other interstitial cells. For Sertoli
+# cells and spermatogonia, removing each cell's overall brightness first
+# helped: the two are packed tightly, so many cells carry some of both signals.
+TESTIS_REFINEMENTS = {
+    "TUBULE": {
+        "markers": ["SOX9", "MAGEA4", "GFRA1", "PIWIL4", "AMH", "DMRT1"],
+        "remove_brightness": True,
+    },
+    "INTERSTITIUM": {
+        "markers": ["SMA", "MYH11", "CYP17A1", "STAR", "CYP11A1", "CD68"],
+        "remove_brightness": False,
+    },
+}
+TESTIS_REFINEMENT_RESOLUTION = 0.5
+DEFAULT_REFINEMENT_RESOLUTION = 0.8
+# Smooth-muscle markers: they mark structures one cell thick, which averaging
+# over neighbours would blur, so they are suggested to stay per cell.
+PER_CELL_MARKER_NAMES = {"SMA", "ASMA", "ACTA2", "MYH11"}
 FINAL_LABELS = [
     "",
+    "Tubule",
+    "Interstitium",
+    "Sertoli",
+    "Spermatogonia",
+    "Spermatocyte",
+    "Spermatid",
+    "Myoid",
+    "Leydig",
+    "Other interstitium",
     "immune",
     "LSEC",
     "vascular_cell",
@@ -116,10 +170,14 @@ def sample_metadata(adata_path: str, image_path: str) -> dict[str, object]:
         "markers": [str(marker) for marker in adata.var_names],
         "obs_columns": list(adata.obs.columns),
         "layers": list(adata.layers.keys()),
+        "marker_order_warning": marker_order_warning(adata),
     }
+    planes = plane_marker_names(adata)
     adata.file.close()
-    resolved_image = resolve_image(Path(image_path), imageids[0] if imageids else None)
-    channels = mgq.canonical_channel_names(resolved_image, metadata["markers"])
+    # A TMA image folder may hold images for only some FOVs.
+    with_image = imageids_with_images(image_path, imageids)
+    resolved_image = resolve_image(Path(image_path), with_image[0] if with_image else None)
+    channels = mgq.canonical_channel_names(resolved_image, planes)
     metadata["image_channels"] = channels
     metadata["missing_image_channels"] = sorted(
         set(metadata["markers"]) - set(channels)
@@ -128,6 +186,7 @@ def sample_metadata(adata_path: str, image_path: str) -> dict[str, object]:
         metadata["obs_columns"]
     )
     metadata["imageids"] = imageids
+    metadata["imageids_with_image"] = with_image
     metadata["imageid_counts"] = imageid_counts
     metadata["default_image_path"] = str(resolved_image)
     return metadata
@@ -138,6 +197,40 @@ def recommended_defaults(sample_id: str, markers: list[str]) -> tuple[list[str],
 
     selected = [marker for marker in CORE_MARKERS if marker in markers]
     return selected, 0.4
+
+
+def marker_base(name: str) -> str:
+    """``CLDN11_2`` -> ``CLDN11``: panels number repeated stains."""
+    return re.sub(r"_\d+$", "", str(name)).upper()
+
+
+def panel_markers(wanted: list[str], available: list[str]) -> list[str]:
+    """The markers of ``available`` that match ``wanted``, ignoring case and ``_1``/``_2``."""
+    by_base: dict[str, str] = {}
+    for marker in available:
+        by_base.setdefault(marker_base(marker), marker)
+    return [by_base[marker_base(name)] for name in wanted if marker_base(name) in by_base]
+
+
+def suggested_per_cell_markers(markers: list[str]) -> list[str]:
+    return [marker for marker in markers if marker_base(marker) in PER_CELL_MARKER_NAMES]
+
+
+def refinement_defaults(
+    parent: str, available: list[str], level0_markers: list[str]
+) -> tuple[list[str], float, bool]:
+    """Starting markers, resolution and brightness removal for refining ``parent``.
+
+    The broad testis labels (Tubule, Interstitium) start from their own
+    markers when the panel has at least three of them; any other label starts
+    from the Level-0 markers.
+    """
+    preset = TESTIS_REFINEMENTS.get(str(parent).strip().upper())
+    if preset is not None:
+        markers = panel_markers(preset["markers"], available)
+        if len(markers) >= 3:
+            return markers, TESTIS_REFINEMENT_RESOLUTION, bool(preset["remove_brightness"])
+    return list(level0_markers), DEFAULT_REFINEMENT_RESOLUTION, False
 
 
 def start_worker(
@@ -162,12 +255,7 @@ def start_worker(
         "--status",
         str(status_path),
     )
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    with log_path.open("ab") as log:
-        process = subprocess.Popen(
-            command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True
-        )
-    return process.pid
+    return start_logged_process(command, log_path)
 
 
 def launch_napari(
@@ -177,7 +265,7 @@ def launch_napari(
     name: str,
     imageid: str | None = None,
 ) -> tuple[int, Path]:
-    log_path = output_dir / f"{name}_napari.log"
+    _, _, log_path = run_files(output_dir, f"{name}_napari")
     command = module_command(
         "spatioev.workflows.clustering_review",
         "--adata",
@@ -189,11 +277,7 @@ def launch_napari(
     )
     if imageid is not None:
         command.extend(["--imageid", imageid])
-    with log_path.open("ab") as log:
-        process = subprocess.Popen(
-            command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True
-        )
-    return process.pid, log_path
+    return start_logged_process(command, log_path), log_path
 
 
 @st.fragment(run_every=AUTO_REFRESH_SECONDS)
@@ -457,6 +541,10 @@ def main() -> None:
                     st.success(
                         f"Loaded {sample_id}: {metadata['cells']:,} cells and {len(metadata['markers'])} markers."
                     )
+                    if metadata.get("marker_order_warning"):
+                        st.warning(
+                            metadata["marker_order_warning"], icon=":material/warning:"
+                        )
             except Exception as exc:
                 st.exception(exc)
 
@@ -479,13 +567,22 @@ def main() -> None:
     review_imageid = None
     review_image = Path(metadata["default_image_path"])
     if metadata["imageids"]:
+        with_image = metadata.get("imageids_with_image") or metadata["imageids"]
         review_imageid = st.selectbox(
             "FOV selected for clustering or image review",
             metadata["imageids"],
+            index=metadata["imageids"].index(with_image[0]) if with_image[0] in metadata["imageids"] else 0,
             key=f"cluster_review_imageid_{sample_id}",
         )
-        review_image = resolve_image(loaded_paths["image"], review_imageid)
-        st.caption(f"Image review uses {review_imageid}: {review_image}")
+        if review_imageid in with_image:
+            review_image = resolve_image(loaded_paths["image"], review_imageid)
+            st.caption(f"Image review uses {review_imageid}: {review_image}")
+        else:
+            review_image = None
+            st.caption(
+                f"{review_imageid} has no image in {loaded_paths['image']}, so napari "
+                f"review is off for it. FOVs with an image: {', '.join(with_image)}."
+            )
 
     scope_options = ["All FOVs jointly"]
     if metadata["imageids"]:
@@ -512,15 +609,28 @@ def main() -> None:
     recommended_markers, recommended_resolution = recommended_defaults(
         sample_id, metadata["markers"]
     )
+    testis_markers = panel_markers(TESTIS_STRUCTURE_MARKERS, metadata["markers"])
+    presets = ["Notebook-informed recommendation", "Core lineage panel", TESTIS_PRESET, "Custom"]
     preset = st.selectbox(
         "Marker preset",
-        ["Notebook-informed recommendation", "Core lineage panel", "Custom"],
-        help="The recommendation reproduces the marker choices used in the reference notebooks.",
+        presets,
+        # A panel with most of the testis markers is a testis panel.
+        index=presets.index(TESTIS_PRESET) if len(testis_markers) >= 6 else 0,
+        help=(
+            "The first two reproduce the liver (HCC) reference notebooks. "
+            f"{TESTIS_PRESET} picks the markers that separate tubules, the "
+            "peritubular wall and the interstitium: GFRA1, PIWIL4, NaKATPase, "
+            "AMH, SOX9, MAGEA4, MYH11, SMA, CYP17A1 and STAR. For pubertal or "
+            "adult testes add SYCP3 and Acrosin, so spermatocytes and "
+            "spermatids have a marker too."
+        ),
     )
     if preset == "Core lineage panel":
         default_markers = [
             marker for marker in CORE_MARKERS if marker in metadata["markers"]
         ]
+    elif preset == TESTIS_PRESET:
+        default_markers = testis_markers
     else:
         default_markers = recommended_markers
     marker_key = f"level0_markers_{sample_id}_{preset}"
@@ -541,11 +651,83 @@ def main() -> None:
         n_pcs = st.number_input("Requested PCs", 2, 50, 15, 1)
     with q4:
         scale = st.toggle("Z-score markers", value=True)
+    several_fovs = cluster_imageid is None and len(metadata["imageids"]) > 1
+    scale_within_image = st.checkbox(
+        "Z-score within each FOV",
+        value=False,
+        disabled=not (scale and several_fovs),
+        help=(
+            "Scale every marker separately in each FOV. Use it when cores were "
+            "stained or imaged unevenly: clusters made of one or two FOVs in the "
+            "summary table are the sign. Each FOV should contain several cell "
+            "types, since a FOV that is all one type is scaled to look like the rest."
+        ),
+    )
+    scale_within_image = bool(scale and several_fovs and scale_within_image)
 
-    level0_config_path = output_dir / f"{scoped_id}_level0_config.json"
-    level0_status_path = output_dir / f"{scoped_id}_level0_status.json"
-    level0_log_path = output_dir / f"{scoped_id}_level0_worker.log"
-    run_disabled = len(selected_markers) < 3
+    average = st.checkbox(
+        "Average markers over neighbouring cells",
+        value=False,
+        help=(
+            "Give every cell the mean of the cells around it before clustering. "
+            "Clusters then follow tissue structures (tubules, interstitium) "
+            "instead of single cells. Try it when cells without a reliable "
+            "marker, such as most interstitial cells, end up in the wrong "
+            "structure's clusters, and compare both runs on several FOVs. "
+            "Refinement and export still use each cell's own values."
+        ),
+    )
+    neighbourhood_um, pixel_size_um, per_cell_markers = 0.0, 0.0, []
+    if average:
+        n1, n2, n3 = st.columns([1, 1, 2])
+        with n1:
+            neighbourhood_um = st.number_input(
+                "Neighbourhood radius (µm)",
+                1.0,
+                200.0,
+                15.0,
+                1.0,
+                help=(
+                    "Cells whose centre lies within this distance are averaged "
+                    "together. One to two cell diameters; 15 µm suits testis cores."
+                ),
+            )
+        with n2:
+            st.session_state.setdefault("cluster_pixel_size", 0.0)
+            pixel_size_um = st.number_input(
+                "Pixel size (µm / px)",
+                0.0,
+                100.0,
+                step=0.001,
+                format="%.4f",
+                key="cluster_pixel_size",
+                help=(
+                    "The size of one image pixel. It is not read from the image, "
+                    "because some scanners record a wrong value there."
+                ),
+            )
+        with n3:
+            per_cell_markers = st.multiselect(
+                "Markers kept per cell",
+                options=selected_markers,
+                default=suggested_per_cell_markers(selected_markers),
+                help=(
+                    "Markers of structures one cell thick, such as the smooth-muscle "
+                    "wall (SMA, MYH11) around tubules and vessels. Averaging would "
+                    "spread them onto the cells on both sides."
+                ),
+            )
+        if not pixel_size_um:
+            st.warning(
+                "Type the pixel size of your scan to average markers over "
+                "neighbouring cells.",
+                icon=":material/straighten:",
+            )
+
+    level0_config_path, level0_status_path, level0_log_path = run_files(
+        output_dir, f"{scoped_id}_level0"
+    )
+    run_disabled = len(selected_markers) < 3 or (average and not pixel_size_um)
     if st.button(
         "Run Level-0 clustering",
         type="primary",
@@ -562,7 +744,11 @@ def main() -> None:
             "n_neighbors": int(n_neighbors),
             "n_pcs": int(n_pcs),
             "scale": bool(scale),
+            "scale_within_image": scale_within_image,
             "cluster_imageid": cluster_imageid,
+            "neighbourhood_um": float(neighbourhood_um) if average else 0.0,
+            "pixel_size_um": float(pixel_size_um) if average else None,
+            "per_cell_markers": list(per_cell_markers) if average else [],
         }
         write_json(level0_config_path, config)
         pid = start_worker(
@@ -570,7 +756,9 @@ def main() -> None:
         )
         st.success(f"Level-0 worker started (process {pid}).")
 
-    level0_status = render_job(level0_status_path, label="Level-0")
+    level0_status = render_job(
+        find_run_file(output_dir, level0_status_path.name), label="Level-0"
+    )
     if not level0_status or level0_status.get("state") != "complete":
         return
     level0_outputs = {
@@ -581,6 +769,19 @@ def main() -> None:
         f"Checkpoint: {level0_outputs['n_cells']:,} cells, {level0_outputs['n_clusters']} clusters. "
         f"Worker log: {level0_log_path}"
     )
+    mean_cells_averaged = level0_outputs.get("mean_cells_averaged")
+    if mean_cells_averaged is not None:
+        st.caption(
+            f"Markers were averaged within {level0_outputs['neighbourhood_um']:g} µm: "
+            f"{mean_cells_averaged:.1f} cells per neighbourhood on average."
+        )
+        if mean_cells_averaged < clustering.MIN_MEAN_CELLS_AVERAGED:
+            st.warning(
+                "Most cells had no neighbour within the radius, so markers were "
+                "barely averaged. Check the pixel size: a typical nucleus is "
+                "5–10 µm across.",
+                icon=":material/warning:",
+            )
     qc1, qc2 = st.columns(2)
     with qc1:
         st.image(
@@ -592,7 +793,11 @@ def main() -> None:
             caption="Cluster marker heatmap",
             width="stretch",
         )
-    if st.button("Launch Level-0 napari review", icon=":material/open_in_new:"):
+    if st.button(
+        "Launch Level-0 napari review",
+        icon=":material/open_in_new:",
+        disabled=review_image is None,
+    ):
         pid, log_path = launch_napari(
             level0_outputs["clustered_h5ad"],
             review_image,
@@ -641,13 +846,16 @@ def main() -> None:
     )
     refinements = []
     for parent in refine_parents:
+        default_refine_markers, default_refine_resolution, default_remove_brightness = (
+            refinement_defaults(parent, metadata["markers"], selected_markers)
+        )
         with st.expander(f"Refinement: {parent}", expanded=True):
             r1, r2 = st.columns([3, 1])
             with r1:
                 markers = st.multiselect(
                     "Refinement markers",
                     options=metadata["markers"],
-                    default=selected_markers,
+                    default=default_refine_markers,
                     key=f"refine_markers_{scoped_id}_{parent}",
                 )
             with r2:
@@ -655,10 +863,24 @@ def main() -> None:
                     "Resolution",
                     0.1,
                     2.0,
-                    0.8,
+                    default_refine_resolution,
                     0.1,
                     key=f"refine_resolution_{scoped_id}_{parent}",
                 )
+            remove_brightness = st.checkbox(
+                "Remove each cell's overall brightness",
+                value=default_remove_brightness,
+                disabled=not scale,
+                key=f"refine_brightness_{scoped_id}_{parent}",
+                help=(
+                    "Subtract each cell's mean over the refinement markers after "
+                    "z-scoring. Big, bright or tightly packed cells raise every "
+                    "marker together, which gives clusters that are high in "
+                    "everything; this leaves which markers stand out in each cell. "
+                    "It helped separate Sertoli cells from spermatogonia. Needs "
+                    "Z-score markers on."
+                ),
+            )
             refinements.append(
                 {
                     "annotation": parent,
@@ -667,12 +889,13 @@ def main() -> None:
                     "n_neighbors": int(n_neighbors),
                     "n_pcs": int(n_pcs),
                     "scale": bool(scale),
+                    "remove_brightness": bool(scale and remove_brightness),
                 }
             )
 
-    refinement_config_path = output_dir / f"{scoped_id}_refinement_config.json"
-    refinement_status_path = output_dir / f"{scoped_id}_refinement_status.json"
-    refinement_log_path = output_dir / f"{scoped_id}_refinement_worker.log"
+    refinement_config_path, refinement_status_path, refinement_log_path = run_files(
+        output_dir, f"{scoped_id}_refinement"
+    )
     if refine_parents and st.button(
         "Run selected refinements", type="primary", icon=":material/account_tree:"
     ):
@@ -684,6 +907,7 @@ def main() -> None:
             "level0_h5ad": str(level0_outputs["clustered_h5ad"]),
             "level0_mapping_path": str(level0_mapping_path),
             "refinements": refinements,
+            "scale_within_image": scale_within_image,
             "cluster_imageid": cluster_imageid,
         }
         write_json(refinement_config_path, config)
@@ -696,7 +920,9 @@ def main() -> None:
         st.success(f"Refinement worker started (process {pid}).")
 
     refinement_status = (
-        render_job(refinement_status_path, label="Refinement")
+        render_job(
+            find_run_file(output_dir, refinement_status_path.name), label="Refinement"
+        )
         if refine_parents
         else None
     )
@@ -725,7 +951,9 @@ def main() -> None:
                 width="stretch",
             )
         if st.button(
-            f"Launch napari: {parent}", key=f"napari_refine_{scoped_id}_{parent}"
+            f"Launch napari: {parent}",
+            key=f"napari_refine_{scoped_id}_{parent}",
+            disabled=review_image is None,
         ):
             pid, log_path = launch_napari(
                 Path(result["clustered_h5ad"]),
@@ -769,9 +997,9 @@ def main() -> None:
             )
 
     st.subheader("5. Merge and export")
-    export_config_path = output_dir / f"{scoped_id}_export_config.json"
-    export_status_path = output_dir / f"{scoped_id}_export_status.json"
-    export_log_path = output_dir / f"{scoped_id}_export_worker.log"
+    export_config_path, export_status_path, export_log_path = run_files(
+        output_dir, f"{scoped_id}_export"
+    )
     export_disabled = bool(refine_parents) and not all_refinement_mappings_ready
     if st.button(
         "Export broad phenotyping",
@@ -779,7 +1007,7 @@ def main() -> None:
         disabled=export_disabled,
         icon=":material/save:",
     ):
-        level0_config = read_json(level0_config_path)
+        level0_config = read_json(find_run_file(output_dir, level0_config_path.name))
         config = {
             "sample_id": sample_id,
             "adata_path": str(loaded_paths["adata"]),
@@ -797,7 +1025,9 @@ def main() -> None:
         )
         st.success(f"Export worker started (process {pid}).")
 
-    export_status = render_job(export_status_path, label="Export")
+    export_status = render_job(
+        find_run_file(output_dir, export_status_path.name), label="Export"
+    )
     if export_status and export_status.get("state") == "complete":
         outputs = export_status["outputs"]
         st.success(

@@ -13,9 +13,10 @@ ignored for GitHub upload; see [Data Policy](docs/data_policy.md).
 
 > **New to SpatioEv, or to coding?** The [step-by-step guide](https://bashford-rogers-lab.github.io/SpatioEv/guide/)
 > ([source](docs/guide/index.md)) walks through installing it on a Mac,
-> organising your data, classifying cells in QuPath, and every analysis
-> stage, with screenshots. Practise first on synthetic data made by
-> `spatioev demo ~/SpatioEv_demo`.
+> organising your data, classifying cells in QuPath (or by clustering,
+> gating and marker rules), and every analysis stage, with screenshots.
+> Practise first on synthetic data made by `spatioev demo ~/SpatioEv_demo`
+> (or `--kind testis` for a multi-FOV ARK TMA).
 
 ## Main Capabilities
 
@@ -38,11 +39,15 @@ ignored for GitHub upload; see [Data Policy](docs/data_policy.md).
 - "Run for every core": repeat a checked fiber segmentation, tissue regions
   or co-localisation run for every core with the same settings
   (`spatioev batch`, or one button in the interface).
-- Synthetic practice data in the real folder layout (`spatioev demo`).
-- A staged interface for CellSAM-to-AnnData conversion, broad clustering,
-  marker autogating, SCIMAP subset phenotyping, fiber segmentation, tissue
-  regions, co-localisation and cohort comparison, including multi-FOV TMA
-  projects split across multiple ARK working directories.
+- Synthetic practice data in the real folder layout (`spatioev demo`;
+  `--kind testis` for a multi-FOV ARK TMA with cell-type rules and the true
+  cell type of every cell).
+- A staged interface for CellSAM/ARK-to-AnnData conversion (columns in
+  image-channel order, taken from the panel's `markers_bs.csv`), broad
+  clustering, marker autogating, SCIMAP subset phenotyping with per-image
+  gates, fiber segmentation, tissue regions, co-localisation and cohort
+  comparison, including multi-FOV TMA projects split across multiple ARK
+  working directories.
 
 The WGCNA-like workflow from earlier manuscript drafts is not part of the
 current public package API yet.

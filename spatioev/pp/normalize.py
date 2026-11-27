@@ -12,8 +12,8 @@ if TYPE_CHECKING:
     import anndata as ad
 
 
-def zscore_normalize(adata: ad.AnnData) -> ad.AnnData:
-    """Z-score normalise marker expression across all cells.
+def zscore_normalize(adata: ad.AnnData, groupby: str | None = None) -> ad.AnnData:
+    """Z-score normalise marker expression across all cells, or within groups.
 
     Stores the original expression in ``adata.layers["raw"]`` (if not
     already present) and the z-scored matrix in ``adata.layers["scaled"]``.
@@ -22,6 +22,10 @@ def zscore_normalize(adata: ad.AnnData) -> ad.AnnData:
     ----------
     adata : anndata.AnnData
         AnnData with a marker expression matrix in ``adata.X``.
+    groupby : str, optional
+        An ``obs`` column, such as ``"imageid"``. Each marker is then
+        z-scored within each group, so a core that stained brighter or dimmer
+        overall does not form clusters of its own.
 
     Returns
     -------
@@ -41,12 +45,21 @@ def zscore_normalize(adata: ad.AnnData) -> ad.AnnData:
 
     X = adata.X.toarray() if sparse.issparse(adata.X) else np.asarray(adata.X)
 
-    mean = np.asarray(np.mean(X, axis=0)).ravel()
-    std = np.asarray(np.std(X, axis=0)).ravel()
+    if groupby is None:
+        groups = [np.arange(adata.n_obs)]
+    else:
+        if groupby not in adata.obs:
+            raise KeyError(f"AnnData has no obs column {groupby!r} to z-score within")
+        codes = pd.Categorical(adata.obs[groupby].astype(str)).codes
+        groups = [np.flatnonzero(codes == code) for code in np.unique(codes)]
+    scaled = np.empty(X.shape, dtype=np.result_type(X.dtype, np.float32))
+    for rows in groups:
+        mean = X[rows].mean(axis=0)
+        std = X[rows].std(axis=0)
+        std[std == 0] = 1
+        scaled[rows] = (X[rows] - mean) / std
 
-    std[std == 0] = 1
-
-    adata.X = (X - mean) / std
+    adata.X = scaled
 
     adata.layers["scaled"] = adata.X.copy()
 

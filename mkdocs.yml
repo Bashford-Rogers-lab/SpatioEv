@@ -45,6 +45,7 @@ nav:
       - 3. Organise your data: guide/organise.md
       - 4. Open the app: guide/app.md
       - 5. Cell types in QuPath: guide/qupath.md
+      - 5b. Cell types by clustering and gating: guide/clustering_gating.md
       - 6. Matrix fibers: guide/fibers.md
       - 7. Tissue regions: guide/regions.md
       - 8. Co-localisation: guide/colocalisation.md

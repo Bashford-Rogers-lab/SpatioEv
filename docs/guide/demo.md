@@ -60,6 +60,16 @@ WNT5A+ fibroblasts), so [comparing groups](cohort.md) has something to find.
     depends on it) and run the command again. `--overwrite` replaces only the
     core folders, not the results you made.
 
+## A demo for clustering and gating
+
+[Step 5b](clustering_gating.md) (cell types by clustering and gating) has its
+own demo: a synthetic multi-FOV testis TMA in the ARK folder layout, with
+cell-type rules, hand-set gates and the true cell type of every cell:
+
+```bash
+spatioev demo ~/SpatioEv_practice --kind testis
+```
+
 Next: [Organise your data](organise.md), or, for the demo,
 [Open the app](app.md) with:
 

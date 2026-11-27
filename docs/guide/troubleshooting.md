@@ -25,7 +25,24 @@ Find the message you see, or the step you are on. If nothing here helps, see
 | A run shows a red error | Something in the input or settings did not work. | Open **Error details** and read the last line; it usually names the problem. Send the whole text if you ask for help. |
 | A progress bar seems stuck | Large images take a while; the bar moves between steps, not continuously. | Open **Worker log** under the progress bar. If the last line has not changed for more than 15 minutes, ask for help. |
 | *Run for every core* reports **missing input** for some cores | An earlier step has not been done for those cores. | The message says which input is missing, for example *no cell AnnData* (run [QuPath collect](qupath.md) for that core) or *no fiber segmentation result* (run [step 6](fibers.md) for it). Then press **Run for every core** again; finished cores are skipped. |
-| *Run for every core* reports **failed** for a core | That core's run hit an error. | Look in that core's results folder for `<core>_…_worker.log`; the end of the file shows the error. Other cores are not affected. |
+| *Run for every core* reports **failed** for a core | That core's run hit an error. | Open `logs/<core>_<stage>.log` in that core's results folder; the end of the file shows the error. Other cores are not affected. |
+
+## Clustering and gating (steps 00–03)
+
+| What you see | Why | What to do |
+|---|---|---|
+| *Marker order CSV lists … markers but … has … image channels* (page 00) | The marker CSV found does not belong to these images, often an older copy in a parent folder. | Type the path of the right `markers_bs.csv` into **Marker order CSV**. Check the **Marker order** tab before building. |
+| A warning that the AnnData *was built by an older SpatioEv* (pages 01–02) | Made with SpatioEv 0.2.0 or earlier, which paired markers with the wrong image planes. | Rebuild it with page 00, then redo clustering and gating ([step 5b](clustering_gating.md#b-prepare-anndata-page-00)). |
+| Clusters on page 01 come mostly from one or two FOVs | Cores were stained or imaged unevenly, and scaling over all cells keeps those differences. | Tick **Z-score within each FOV** and run Level-0 clustering again ([step 5b](clustering_gating.md#c-find-the-tissue-structures-page-01)). |
+| Image review is greyed out, or a FOV is missing from the FOV list (pages 01–03) | That FOV has no image in the image folder. Its cells are still converted and analysed. | Copy its OME-TIFF into the folder (name it with the FOV number, e.g. `22.ome.tif`), or review another FOV. |
+| *Workflow markers absent from AnnData* (page 03) | A marker column of the rules file matches no marker, not even after ignoring suffixes such as `_1`/`_2`. | Rename the column to the marker name in your panel, or delete it. |
+| *Workflow markers absent from gate CSV* (page 03) | The gate table has no row for a marker the rules use. | Add a gate for it (step 02 calculates one for every marker), or remove it from the rules. |
+| *No gate for SOX9 in fov2, …* (page 03) | A per-FOV gate table has no value for those FOVs. | Choose how to fill them under **Images without a gate for a marker**, or list only the gated FOVs in **Image IDs to phenotype**. |
+| A note that a row uses a single `pos` / `neg` marker (page 03) | scimap only averages that marker into the score, so cells that break it can still get the type. | Use `allpos` / `allneg` when the marker must be positive / negative ([why](clustering_gating.md#the-rules-file)). |
+| *N cells … were set to Unknown because their phenotype had fewer than K cells in that image* | **Minimum cells per phenotype per image** removes small populations per FOV. | Set it to 0 for small cores, or lower it. |
+| Many cells of a broadly expressed marker are called negative | The marker was left blank in the staining questionnaire, so it got a cautious upper-tail gate. | Answer **Staining condition**, **Compartment** and **Artifact** for it on page 02 and calculate again. |
+| A marker is flagged `3GMM_high_is_majority` and called positive in only a few percent of cells (page 02) | Its values have no separate positive peak. The usual gate would have called most cells positive, so a stricter upper-tail gate was used, which calls at most about a quarter of cells positive. | Check the marker on the image (**Generate spatial QC images**). If it really is in many cells, move its gate in napari review. |
+| Distances or areas look 3× too large or too small (pages 04–06) | The pixel size is wrong. Some scanners write a wrong one into the OME-TIFF, and page 04 fills it in from there. | Check it: a typical nucleus is 5–10 µm across. Type your scan's pixel size (0.325 µm/px for our TMA scans) and run again. |
 
 ## QuPath
 

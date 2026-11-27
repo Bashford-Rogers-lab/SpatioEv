@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 
 import pytest
 
@@ -45,6 +46,12 @@ def test_detect_stage_and_find_template(tmp_path):
     config.write_text(json.dumps(_template(tmp_path)))
     assert batch.find_template(run) == config
     assert batch.find_template(config) == config
+    # The current layout keeps run settings in logs/; the newer file wins.
+    current = run / "logs" / "CORE_A_tissue_regions_config.json"
+    current.parent.mkdir()
+    current.write_text(json.dumps(_template(tmp_path)))
+    os.utime(config, (1, 1))
+    assert batch.find_template(run) == current
 
 
 def _core(root, name):
@@ -102,7 +109,11 @@ def test_fiber_batch_runs_every_demo_core_and_resumes(tmp_path):
     assert list(first["status"]) == ["done", "done"], first["message"].tolist()
     second_core = tmp_path / "results" / "DEMO_02_fiber_segmentation"
     assert (second_core / "DEMO_02_fiber_manifest.json").exists()
-    assert json.loads((second_core / "DEMO_02_fiber_config.json").read_text())["image_path"].endswith("DEMO_02/background/DEMO_02.ome.tiff")
+    # Run settings, status and the worker log live in logs/, not beside the results.
+    config = second_core / "logs" / "DEMO_02_fiber_config.json"
+    assert json.loads(config.read_text())["image_path"].endswith("DEMO_02/background/DEMO_02.ome.tiff")
+    assert (second_core / "logs" / "DEMO_02_fiber.log").exists()
+    assert not list(second_core.glob("*_status.json")) and not list(second_core.glob("*.log"))
 
     again = batch.run_batch(run, log=lambda message: None)
     assert set(again["status"]) == {"skipped"}

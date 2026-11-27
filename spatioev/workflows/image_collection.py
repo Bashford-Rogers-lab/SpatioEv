@@ -6,6 +6,7 @@ import re
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
+import numpy as np
 import tifffile
 
 OME_PATTERNS = ("*.ome.tif", "*.ome.tiff", "*.tif", "*.tiff")
@@ -115,6 +116,24 @@ def generic_channel_names(channels: list[str]) -> bool:
     )
 
 
+def plane_marker_names(adata) -> list[str]:
+    """One marker name per image plane, as recorded when the AnnData was built.
+
+    Prepare AnnData stores the plane order in ``adata.uns["all_markers"]``
+    (the marker order CSV's row order, or the OME channel names). That, not
+    ``adata.var_names``, is what names the planes of an unnamed image: the two
+    differ whenever a plane is not a marker (a repeated nuclear stain, a
+    channel flagged ``remove``). Older files without it fall back to
+    ``var_names``.
+    """
+    recorded = getattr(adata, "uns", {}).get("all_markers")
+    if recorded is not None:
+        names = [str(name) for name in np.asarray(recorded).ravel().tolist()]
+        if names:
+            return names
+    return [str(name) for name in adata.var_names]
+
+
 def channel_names(image_path: Path, fallback: list[str] | None = None) -> list[str]:
     channels = raw_channel_names(image_path)
     if generic_channel_names(channels) and fallback is not None:
@@ -126,7 +145,14 @@ def channel_names(image_path: Path, fallback: list[str] | None = None) -> list[s
     return channels
 
 
-def collection_manifest(source: Path, imageids: list[str]) -> list[dict[str, str]]:
+def collection_manifest(
+    source: Path, imageids: list[str], *, allow_missing: bool = False
+) -> list[dict[str, str]]:
+    """One ``{imageid, image_path}`` row per image ID that has an image.
+
+    An image ID without an image is an error unless ``allow_missing``; then it
+    is simply left out (see :func:`imageids_with_images`).
+    """
     mapping = image_map(source)
     rows = []
     missing = []
@@ -136,6 +162,26 @@ def collection_manifest(source: Path, imageids: list[str]) -> list[dict[str, str
             missing.append(str(imageid))
         else:
             rows.append({"imageid": str(imageid), "image_path": str(path)})
-    if missing:
+    if missing and not allow_missing:
         raise ValueError(f"No OME-TIFF was found for FOVs: {missing}")
     return rows
+
+
+def imageids_with_images(source: Path | str | None, imageids: list[str]) -> list[str]:
+    """The image IDs that have an image under ``source``, in the given order.
+
+    A single image file serves every image ID. A folder serves the FOVs whose
+    OME-TIFF it holds. A TMA's images are around 1 GB each, so often only a
+    few FOVs are copied locally while the cell tables cover all of them:
+    everything computed from the cell tables still works for the others, and
+    only image review and overlays need one of these.
+    """
+    if source is None or not str(source).strip():
+        return []
+    source = Path(source).expanduser()
+    if source.is_file():
+        return [str(imageid) for imageid in imageids]
+    if not source.is_dir():
+        return []
+    keys = set(image_map(source))
+    return [str(imageid) for imageid in imageids if imageid_key(imageid) in keys]

@@ -29,7 +29,7 @@ import pandas as pd
 
 from spatioev.io.qupath import find_cores
 
-from ._io import now, read_json, write_json
+from ._io import LOG_DIRNAME, now, read_json, run_files, write_json
 
 __all__ = ["STAGES", "config_for_core", "detect_stage", "find_template", "run_batch"]
 
@@ -86,12 +86,18 @@ def find_template(path: str | Path) -> Path:
         return path
     if not path.is_dir():
         raise FileNotFoundError(f"No such file or folder: {path}")
-    candidates = [p for p in path.glob("*_config.json") if any(p.name.endswith(s) for s in _CONFIG_SUFFIXES)]
+    # Run settings live in <output>/logs/ (older runs kept them beside the results).
+    candidates = [
+        p
+        for folder in (path / LOG_DIRNAME, path)
+        for p in folder.glob("*_config.json")
+        if any(p.name.endswith(s) for s in _CONFIG_SUFFIXES)
+    ]
     candidates += [p for p in [path / "config.json"] if p.exists()]
     if not candidates:
         raise FileNotFoundError(
             f"No run settings found in {path}. Point at the output folder of a finished fiber segmentation, "
-            "tissue regions or co-localisation run (it holds a *_config.json file)."
+            "tissue regions or co-localisation run (its logs/ folder holds a *_config.json file)."
         )
     return max(candidates, key=lambda p: p.stat().st_mtime)
 
@@ -146,12 +152,10 @@ def _run_one(core: str, config: dict, stage: str) -> tuple[str, float, str]:
     output_dir = Path(config["output_dir"]).expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     prefix = {"fiber": "fiber", "regions": "tissue_regions", "coloc": "colocalization"}[stage]
-    config_path = output_dir / f"{core}_{prefix}_config.json"
-    status_path = output_dir / f"{core}_{prefix}_status.json"
-    log_path = output_dir / f"{core}_{prefix}_worker.log"
+    config_path, status_path, log_path = run_files(output_dir, f"{core}_{prefix}")
     write_json(config_path, config)
     started = time.monotonic()
-    with log_path.open("ab") as log:
+    with log_path.open("wb") as log:
         code = subprocess.call(
             [sys.executable, "-m", STAGES[stage]["module"], "--config", str(config_path), "--status", str(status_path)],
             stdout=log, stderr=subprocess.STDOUT,
@@ -160,7 +164,7 @@ def _run_one(core: str, config: dict, stage: str) -> tuple[str, float, str]:
     status = read_json(status_path) or {}
     if code == 0 and status.get("state") == "complete":
         return "done", seconds, status.get("message", "")
-    return "failed", seconds, status.get("message") or f"exit code {code}; see {log_path.name}"
+    return "failed", seconds, status.get("message") or f"exit code {code}; see logs/{log_path.name}"
 
 
 def run_batch(
