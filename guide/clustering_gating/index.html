@@ -1,0 +1,2898 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Spatial evolution analysis for multiplexed imaging and spatial transcriptomics.">
+      
+      
+      
+        <link rel="canonical" href="https://bashford-rogers-lab.github.io/SpatioEv/guide/clustering_gating/">
+      
+      
+        <link rel="prev" href="../qupath/">
+      
+      
+        <link rel="next" href="../fibers/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
+    
+    
+      
+        <title>5b. Cell types by clustering and gating - SpatioEv</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#5b-cell-types-by-clustering-and-gating" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="SpatioEv" class="md-header__button md-logo" aria-label="SpatioEv" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SpatioEv
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              5b. Cell types by clustering and gating
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo" aria-hidden="true" type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Bashford-Rogers-lab/SpatioEv" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    Bashford-Rogers-lab/SpatioEv
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="SpatioEv" class="md-nav__button md-logo" aria-label="SpatioEv" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    SpatioEv
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Bashford-Rogers-lab/SpatioEv" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    Bashford-Rogers-lab/SpatioEv
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked="">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Step-by-step guide
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Step-by-step guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Install SpatioEv
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Practise on demo data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../organise/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Organise your data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../app/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Open the app
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../qupath/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Cell types in QuPath
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5b. Cell types by clustering and gating
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5b. Cell types by clustering and gating
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#the-folder-layout-it-expects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The folder layout it expects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-create-the-demo-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Create the demo data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-prepare-anndata-page-00" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Prepare AnnData (page 00)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-find-the-tissue-structures-page-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. Find the tissue structures (page 01)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-gate-the-markers-page-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D. Gate the markers (page 02)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="D. Gate the markers (page 02)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gate-tables-you-made-yourself" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gate tables you made yourself
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e-assign-cell-types-with-rules-page-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E. Assign cell types with rules (page 03)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="E. Assign cell types with rules (page 03)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-rules-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The rules file
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#first-run-cell-types-inside-the-tubules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First run: cell types inside the tubules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#second-run-cell-types-in-the-interstitium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Second run: cell types in the interstitium
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f-spatial-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F. Spatial analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="F. Spatial analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#individual-tubules-and-what-they-contain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Individual tubules and what they contain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#co-localisation-page-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Co-localisation (page 06)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g-check-the-demo-result-against-the-truth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G. Check the demo result against the truth
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#h-your-own-tma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H. Your own TMA
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fibers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Matrix fibers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../regions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Tissue regions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../colocalisation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Co-localisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cohort/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Compare groups
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../outputs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output files explained
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflow_apps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../tutorials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/md/spatial_evolution_spatioev/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mastering Spatial Evolution Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7">
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/preprocessing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preprocessing (pp)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/tools_spatial_statistics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial Statistics (tl.stats)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/tools_density_interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Density &amp; Interactions (tl.density)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/tools_niche_pseudotime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Niche Graphs &amp; Pseudotime (tl.niche, tl.pseudotime)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/tools_ecm_cell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECM–Cell Analysis (tl.ecm)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/plotting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting (pl)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/helper_functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Helper Functions (hl)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../functions/xenium/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Xenium (xe)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8">
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Methods
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/morphology_topology_features/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Morphology &amp; Topology Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/spatial_statistics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial Statistics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/niche_graph_pseudotime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Niche Graph Pseudotime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/ecm_cell_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECM–Cell Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9">
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Publication
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Publication
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../publication/reproducibility/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10">
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../function_catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Function Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../data_policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release_checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#the-folder-layout-it-expects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The folder layout it expects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-create-the-demo-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Create the demo data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-prepare-anndata-page-00" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Prepare AnnData (page 00)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-find-the-tissue-structures-page-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. Find the tissue structures (page 01)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-gate-the-markers-page-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D. Gate the markers (page 02)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="D. Gate the markers (page 02)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gate-tables-you-made-yourself" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gate tables you made yourself
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e-assign-cell-types-with-rules-page-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E. Assign cell types with rules (page 03)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="E. Assign cell types with rules (page 03)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-rules-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The rules file
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#first-run-cell-types-inside-the-tubules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First run: cell types inside the tubules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#second-run-cell-types-in-the-interstitium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Second run: cell types in the interstitium
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f-spatial-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F. Spatial analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="F. Spatial analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#individual-tubules-and-what-they-contain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Individual tubules and what they contain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#co-localisation-page-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Co-localisation (page 06)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g-check-the-demo-result-against-the-truth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G. Check the demo result against the truth
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#h-your-own-tma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H. Your own TMA
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="5b-cell-types-by-clustering-and-gating">5b. Cell types by clustering and gating<a class="headerlink" href="#5b-cell-types-by-clustering-and-gating" title="Permanent link">¶</a></h1>
+<p>This is the alternative to <a href="../qupath/">step 5</a>: cell types are assigned inside
+SpatioEv, without QuPath. It suits a multi-FOV TMA that went through ARK
+segmentation, when you know which markers define each cell type.</p>
+<p><strong>What it does:</strong> builds one AnnData file from the ARK cell tables, with its
+columns in the same order as the image channels. It then works in three
+layers:</p>
+<ol>
+<li><strong>Clustering</strong> finds the tissue structures (in testis: tubule,
+   peritubular myoid, interstitium).</li>
+<li><strong>Gating</strong> decides, for every marker, which cells are positive.</li>
+<li><strong>Prior-knowledge rules</strong> (scimap style) combine the two: inside each
+   structure, a cell's positive markers decide its cell type.</li>
+</ol>
+<p>The result feeds the spatial analysis: individual tubules, what each tubule
+contains, and co-localisation.</p>
+<p><strong>What it needs:</strong></p>
+<ul>
+<li>the ARK cell tables (<code>cell_table_arcsinh_transformed.csv</code> and
+  <code>cell_table_size_normalized.csv</code>);</li>
+<li>the marker list <code>background/markers_bs.csv</code>;</li>
+<li>one image per FOV;</li>
+<li>a table of rules saying which markers define each cell type.</li>
+</ul>
+<p><strong>How long:</strong> about 30 minutes on the demo data. With your own data, allow an
+afternoon for the first FOVs, mostly for checking gates.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a> ARK cell tables + markers_bs.csv + FOV images
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>        │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        ├─ 00 Prepare AnnData      one file; columns in image-channel order
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        ├─ 01 Broad clustering     Tubule / Myoid / Interstitium   (structures)
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        ├─ 02 Marker gating        a positive / negative cut-off per marker
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        ├─ 03 Subset phenotyping   rules inside each structure → cell types
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        └─ F. Spatial analysis     tubules, their composition, co-localisation
+</code></pre></div>
+<h2 id="the-folder-layout-it-expects">The folder layout it expects<a class="headerlink" href="#the-folder-layout-it-expects" title="Permanent link">¶</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ST_TMA_01/                                  ← project root (one TMA)
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── background/markers_bs.csv               ← the marker of every image plane, in image order
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>├── dearray/1.ome.tif … N.ome.tif           ← one image per FOV (1.ome.tif is fov1)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>├── ark_wdir_1/segmentation/
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>│   ├── cell_table/cell_table_arcsinh_transformed.csv   → becomes adata.X
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>│   ├── cell_table/cell_table_size_normalized.csv       → becomes the layer "size_normalized"
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>│   └── deepcell_output/fov1_whole_cell.tiff …          ← cell masks
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>├── ark_wdir_2/ …                           ← further ARK runs, each with some of the FOVs
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>└── data/                                   ← SpatioEv writes the AnnData here
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">markers_bs.csv decides which marker each column is</p>
+<p>The image planes usually carry no marker names (at most <code>C0</code>, <code>C1</code>, …),
+and ARK writes the cell-table columns in <strong>alphabetical</strong> order. The only
+record of which marker sits in
+which image plane is the <strong>row order</strong> of <code>markers_bs.csv</code>: row 1 is
+plane 0, row 2 is plane 1, and so on. SpatioEv puts the AnnData columns
+(<code>adata.X</code>) in exactly that order, so column <em>n</em> of <code>adata.X</code> is image
+plane <em>n</em>.</p>
+<ul>
+<li>Do not sort the file. Its <code>channel_number</code> column restarts at 1 in every
+  imaging cycle, so sorting by it mixes the cycles up.</li>
+<li>To leave a plane out of the analysis (an empty or failed channel), keep
+  its row and add a column <code>remove</code> with <code>TRUE</code> in that row. The plane
+  stays in the image, but it is not used as a marker.</li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">AnnData files made with SpatioEv 0.2.0 or earlier must be rebuilt</p>
+<p>Those versions sorted <code>markers_bs.csv</code> by <code>channel_number</code>, which paired
+most markers with the wrong image plane. Pages 01 and 02 recognise such
+files and show a warning. Rebuild the file with page 00 (section B) and
+redo anything made from it.</p>
+</div>
+<h2 id="a-create-the-demo-data">A. Create the demo data<a class="headerlink" href="#a-create-the-demo-data" title="Permanent link">¶</a></h2>
+<p>The demo is a small <strong>synthetic</strong> testis TMA: six FOVs of made-up tissue in
+exactly the layout above, with a 30-marker cyclic-IF panel. FOVs 1–3 are
+"prepubertal" (tubules with Sertoli cells and spermatogonia only); FOVs 4–6
+are "peripubertal" (also spermatocytes and spermatids). It contains no
+patient data.</p>
+<p>In Terminal:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>conda<span class="w"> </span>activate<span class="w"> </span>spatioev_env
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>spatioev<span class="w"> </span>demo<span class="w"> </span>~/SpatioEv_practice<span class="w"> </span>--kind<span class="w"> </span>testis
+</code></pre></div>
+<p>It takes a few seconds and creates <code>~/SpatioEv_practice/DEMO_TESTIS</code>. Besides
+the folders above, it holds:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tubule_phenotype_workflow.csv</code>, <code>interstitium_phenotype_workflow.csv</code></td>
+<td>the cell-type rules for section E</td>
+</tr>
+<tr>
+<td><code>manual_gates.csv</code></td>
+<td>hand-set gates for some FOVs, in the per-FOV layout (section E)</td>
+</tr>
+<tr>
+<td><code>data/DEMO_TESTIS_marker_condition_for_gating.csv</code></td>
+<td>answers to the staining questionnaire of section D</td>
+</tr>
+<tr>
+<td><code>fov_metadata.csv</code></td>
+<td>the age group of each FOV</td>
+</tr>
+<tr>
+<td><code>ground_truth.csv</code></td>
+<td>the true cell type of every cell, to check the result (section G)</td>
+</tr>
+</tbody>
+</table>
+<p>Open the app on it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>spatioev<span class="w"> </span>ui<span class="w"> </span>--project-root<span class="w"> </span>~/SpatioEv_practice/DEMO_TESTIS
+</code></pre></div>
+<p>On the home page, type <code>DEMO_TESTIS</code> as the <strong>Sample ID</strong> and press <strong>Apply</strong>.
+Every page below then fills in its paths for you.</p>
+<div class="admonition tip">
+<p class="admonition-title">Start again at any time</p>
+<p><code>spatioev demo ~/SpatioEv_practice --kind testis --overwrite</code> replaces the
+whole <code>DEMO_TESTIS</code> folder, <strong>including</strong> everything you made in it.</p>
+</div>
+<h2 id="b-prepare-anndata-page-00">B. Prepare AnnData (page 00)<a class="headerlink" href="#b-prepare-anndata-page-00" title="Permanent link">¶</a></h2>
+<p>Open <strong>prepare anndata</strong> in the sidebar. For a TMA folder, <strong>Dataset layout</strong>
+is already set to <strong>Multi-FOV / TMA</strong>, and the boxes are filled in from the
+project root:</p>
+<table>
+<thead>
+<tr>
+<th>Box</th>
+<th>Demo value</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TMA project folder</strong></td>
+<td><code>…/DEMO_TESTIS</code></td>
+<td>the folder that holds <code>ark_wdir_*</code></td>
+</tr>
+<tr>
+<td><strong>FOV OME-TIFF folder</strong></td>
+<td><code>…/DEMO_TESTIS/dearray</code></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Marker order CSV (blank = find automatically)</strong></td>
+<td>leave blank</td>
+<td>finds <code>background/markers_bs.csv</code></td>
+</tr>
+<tr>
+<td><strong>Dataset ID</strong></td>
+<td><code>DEMO_TESTIS</code></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Output H5AD</strong></td>
+<td><code>…/data/DEMO_TESTIS_adata.h5ad</code></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Secondary layer name</strong></td>
+<td><code>size_normalized</code></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Table assignment</strong> (folded)</td>
+<td><code>cell_table_arcsinh_transformed.csv</code> → adata.X, <code>cell_table_size_normalized.csv</code> → layer</td>
+<td>the defaults; leave them</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>
+<p>Press <strong>Inspect TMA</strong>. The <strong>TMA input check</strong> shows three tabs:</p>
+<ul>
+<li><strong>ARK batches</strong>: each <code>ark_wdir_*</code> folder and its FOVs.</li>
+<li><strong>FOV images</strong>: each image and the number of planes it has.</li>
+<li><strong>Marker order</strong>: one row per image plane, with the marker it holds and
+  whether it goes into <code>adata.X</code>.</li>
+</ul>
+<p>A blue note above the tabs names the marker CSV it found. Check that the
+first rows of <strong>Marker order</strong> match the first rows of your
+<code>markers_bs.csv</code>.
+2. Press <strong>Build TMA AnnData</strong>. It takes seconds for the demo and a few
+   minutes for a large TMA.</p>
+</li>
+</ol>
+<p>You get <code>data/DEMO_TESTIS_adata.h5ad</code>, with:</p>
+<ul>
+<li><code>adata.X</code>: arcsinh values, columns in <code>markers_bs.csv</code> order;</li>
+<li>the layer <code>size_normalized</code>;</li>
+<li><code>imageid</code> (the FOV, <code>fov1</code> …), <code>label</code> and <code>X_centroid</code>/<code>Y_centroid</code> for
+  each cell.</li>
+</ul>
+<p><code>data/DEMO_TESTIS_adata_qc/</code> holds the checks:</p>
+<ul>
+<li><code>marker_channel_order.csv</code>: the plane-by-plane order that was used;</li>
+<li><code>cells_per_fov.csv</code>;</li>
+<li>a marker-distribution plot and a centroid-coverage plot.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Only some FOVs have an image?</p>
+<p>That is fine. A TMA's images are large, so often only a few are copied
+locally. Every FOV is converted from its cell table; a warning lists the
+FOVs without an image. Image review and overlays on the next pages offer
+only the FOVs that have one. Image file names must contain the FOV
+number (<code>22.ome.tif</code> or <code>fov22.ome.tif</code>).</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">If Inspect TMA says <em>Marker order CSV lists … markers but 1.ome.tif has … image channels</em></p>
+<p>The marker CSV has a different number of rows than the images have
+planes. Usually the wrong CSV was found (for example an older copy in a
+parent folder). Type the path of the right one into <strong>Marker order CSV</strong>.</p>
+</div>
+<h2 id="c-find-the-tissue-structures-page-01">C. Find the tissue structures (page 01)<a class="headerlink" href="#c-find-the-tissue-structures-page-01" title="Permanent link">¶</a></h2>
+<p>Open <strong>broad clustering</strong>. The paths are filled in from the sample ID.</p>
+<ol>
+<li>Press <strong>Load sample</strong>. Keep <strong>Clustering scope</strong> at <strong>All FOVs jointly</strong>,
+   so a cluster means the same thing in every FOV.</li>
+<li>
+<p>In <strong>2. Level-0 clustering</strong>, keep the <strong>Testis structures</strong> marker
+   preset. It is chosen automatically when the panel holds the testis markers,
+   and selects the markers that separate the structures, not the cell
+   subtypes:</p>
+<p><code>GFRA1, PIWIL4, NaKATPase, AMH, SOX9, MAGEA4, MYH11, SMA, CYP17A1, STAR</code></p>
+<p>They were picked from the images of a 28-core testis TMA. GFRA1, PIWIL4,
+NaKATPase and AMH stain only inside tubules in every core; SOX9 marks
+Sertoli cells and MAGEA4 spermatogonia. SMA and MYH11 mark the smooth
+muscle of the peritubular wall, and CYP17A1 and STAR mark Leydig cells.
+DMRT1 is left out because it stains Sertoli and germ cells alike. Broad
+stains such as Vimentin, NF2F2, CD45 or CD68 are left out because on real
+tissue they stain cells in every structure and blur the clusters.</p>
+<p><strong>For the demo, add <code>SYCP3</code> and <code>Acrosin</code> to the markers.</strong> Its older FOVs
+hold spermatocytes (SYCP3) and spermatids (Acrosin). The preset leaves
+them out because a testis before puberty has no meiotic cells, and the
+two channels then add only noise. Add them for any pubertal or adult
+testis: without them, 19 of the demo's 41 spermatids end up <em>Unknown</em>.</p>
+<p>Set <strong>Leiden resolution</strong> to <code>0.6</code> and <strong>Neighbors</strong> to <code>15</code>. Keep
+<strong>Z-score markers</strong> ticked. Leave <strong>Z-score within each FOV</strong> and
+<strong>Average markers over neighbouring cells</strong> unticked for the demo (see
+the tips below for real TMAs).
+3. Press <strong>Run Level-0 clustering</strong>. The heatmap shows each cluster's marker
+   profile:</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../images/testis_level0_heatmap.png" data-desc-position="bottom"><img alt="Level-0 cluster heatmap" src="../images/testis_level0_heatmap.png" width="900"></a></p>
+<p>Clusters with Sertoli markers (SOX9, AMH), germ-cell markers (MAGEA4,
+GFRA1, PIWIL4, SYCP3, Acrosin) or NaKATPase are <strong>inside tubules</strong>.
+SMA/MYH11 marks the <strong>peritubular myoid</strong> ring. CYP17A1/STAR marks Leydig
+cells. Clusters with none of these markers are the other interstitial
+cells (vessels, immune cells, fibroblasts). Leydig and these clusters
+make up the <strong>interstitium</strong>. <strong>Launch Level-0 napari review</strong> shows the
+clusters on the image if a cluster is unclear.
+4. In <strong>3. Assign broad cluster labels</strong>, choose <code>Tubule</code>, <code>Myoid</code> or
+   <code>Interstitium</code> in <strong>Annotation</strong> for every cluster. Press <strong>Save Level-0
+   annotations</strong>.
+5. Skip <strong>4. Optional cluster refinement</strong> for the demo: its structures
+   separate cleanly at Level-0. For real tissue, see the tip <em>Real testis
+   TMAs</em> below. Then press <strong>Export broad phenotyping</strong> in <strong>5. Merge and
+   export</strong>.</p>
+</li>
+</ol>
+<p>The result is <code>results/DEMO_TESTIS_clustering_workflow/DEMO_TESTIS_phenotyped.h5ad</code>.
+It holds every marker and the column <code>annotation</code> (Tubule / Myoid /
+Interstitium), and the next two pages use it.</p>
+<div class="admonition tip">
+<p class="admonition-title">Clusters made of one or two FOVs</p>
+<p>Real cores differ in staining and imaging. If the summary table or the
+heatmap shows clusters that come mostly from one or two FOVs, run again
+with <strong>Z-score within each FOV</strong> ticked: each marker is then scaled
+separately in every FOV. Check the result on a FOV's image (<strong>Launch
+Level-0 napari review</strong>): tubule labels should fill the tubules and myoid
+labels sit on the SMA rings. It suits TMAs where every core holds several
+structures; a core that is almost all one structure gets scaled to look
+like the others.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Name clusters on several FOVs</p>
+<p>On a real TMA, a cluster can look like tubule in one core and like wall in
+another. A wrong name moves every cell of the cluster, so this matters
+more than the exact settings. Before saving, check each cluster's name on
+two or three FOVs: choose them in <strong>FOV selected for clustering or image
+review</strong> and press <strong>Launch Level-0 napari review</strong>.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Real testis TMAs: name two structures first, then refine</p>
+<p>On a real 28-core TMA (donors 8–14 years old), naming myoid and Leydig
+clusters straight from Level-0 failed. 43% of the hand-gated myoid cells
+sat in clusters that looked like Leydig cells, and whole tubules with
+dimmer staining fell into clusters with no marker. Two steps worked better:</p>
+<ol>
+<li>In <strong>3. Assign broad cluster labels</strong>, name each cluster <code>Tubule</code> or
+   <code>Interstitium</code>: whichever group is higher on the heatmap, the tubule
+   markers or the wall and Leydig markers. Name a cluster that is low in
+   every marker <code>artifact</code> (empty or out-of-focus areas). This matched
+   hand gates for 86% of cells.</li>
+<li>In <strong>4. Optional cluster refinement</strong>, choose <code>Interstitium</code> and
+   <code>Tubule</code>. Their markers are filled in for a testis panel:<ul>
+<li><strong>Interstitium</strong>: SMA, MYH11, CYP17A1, STAR, CYP11A1, CD68. Name
+  the clusters <code>Myoid</code> (SMA and MYH11 high), <code>Leydig</code> (CYP17A1, STAR
+  or CYP11A1 high) or <code>Other interstitium</code> (none of them). Leydig and
+  myoid cells fell into separate clusters, but check the names on
+  several FOVs: in weakly stained cores, many cells named Myoid or
+  Leydig were neither.</li>
+<li><strong>Tubule</strong>: SOX9, MAGEA4, GFRA1, PIWIL4, AMH, DMRT1, with <strong>Remove
+  each cell's overall brightness</strong> ticked. Name the clusters <code>Sertoli</code>
+  (SOX9 stands out) or <code>Spermatogonia</code> (MAGEA4 stands out). The two
+  are distinct on the image, but packed cells share some signal, so
+  the clusters either miss spermatogonia or include Sertoli cells. A
+  MAGEA4 gate (sections D and E) is more precise.</li>
+</ul>
+</li>
+</ol>
+<p>A small cluster with one marker far below the rest (around −7 on the
+heatmap) holds cells with an empty channel: name it <code>artifact</code>. Heatmap
+colours stop at ±3 so such clusters do not wash out the others; every
+cell shows the exact mean.</p>
+<p><code>Spermatocyte</code> and <code>Spermatid</code> need SYCP3- or Acrosin-bright cells, which
+a testis before puberty does not have. Folds, where the tissue lies
+double, look like bright tubule and are not separated by clustering.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Clusters that are high in every marker</p>
+<p>Big, bright or tightly packed cells raise every marker together. On the
+real TMA this shared brightness was 42% of the variation across the
+preset's markers, which gives clusters that are high in everything and
+hard to name. <strong>Remove each cell's overall brightness</strong> (in each
+refinement) subtracts each cell's mean over the refinement markers after
+z-scoring, so the clusters follow which markers stand out instead. It
+helped split Sertoli cells from spermatogonia and made little difference to
+the interstitium.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Interstitial cells end up in tubule or myoid clusters</p>
+<p>Most interstitial cells carry none of the preset's markers, so per cell
+they can join any cluster of cells low in every marker. <strong>Average markers
+over neighbouring cells</strong> gives each cell the mean of the cells around it
+(15 µm suits testis cores), so the clusters follow the tissue instead.
+Type your scan's pixel size; it is not read from the image. SMA and MYH11
+stay per cell, so the wall, one cell thick, is not blurred. On a 28-core
+testis TMA it improved some cores and not others, so run both ways and
+compare them on several FOVs before choosing.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Why cluster first, and only for structures?</p>
+<p>Structures are large and distinct, so clustering finds them reliably.
+Clustering is poor at small subtypes (four spermatogonia states, rare
+T cells). Those are better defined by explicit marker rules (section E),
+applied only inside the right structure. A rule like "MAGEA4+ means germ
+cell" is then only ever applied to tubule cells.</p>
+</div>
+<h2 id="d-gate-the-markers-page-02">D. Gate the markers (page 02)<a class="headerlink" href="#d-gate-the-markers-page-02" title="Permanent link">¶</a></h2>
+<p>A <strong>gate</strong> is the cut-off above which a cell counts as positive for a
+marker. Open <strong>marker autogating</strong>.</p>
+<ol>
+<li>Check the boxes: <strong>AnnData (.h5ad)</strong> points at step C's
+   <code>DEMO_TESTIS_phenotyped.h5ad</code>, and <strong>OME-TIFF image or FOV image folder</strong>
+   at <code>dearray</code>.</li>
+<li>
+<p>Type <code>size_normalized</code> in <strong>Expression layer</strong>, then press <strong>Load sample</strong>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Use the layer your gates are meant for</p>
+<p>Gates are set on log1p of the chosen expression values. Size-normalised
+intensities (ARK's mean intensity per cell) are the usual choice for
+gating and the scale most hand-made gate tables use. Step E must use
+the same layer. Page 02 records it, and page 03 fills it in.</p>
+</div>
+</li>
+<li>
+<p><strong>2. Marker staining questionnaire (optional).</strong> The demo's answers load
+   automatically from <code>data/DEMO_TESTIS_marker_condition_for_gating.csv</code>
+   (a blue note names the file). For your own data, at least answer:</p>
+<ul>
+<li><strong>Staining condition</strong>: <code>clear_specific</code> for a clean stain;</li>
+<li><strong>Artifact level</strong>: <code>low</code> for little background;</li>
+<li><strong>Compartment</strong>.</li>
+</ul>
+<p>Answer them for every marker your rules use. Answers are saved with the
+gates and loaded again next time.</p>
+<div class="admonition warning">
+<p class="admonition-title">Unanswered markers get cautious gates</p>
+<p>Without answers, a marker gets an upper-tail gate that only calls its
+brightest cells positive. That is safe for rare markers. For broadly
+expressed ones it misses most positive cells. In the demo, leaving the
+questionnaire blank set the <code>Vimentin_2</code> and <code>NF2F2</code> gates so high that most
+fibroblasts ended up <em>Unknown</em>. With the answers, 99.3% of cells got
+their correct type.</p>
+</div>
+</li>
+<li>
+<p>Press <strong>Calculate gates</strong> (<strong>3. Calculate initial gates</strong>). The table lists
+   each marker's gate, the method chosen and the fraction of positive cells.
+   The histograms in <code>qc/</code> show each gate on its distribution. A
+   <code>3GMM_high_is_majority</code> flag means the usual gate would have called most
+   cells positive, so a stricter one was used. Check those markers on the
+   image in the next step.</p>
+</li>
+<li>
+<p><strong>4. Gate QC → Generate spatial QC images</strong> marks the positive cells on the
+   image of the FOV chosen under <em>FOV used for image QC and gate review</em>:</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../images/testis_gate_overlay.png" data-desc-position="bottom"><img alt="Positive cells for six markers" src="../images/testis_gate_overlay.png" width="900"></a></p>
+<p>Positive cells (red circles) should sit where the stain is: SOX9 on the
+tubule edge, SMA on the ring around each tubule, CD31 on vessels.
+6. To adjust a gate by eye, press <strong>Launch napari gate review</strong> (<strong>5. Review
+   on the original image</strong>). It opens a viewer with a slider per marker.
+   Slider positions are saved as you go. Press <strong>Export reviewed gates</strong> in
+   the viewer when you are done.</p>
+</li>
+</ol>
+<p>The gates are in <code>results/DEMO_TESTIS_marker_gating_qc/DEMO_TESTIS_scimap_manual_gates.csv</code>.
+Calculating again, or exporting from the viewer, replaces this file. The
+version before it is kept in <code>details/</code> as
+<code>DEMO_TESTIS_scimap_manual_gates_previous.csv</code>.</p>
+<h3 id="gate-tables-you-made-yourself">Gate tables you made yourself<a class="headerlink" href="#gate-tables-you-made-yourself" title="Permanent link">¶</a></h3>
+<p>Page 03 also accepts a gate table you set by hand (in napari, QuPath or
+elsewhere). It can have one gate per marker for all FOVs:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>markers,gates
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>SOX9,5.6
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>MAGEA4,5.9
+</code></pre></div>
+<p>or one column per FOV, when staining differs between FOVs:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>markers,fov5,fov13,fov23
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>SOX9,5.6,5.7,5.3
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>MAGEA4,5.9,6.1,5.5
+</code></pre></div>
+<p>Values are <strong>log1p</strong> of the gate layer. The column names must be the FOV
+names in <code>adata.obs["imageid"]</code> (<code>fov1</code>, <code>fov2</code>, …). The demo's
+<code>manual_gates.csv</code> uses the per-FOV layout and, like a table still being
+made, covers only fov1, fov3 and fov5.</p>
+<h2 id="e-assign-cell-types-with-rules-page-03">E. Assign cell types with rules (page 03)<a class="headerlink" href="#e-assign-cell-types-with-rules-page-03" title="Permanent link">¶</a></h2>
+<h3 id="the-rules-file">The rules file<a class="headerlink" href="#the-rules-file" title="Permanent link">¶</a></h3>
+<p>A <strong>phenotype workflow</strong> CSV lists every cell type, its parent, and the
+markers that define it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>parent,phenotype,SOX9,AMH,MAGEA4,SYCP3,Acrosin,UTF1_2,PIWIL4,GFRA1,PCNA,DMRT1,CLDN11_1
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>all,Sertoli,anypos,anypos,,,,,,,,,anypos
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>all,Germ cells,,,anypos,anypos,anypos,,,,,,
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>Germ cells,Spermatogonia,,,allpos,allneg,,,,,,,
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>Germ cells,Spermatocytes,,,,pos,,,,,,,
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>Germ cells,Spermatids,,,,,pos,,,,,,
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>Spermatogonia,SPG state0,,,,,,anypos,anypos,,,,
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>Spermatogonia,SPG state1,,,,,,,,pos,,,
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>Spermatogonia,SPG state2,,,,,,,,,anypos,anypos,
+</code></pre></div>
+<ul>
+<li><code>parent</code> = <code>all</code> is a top-level type. Other rows are only tried on cells
+  already given their parent (a spermatogonium must first be a germ cell).</li>
+<li><code>pos</code> / <code>neg</code>: the marker should be positive / negative.</li>
+<li><code>anypos</code> / <code>anyneg</code>: at least one of these markers is positive / negative.</li>
+<li><code>allpos</code> / <code>allneg</code>: every one of these markers must be positive /
+  negative.</li>
+<li>Marker names that differ only in a suffix are matched: <code>CLDN11_1</code> in the
+  rules is used for <code>CLDN11_2</code> in the data, and the page lists every such
+  match. A marker that cannot be matched stops the run with its name.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">A single 'pos' or 'neg' is a preference, not a requirement</p>
+<p>scimap scores every candidate cell type and picks the highest score. A
+lone <code>pos</code> or <code>neg</code> marker is only averaged into that score, so a cell
+that breaks it can still win. In the demo, <code>Spermatogonia</code> written as
+<code>MAGEA4 pos, SYCP3 neg</code> swallowed SYCP3+ spermatocytes. Write <code>allpos</code> /
+<code>allneg</code> when a marker <strong>must</strong> be positive or negative. <strong>Inspect
+inputs</strong> points out rows where this applies.</p>
+<p>With two or more <code>pos</code> (or <code>neg</code>) markers in a row, a cell that scores
+highest for that type but misses one of them is called
+<code>likely-&lt;type&gt;</code>, for example <code>likely-Fibroblast</code> for an NF2F2+ cell that
+is Vimentin−. Check these cells on the image, or merge them into the type
+if that is acceptable.</p>
+</div>
+<h3 id="first-run-cell-types-inside-the-tubules">First run: cell types inside the tubules<a class="headerlink" href="#first-run-cell-types-inside-the-tubules" title="Permanent link">¶</a></h3>
+<p>Open <strong>subset phenotyping</strong>. The boxes fill in from the sample ID:</p>
+<table>
+<thead>
+<tr>
+<th>Box</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Full-marker H5AD</strong></td>
+<td>step C's <code>DEMO_TESTIS_phenotyped.h5ad</code></td>
+</tr>
+<tr>
+<td><strong>Gate CSV</strong></td>
+<td>step D's gates, or the demo's <code>…/DEMO_TESTIS/manual_gates.csv</code></td>
+</tr>
+<tr>
+<td><strong>Phenotype workflow CSV</strong></td>
+<td><code>…/DEMO_TESTIS/tubule_phenotype_workflow.csv</code> (type this one in)</td>
+</tr>
+<tr>
+<td><strong>Gate layer (blank = adata.X)</strong></td>
+<td><code>size_normalized</code> (filled in from step D)</td>
+</tr>
+<tr>
+<td><strong>Images without a gate for a marker</strong></td>
+<td>for <code>manual_gates.csv</code>: <em>Use the marker's median gate of the other images</em></td>
+</tr>
+<tr>
+<td><strong>Image IDs to phenotype</strong></td>
+<td>leave blank for all FOVs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Images without a gate for a marker</strong> says what to do when a per-FOV table
+has no gate for a FOV:</p>
+<ul>
+<li><em>Stop and list them</em> (the default) stops and names every missing
+  marker/FOV pair.</li>
+<li><em>Use the marker's median gate of the other images</em> uses the median of
+  that marker's other FOVs.</li>
+<li><em>Estimate with scimap's Gaussian mixture</em> lets scimap estimate the gate.</li>
+</ul>
+<p>To phenotype only the FOVs you have gated, list them in <strong>Image IDs to
+phenotype</strong> instead, for example <code>fov1, fov3, fov5</code>.</p>
+<ol>
+<li>Press <strong>Inspect inputs</strong>. Read the blue notes. They list renamed markers,
+   filled gates, and rule rows that need <code>allpos</code> / <code>allneg</code>.</li>
+<li>Set <strong>Broad annotation column</strong> to <code>annotation</code> and <strong>Populations to
+   phenotype</strong> to <code>Tubule</code>.</li>
+<li>Type <code>tubule</code> in <strong>Subset output name</strong> and <code>final_phenotype</code> in
+   <strong>Combined final column</strong>.</li>
+<li>
+<p>Open <strong>Run settings</strong> and set <strong>Minimum cells per phenotype per image</strong>
+   to <code>0</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Minimum cells per phenotype per image</p>
+<p>In each FOV, a cell type with fewer cells than this becomes <em>Unknown</em>.
+The default of 10 hides real but small populations in a small TMA
+core. When it relabels cells, the run says how many and which types.</p>
+</div>
+</li>
+<li>
+<p>Press <strong>Run SCIMAP phenotyping</strong>.</p>
+</li>
+</ol>
+<h3 id="second-run-cell-types-in-the-interstitium">Second run: cell types in the interstitium<a class="headerlink" href="#second-run-cell-types-in-the-interstitium" title="Permanent link">¶</a></h3>
+<p>Run the page again on the <strong>result of the first run</strong>, so the two sets of
+cell types end up in one column. Change these boxes, press <strong>Inspect inputs</strong>
+again, and keep <strong>Minimum cells per phenotype per image</strong> at <code>0</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Box</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Full-marker H5AD</strong></td>
+<td><code>results/DEMO_TESTIS_scimap_phenotyping_interface/DEMO_TESTIS_broad_plus_tubule_phenotyped.h5ad</code></td>
+</tr>
+<tr>
+<td><strong>Phenotype workflow CSV</strong></td>
+<td><code>…/DEMO_TESTIS/interstitium_phenotype_workflow.csv</code></td>
+</tr>
+<tr>
+<td><strong>Broad annotation column</strong></td>
+<td><code>final_phenotype</code></td>
+</tr>
+<tr>
+<td><strong>Populations to phenotype</strong></td>
+<td><code>Interstitium</code></td>
+</tr>
+<tr>
+<td><strong>Subset output name</strong></td>
+<td><code>interstitium</code></td>
+</tr>
+<tr>
+<td><strong>Combined final column</strong></td>
+<td><code>cell_type</code></td>
+</tr>
+</tbody>
+</table>
+<p>Myoid cells need no rules, so they keep their broad label.</p>
+<p><code>results/DEMO_TESTIS_scimap_phenotyping_interface/DEMO_TESTIS_broad_plus_interstitium_phenotyped.h5ad</code>
+now holds a <code>cell_type</code> for every cell:</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../images/testis_cell_types.png" data-desc-position="bottom"><img alt="Final cell types on all six FOVs" src="../images/testis_cell_types.png" width="900"></a></p>
+<p>Spermatocytes and spermatids appear only in fov4–6, as built into the demo.
+<code>qc/</code> holds a marker heatmap per run, image overlays, and
+<code>*_gate_rescale_agreement.csv</code>, which shows for each marker the fraction of
+cells the gate calls positive before and after scimap's rescaling and how
+often the two agree (close to 1 is expected).</p>
+<h2 id="f-spatial-analysis">F. Spatial analysis<a class="headerlink" href="#f-spatial-analysis" title="Permanent link">¶</a></h2>
+<h3 id="individual-tubules-and-what-they-contain">Individual tubules and what they contain<a class="headerlink" href="#individual-tubules-and-what-they-contain" title="Permanent link">¶</a></h3>
+<p>The app has no page for this yet. Paste the code below into a Jupyter
+notebook or a Python file, in the <code>spatioev_env</code> environment:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">anndata</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ad</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">spatioev</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sv</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="n">project</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"~/SpatioEv_practice/DEMO_TESTIS"</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="n">sample</span> <span class="o">=</span> <span class="s2">"DEMO_TESTIS"</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="n">results</span> <span class="o">=</span> <span class="n">project</span> <span class="o">/</span> <span class="s2">"results"</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sample</span><span class="si">}</span><span class="s2">_scimap_phenotyping_interface"</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="n">adata</span> <span class="o">=</span> <span class="n">ad</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="n">results</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sample</span><span class="si">}</span><span class="s2">_broad_plus_interstitium_phenotyped.h5ad"</span><span class="p">)</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="c1"># 1. One ID per tubule: tubule cells closer than 35 px (about 17 µm) are joined.</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="n">adata</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">cluster_spatial_components</span><span class="p">(</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>    <span class="n">adata</span><span class="p">,</span> <span class="n">label_key</span><span class="o">=</span><span class="s2">"annotation"</span><span class="p">,</span> <span class="n">label_value</span><span class="o">=</span><span class="s2">"Tubule"</span><span class="p">,</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>    <span class="n">component_key</span><span class="o">=</span><span class="s2">"tubule_id"</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">min_component_size</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="p">)</span>
+<a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="n">tubules</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">"tubule_id"</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">"component"</span><span class="p">)]</span>
+<a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="nb">print</span><span class="p">(</span><span class="n">tubules</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"imageid"</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="s2">"tubule_id"</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">())</span>
+<a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>
+<a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a><span class="c1"># 2. What each tubule contains.</span>
+<a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a><span class="n">composition</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">tubules</span><span class="p">[</span><span class="s2">"tubule_id"</span><span class="p">],</span> <span class="n">tubules</span><span class="p">[</span><span class="s2">"cell_type"</span><span class="p">])</span>
+<a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a><span class="n">composition</span><span class="p">[</span><span class="s2">"imageid"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tubules</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"tubule_id"</span><span class="p">)[</span><span class="s2">"imageid"</span><span class="p">]</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+<a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a><span class="n">germ</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"SPG state0"</span><span class="p">,</span> <span class="s2">"SPG state1"</span><span class="p">,</span> <span class="s2">"SPG state2"</span><span class="p">,</span> <span class="s2">"Spermatogonia"</span><span class="p">,</span> <span class="s2">"Spermatocytes"</span><span class="p">,</span> <span class="s2">"Spermatids"</span><span class="p">]</span>
+<a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a><span class="n">composition</span><span class="p">[</span><span class="s2">"germ_cells_per_sertoli"</span><span class="p">]</span> <span class="o">=</span> <span class="n">composition</span><span class="p">[</span><span class="n">germ</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">composition</span><span class="p">[</span><span class="s2">"Sertoli"</span><span class="p">]</span>
+<a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a><span class="n">composition</span><span class="p">[</span><span class="s2">"has_meiotic_cells"</span><span class="p">]</span> <span class="o">=</span> <span class="n">composition</span><span class="p">[[</span><span class="s2">"Spermatocytes"</span><span class="p">,</span> <span class="s2">"Spermatids"</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+<a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a><span class="n">composition</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">results</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sample</span><span class="si">}</span><span class="s2">_tubule_composition.csv"</span><span class="p">)</span>
+<a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a>
+<a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a><span class="c1"># 3. Compare age groups, one value per tubule.</span>
+<a id="__codelineno-8-30" name="__codelineno-8-30" href="#__codelineno-8-30"></a><span class="n">ages</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">project</span> <span class="o">/</span> <span class="s2">"fov_metadata.csv"</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"fov"</span><span class="p">)[</span><span class="s2">"age_group"</span><span class="p">]</span>
+<a id="__codelineno-8-31" name="__codelineno-8-31" href="#__codelineno-8-31"></a><span class="n">composition</span><span class="p">[</span><span class="s2">"age_group"</span><span class="p">]</span> <span class="o">=</span> <span class="n">composition</span><span class="p">[</span><span class="s2">"imageid"</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">ages</span><span class="p">)</span>
+<a id="__codelineno-8-32" name="__codelineno-8-32" href="#__codelineno-8-32"></a><span class="nb">print</span><span class="p">(</span><span class="n">composition</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"age_group"</span><span class="p">)[[</span><span class="s2">"germ_cells_per_sertoli"</span><span class="p">,</span> <span class="s2">"has_meiotic_cells"</span><span class="p">]]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</code></pre></div>
+<p>It finds 23 of the 24 tubules. Peripubertal tubules hold about 2.0 germ
+cells per Sertoli cell, and all of them contain meiotic cells; prepubertal
+tubules hold about 0.6, and none do.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../images/testis_tubules.png" data-desc-position="bottom"><img alt="Tubules found in fov6, and the composition of every tubule" src="../images/testis_tubules.png" width="900"></a></p>
+<ul>
+<li><strong><code>radius</code></strong> is in pixels. Pick it a little larger than the gap between
+  neighbouring cells of one tubule, but smaller than the gap between two
+  tubules.</li>
+<li><strong><code>min_component_size</code></strong> drops small fragments, for example a tubule cut by
+  the edge of the core.</li>
+<li>For your own data, change <code>germ</code> to your germ-cell type names.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">One value per tubule, then per patient</p>
+<p>Tubules from one FOV are not independent. For statistics, average the
+tubules of each FOV (or patient) first, and compare those averages, as
+<a href="../cohort/">step 9</a> does for its standard measures.</p>
+</div>
+<h3 id="co-localisation-page-06">Co-localisation (page 06)<a class="headerlink" href="#co-localisation-page-06" title="Permanent link">¶</a></h3>
+<p>Open <strong>colocalization</strong>. Without a tissue-regions file, <strong>Tissue-regions
+AnnData (or any phenotyped AnnData)</strong> fills in with the newest phenotyping
+result from section E.</p>
+<ol>
+<li>Press <strong>Inspect inputs</strong> and set <strong>Phenotype column</strong> to <code>cell_type</code>.</li>
+<li>Add pairs (<strong>Source phenotype</strong> → <strong>Target phenotype</strong>). For the demo:<ul>
+<li><code>Myoid → Sertoli</code></li>
+<li><code>Leydig → Endothelial</code></li>
+<li><code>Sertoli → Leydig</code></li>
+</ul>
+</li>
+<li>Set <strong>Radii (µm)</strong> to <code>5, 10, 20, 40</code> and <strong>Pixel size (µm / px)</strong> to
+   <code>0.5</code> (the demo's pixel size; use your scanner's).</li>
+<li>Press <strong>Run co-localisation</strong>.</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../images/testis_coloc.png" data-desc-position="bottom"><img alt="Co-localisation curves for three pairs" src="../images/testis_coloc.png" width="700"></a></p>
+<p>A curve above its shaded band means the target cells sit around the source
+cells more than chance. In the demo:</p>
+<ul>
+<li>Myoid cells sit next to Sertoli cells at 20 µm (across the tubule wall).</li>
+<li>Sertoli and Leydig cells avoid each other, because Leydig cells are
+  outside the tubules.</li>
+</ul>
+<p><a href="../colocalisation/">Step 8</a> explains the plots and tables.</p>
+<h2 id="g-check-the-demo-result-against-the-truth">G. Check the demo result against the truth<a class="headerlink" href="#g-check-the-demo-result-against-the-truth" title="Permanent link">¶</a></h2>
+<p><code>ground_truth.csv</code> holds the true type of every demo cell, so you can see
+how close the workflow came. Continuing in the same notebook:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">truth</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">project</span> <span class="o">/</span> <span class="s2">"ground_truth.csv"</span><span class="p">,</span> <span class="n">keep_default_na</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">called</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[[</span><span class="s2">"fov"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">,</span> <span class="s2">"annotation"</span><span class="p">,</span> <span class="s2">"cell_type"</span><span class="p">]]</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s2">"label"</span><span class="p">:</span> <span class="nb">int</span><span class="p">})</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">both</span> <span class="o">=</span> <span class="n">called</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">truth</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"cell_type"</span><span class="p">:</span> <span class="s2">"true_type"</span><span class="p">}),</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s2">"fov"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">])</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="nb">print</span><span class="p">(</span><span class="s2">"structures:"</span><span class="p">,</span> <span class="p">(</span><span class="n">both</span><span class="p">[</span><span class="s2">"annotation"</span><span class="p">]</span> <span class="o">==</span> <span class="n">both</span><span class="p">[</span><span class="s2">"compartment"</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="nb">print</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">both</span><span class="p">[</span><span class="s2">"true_type"</span><span class="p">],</span> <span class="n">both</span><span class="p">[</span><span class="s2">"cell_type"</span><span class="p">]))</span>
+</code></pre></div>
+<p>With the settings above, every structure label is correct, and about 99% of
+cell types are. The truth file names a few types slightly differently
+(<code>Spermatid</code> for <code>Spermatids</code>, <code>T cell</code> for <code>CD8 T cell</code>). Every
+spermatogonium is <code>Spermatogonia</code> there, and its state is in the
+<code>spg_state</code> column:</p>
+<ul>
+<li>state0 = UTF1/PIWIL4 (<code>SPG state0</code> in the result);</li>
+<li>state1 = GFRA1 (<code>SPG state1</code>);</li>
+<li>state2 = PCNA/DMRT1 (<code>SPG state2</code>);</li>
+<li>state3-4 has none of these markers and keeps the parent name
+  <code>Spermatogonia</code>.</li>
+</ul>
+<p>Try the effect of each setting here. For example, write <code>Spermatogonia</code> with
+<code>pos</code>/<code>neg</code> instead of <code>allpos</code>/<code>allneg</code>, or leave the questionnaire blank,
+and see which cells change.</p>
+<h2 id="h-your-own-tma">H. Your own TMA<a class="headerlink" href="#h-your-own-tma" title="Permanent link">¶</a></h2>
+<ol>
+<li>Arrange the folder as in <a href="#the-folder-layout-it-expects">the layout above</a>.
+   Copy <code>markers_bs.csv</code> as it came from background subtraction, unsorted.</li>
+<li>
+<p>Start the app with your folder as the project root, for example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>spatioev<span class="w"> </span>ui<span class="w"> </span>--project-root<span class="w"> </span>/Users/you/Data/ST_TMA_01
+</code></pre></div>
+</li>
+<li>
+<p>Go through sections B–E. Use the same sample ID on every page (the folder
+   name, here <code>ST_TMA_01</code>).</p>
+<ul>
+<li>In section C, choose markers that separate the structures you expect.</li>
+<li>Build the rules from your panel. Start from the demo's two workflow
+  files and change the rows and marker columns.</li>
+</ul>
+</li>
+<li>If you already have per-FOV gates, give them as the <strong>Gate CSV</strong> in
+   section E. Set <strong>Gate layer</strong> to the values they were drawn on
+   (<code>size_normalized</code> for gates set on log1p of size-normalised intensities).
+   Either phenotype only the gated FOVs (<strong>Image IDs to phenotype</strong>) or choose
+   how to fill the gaps.</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Keep each run's settings</p>
+<p>Every run writes its settings to <code>logs/</code> inside its results folder
+(<code>*_config.json</code>), next to its log. To repeat a run later, or to tell
+someone exactly what you did, copy the values from there.</p>
+</div>
+<p>The output files are listed in <a href="../outputs/#cell-types-by-clustering-and-gating-steps-0003">Output files explained</a>.</p>
+<p>The later steps find the newest result of page 03 themselves. In
+<a href="../colocalisation/">co-localisation</a> and <a href="../regions/">tissue regions</a>, choose
+<code>cell_type</code> as the phenotype column where they offer QuPath's classes.</p>
+<p>Next: <a href="../fibers/">Matrix fibers</a> if your panel has matrix channels, otherwise
+<a href="../colocalisation/">Co-localisation</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

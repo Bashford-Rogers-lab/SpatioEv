@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -28,10 +28,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -312,6 +312,8 @@
       
         
       
+        
+      
     
     
     
@@ -513,6 +515,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../clustering_gating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5b. Cell types by clustering and gating
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../fibers/" class="md-nav__link">
         
   
@@ -689,6 +719,17 @@
     <span class="md-ellipsis">
       
         Cell types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cell-types-by-clustering-and-gating-steps-0003" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cell types by clustering and gating (steps 00–03)
       
     </span>
   </a>
@@ -1760,6 +1801,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cell-types-by-clustering-and-gating-steps-0003" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cell types by clustering and gating (steps 00–03)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#matrix-fibers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1838,10 +1890,16 @@
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    ├── cohort_comparison/               group comparison (step 9)
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    └── batch_&lt;stage&gt;_summary.csv        the last "Run for every core" of each stage
 </code></pre></div>
-<p>Every results folder also holds <code>CORE_&lt;stage&gt;_config.json</code> (the exact
-settings used), <code>…_manifest.json</code> (the list of files written), and
-<code>…_status.json</code> and <code>…_worker.log</code> (progress and messages, useful when asking
-for help).</p>
+<p>Every results folder holds a <code>…_manifest.json</code> (the list of files written)
+and a <code>logs/</code> folder with the run's bookkeeping:</p>
+<ul>
+<li><code>logs/CORE_&lt;stage&gt;_config.json</code>: the exact settings used;</li>
+<li><code>logs/CORE_&lt;stage&gt;_status.json</code> and <code>logs/CORE_&lt;stage&gt;.log</code>: progress and
+  messages, useful when asking for help.</li>
+</ul>
+<p>A new run of the same stage replaces them.</p>
+<p>Quality-control pictures are in a <code>qc/</code> sub-folder. Intermediate tables that
+you rarely need are in <code>details/</code> or <code>checkpoints/</code>.</p>
 <p>Distances are in micrometres (<code>_um</code>), areas in square micrometres (<code>_um2</code>)
 or square millimetres (<code>_mm2</code>). Columns ending in <code>_px</code> are in pixels.</p>
 <h2 id="cell-types">Cell types<a class="headerlink" href="#cell-types" title="Permanent link">¶</a></h2>
@@ -1869,6 +1927,80 @@ or square millimetres (<code>_mm2</code>). Columns ending in <code>_px</code> ar
 <tr>
 <td><code>CORE_phenotyped.h5ad</code></td>
 <td>Cells with marker levels, positions and class, used by steps 7–8. Its <code>qupath_class</code> column holds the full class (<code>Fibroblast: WNT5A+</code>); <code>phenotype</code> holds the base class (<code>Fibroblast</code>).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cell-types-by-clustering-and-gating-steps-0003">Cell types by clustering and gating (steps 00–03)<a class="headerlink" href="#cell-types-by-clustering-and-gating-steps-0003" title="Permanent link">¶</a></h2>
+<p>For a multi-FOV TMA with sample ID <code>ST_TMA_01</code> (<a href="../clustering_gating/">step 5b</a>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ST_TMA_01/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── data/
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>│   ├── ST_TMA_01_adata.h5ad                     step 00: all cells, all markers
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>│   ├── ST_TMA_01_adata_qc/                      step 00 checks
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>│   └── ST_TMA_01_marker_condition_for_gating.csv   staining answers (optional)
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>└── results/
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    ├── ST_TMA_01_clustering_workflow/           step 01
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    ├── ST_TMA_01_marker_gating_qc/              step 02
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    └── ST_TMA_01_scimap_phenotyping_interface/  step 03
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data/ST_TMA_01_adata.h5ad</code></td>
+<td>Every cell. <code>adata.X</code> holds the arcsinh values with columns in <code>markers_bs.csv</code> order (= image-plane order); the layer <code>size_normalized</code> holds the size-normalised values.</td>
+</tr>
+<tr>
+<td><code>data/ST_TMA_01_adata_qc/marker_channel_order.csv</code></td>
+<td>Which marker was taken for each image plane. Check this first if markers look swapped.</td>
+</tr>
+<tr>
+<td><code>data/ST_TMA_01_adata_qc/cells_per_fov.csv</code></td>
+<td>Cells per FOV.</td>
+</tr>
+<tr>
+<td><code>…_clustering_workflow/ST_TMA_01_phenotyped.h5ad</code></td>
+<td>All cells with the broad label in <code>annotation</code>. Steps 02 and 03 read it.</td>
+</tr>
+<tr>
+<td><code>…_clustering_workflow/ST_TMA_01_level0_annotation_mapping.csv</code></td>
+<td>The name you gave each cluster.</td>
+</tr>
+<tr>
+<td><code>…_clustering_workflow/qc/</code></td>
+<td>Cluster heatmap, UMAP and cluster summary. <code>checkpoints/</code> holds the clustered file before naming.</td>
+</tr>
+<tr>
+<td><code>…_marker_gating_qc/ST_TMA_01_scimap_manual_gates.csv</code></td>
+<td>The gates (<code>markers,gates</code>, log1p of the gate layer), as used by step 03.</td>
+</tr>
+<tr>
+<td><code>…_marker_gating_qc/ST_TMA_01_selected_marker_gates.csv</code></td>
+<td>The same gates with the method, positive fraction and review flags.</td>
+</tr>
+<tr>
+<td><code>…_marker_gating_qc/ST_TMA_01_gating_manifest.json</code></td>
+<td>Includes <code>gate_layer</code>, the expression values the gates belong to.</td>
+</tr>
+<tr>
+<td><code>…_marker_gating_qc/details/</code></td>
+<td>All candidate gates, and <code>*_previous.csv</code>: the gate tables before the last calculation or napari export.</td>
+</tr>
+<tr>
+<td><code>…_scimap_phenotyping_interface/ST_TMA_01_broad_plus_&lt;run&gt;_phenotyped.h5ad</code></td>
+<td>All cells, with the broad labels and this run's cell types combined in the <em>Combined final column</em>. Use the last run's file downstream.</td>
+</tr>
+<tr>
+<td><code>…_scimap_phenotyping_interface/ST_TMA_01_&lt;run&gt;_scimap_phenotype_counts.csv</code></td>
+<td>Number and fraction of cells per cell type in that run.</td>
+</tr>
+<tr>
+<td><code>…_scimap_phenotyping_interface/qc/</code></td>
+<td>Marker heatmap, spatial maps, image overlays and <code>*_gate_rescale_agreement.csv</code> per run.</td>
 </tr>
 </tbody>
 </table>
@@ -2150,10 +2282,10 @@ the envelope.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   

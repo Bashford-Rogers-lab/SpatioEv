@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -28,10 +28,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -310,6 +310,8 @@
       
         
       
+        
+      
     
     
     
@@ -491,6 +493,34 @@
     
   
     5. Cell types in QuPath
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/clustering_gating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5b. Cell types by clustering and gating
   
 
     
@@ -1871,12 +1901,17 @@ input and output path can be changed in its workflow page. The same default can
 also be supplied with the <code>SPATIOEV_PROJECT_ROOT</code> environment variable.</p>
 <h2 id="workflow-order">Workflow order<a class="headerlink" href="#workflow-order" title="Permanent link">¶</a></h2>
 <ol>
-<li><strong>Prepare AnnData</strong> converts the two CellSAM expression tables into one H5AD.
-   OME-TIFF channels define the marker matrix and its order by default;
-   supplying the optional <strong>Marker order CSV</strong> overrides that, so the CSV's
-   row order becomes the order of <code>var_names</code>. Use it when the image has
-   lost its channel names, or when the stored names disagree with the panel
-   that was actually run. Unmatched table columns are preserved as
+<li><strong>Prepare AnnData</strong> converts the two CellSAM/ARK expression tables into
+   one H5AD. In both the single-image and the multi-FOV mode, a marker order
+   CSV (<code>markers_bs.csv</code>, <code>marker_bs.csv</code> or <code>markers.csv</code>, in a <code>background/</code>
+   folder or next to the data, up to three folders above it) is found
+   automatically, and its <em>row</em> order becomes the order of <code>var_names</code>, so
+   column <em>n</em> of <code>adata.X</code> is image plane <em>n</em>. Without one, the OME-TIFF
+   channel names define the order. Type a path into <strong>Marker order CSV</strong> to
+   use a different file; an optional <code>remove</code> column (<code>TRUE</code>) keeps a plane
+   out of <code>adata.X</code>. AnnData files from SpatioEv 0.2.0 and earlier, which
+   sorted a cycle-based panel by its cycle-local <code>channel_number</code>, are
+   recognised and the clustering and gating pages ask for them to be rebuilt. Unmatched table columns are preserved as
    observation metadata regardless of their CSV position, and are now named
    in a warning rather than dropped from the matrix silently.
    An editable schema review supports marker, cell-ID, coordinate,
@@ -1888,13 +1923,28 @@ also be supplied with the <code>SPATIOEV_PROJECT_ROOT</code> environment variabl
 <li><strong>Broad clustering</strong> performs unsupervised clustering, supports spatial
    Napari review, and exports broad tissue-population annotations.</li>
 <li><strong>Marker autogating</strong> combines a marker-condition questionnaire with
-   distribution diagnostics and a strategy profile. Calculated gates remain
-   adjustable in the original-image Napari overlay before accepted gates and a
-   gated H5AD are written.</li>
+   distribution diagnostics and a strategy profile, on <code>adata.X</code> or a named
+   layer (<strong>Expression layer</strong>; the layer is recorded in the gating manifest
+   and filled in on the phenotyping page). Saved questionnaire answers are
+   loaded again. Calculated gates remain adjustable in the original-image
+   Napari overlay; exporting from it replaces the gate tables and keeps the
+   previous ones in <code>details/</code>.</li>
 <li><strong>Subset phenotyping</strong> selects any broad population and applies a user-chosen
-   SCIMAP phenotype workflow. It writes subset and optional full-tissue H5ADs,
+   SCIMAP phenotype workflow. Gate tables may hold one gate per marker
+   (<code>markers,gates</code>) or one column per image (<code>markers,fov1,fov2,...</code>), on
+   <code>adata.X</code> or a named <strong>Gate layer</strong>; images without a gate stop the run, take
+   the marker's median gate, or use scimap's GMM estimate. Workflow marker names
+   that differ only in a numeric suffix or case (<code>CLDN11_1</code> / <code>CLDN11_2</code>) are
+   matched and reported. The inspection notes rows where scimap's scoring
+   treats a lone <code>pos</code>/<code>neg</code> marker as a preference, and the run reports how
+   many cells the per-image minimum-cell setting turned into <code>Unknown</code>. Runs
+   can be chained (a second population phenotyped on the first run's
+   full-tissue H5AD). It writes subset and optional full-tissue H5ADs,
    tables, publication-ready heatmaps, spatial plots, and image overlays.</li>
 </ol>
+<p>The <a href="../guide/clustering_gating/">step-by-step guide</a> walks through stages
+00–03 and the spatial analysis on a synthetic testis TMA
+(<code>spatioev demo &lt;folder&gt; --kind testis</code>).</p>
 <p>The spatial-analysis stages start from the phenotyped H5AD and the original
 OME-TIFF. Every stage writes CSV tables, PNG plots and a manifest JSON under
 <code>results/&lt;sample&gt;_&lt;stage&gt;/</code>, which the next stage and the cohort comparison
@@ -1987,9 +2037,10 @@ multiple <code>ark_wdir*</code> batches and one OME-TIFF per FOV. The importer:<
 <li>lets users assign the CSV used for <code>adata.X</code> and the CSV used for the named
   layer, applying those filenames to every discovered ARK batch;</li>
 <li>takes the channel order from the marker order CSV, whose <em>row</em> order is
-  authoritative -- a <code>channel_number</code> column that disagrees with the row
-  order is rejected, and named OME channels that disagree are overridden
-  with a warning;</li>
+  authoritative -- a global <code>channel_number</code> column (unique values) that
+  disagrees with the row order is rejected, a cycle-local one (restarting in
+  every cycle, as in <code>markers_bs.csv</code>) is kept as metadata, and named OME
+  channels that disagree are overridden with a warning;</li>
 <li>combines paired <code>whole_cell</code> and <code>nuclear</code> rows into one cell observation;</li>
 <li>creates unique cell IDs from dataset, FOV, and segmentation label;</li>
 <li>sets <code>obs["imageid"]</code> to the FOV value for per-image SCIMAP rescaling;</li>
@@ -2016,12 +2067,15 @@ expression distributions, and supply a phenotype workflow whose marker columns
 match the H5AD.</p>
 <h2 id="reproducibility">Reproducibility<a class="headerlink" href="#reproducibility" title="Permanent link">¶</a></h2>
 <p>Long-running operations execute in background Python processes and record a
-configuration JSON, status JSON, and log next to their outputs. Napari review
-writes reviewed gate tables separately from calculated gates. Keep these files
-with the final H5AD to preserve both the automated starting point and manual
-decisions.</p>
-<p>The AnnData conversion schema is also written beside the H5AD as
-<code>*.conversion_schema.json</code>. This records every reviewed column role and manual
+configuration JSON, status JSON, and log in a <code>logs/</code> folder inside their
+output folder. Figures go to <code>qc/</code>, and intermediate tables and checkpoints
+to <code>details/</code> and <code>checkpoints/</code>, so the top of each output folder holds only
+the results the next stage reads. Re-calculating gates or exporting a napari
+review keeps the gate tables it replaces in <code>details/</code> as <code>*_previous.csv</code>.
+Keep these files with the final H5AD to preserve both the automated starting
+point and manual decisions.</p>
+<p>The AnnData conversion schema is also written to <code>logs/&lt;h5ad name&gt;_conversion_config.json</code>
+next to the H5AD. This records every reviewed column role and manual
 marker-to-channel assignment, allowing the same interpretation to be audited
 or reused when CSV column order changes.</p>
 <p>The workflow engines are importable from <code>spatioev.workflows</code> and can also be
@@ -2090,10 +2144,10 @@ launched as modules, for example:</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   

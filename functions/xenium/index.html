@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -28,10 +28,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -310,6 +310,8 @@
       
         
       
+        
+      
     
     
     
@@ -491,6 +493,34 @@
     
   
     5. Cell types in QuPath
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/clustering_gating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5b. Cell types by clustering and gating
   
 
     
@@ -2016,73 +2046,73 @@ with <code>to_df</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>spatioev/xe/annotation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-19">19</a></span>
-<span class="normal"><a href="#__codelineno-0-20">20</a></span>
-<span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span>
-<span class="normal"><a href="#__codelineno-0-46">46</a></span>
-<span class="normal"><a href="#__codelineno-0-47">47</a></span>
-<span class="normal"><a href="#__codelineno-0-48">48</a></span>
-<span class="normal"><a href="#__codelineno-0-49">49</a></span>
-<span class="normal"><a href="#__codelineno-0-50">50</a></span>
-<span class="normal"><a href="#__codelineno-0-51">51</a></span>
-<span class="normal"><a href="#__codelineno-0-52">52</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="k">def</span><span class="w"> </span><span class="nf">compute_marker_set_scores</span><span class="p">(</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">expression</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="n">marker_sets</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="n">zscore_genes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="n">min_markers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="w">    </span><span class="sd">"""Compute per-cell marker-set scores from expression values.</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">    Parameters</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">    ----------</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">    expression</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">        Gene-expression DataFrame with cells as rows, or an AnnData-like object</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">        with ``to_df``.</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    marker_sets</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">        Mapping from score name to candidate marker genes.</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">    zscore_genes</span>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">        When ``True``, each gene is z-scored before set averaging.</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">    min_markers</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">        Minimum number of available markers required for a score.</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">    """</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>    <span class="n">expr</span> <span class="o">=</span> <span class="n">_as_expression_frame</span><span class="p">(</span><span class="n">expression</span><span class="p">)</span>
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>    <span class="n">expr</span> <span class="o">=</span> <span class="n">expr</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"coerce"</span><span class="p">)</span>
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a>    <span class="k">if</span> <span class="n">zscore_genes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">expr</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a>        <span class="n">expr</span> <span class="o">=</span> <span class="p">(</span><span class="n">expr</span> <span class="o">-</span> <span class="n">expr</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="n">expr</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a>
-<a id="__codelineno-0-45" name="__codelineno-0-45"></a>    <span class="n">out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">expr</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-<a id="__codelineno-0-46" name="__codelineno-0-46"></a>    <span class="k">for</span> <span class="n">score_name</span><span class="p">,</span> <span class="n">markers</span> <span class="ow">in</span> <span class="n">marker_sets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-<a id="__codelineno-0-47" name="__codelineno-0-47"></a>        <span class="n">available</span> <span class="o">=</span> <span class="p">[</span><span class="n">gene</span> <span class="k">for</span> <span class="n">gene</span> <span class="ow">in</span> <span class="n">markers</span> <span class="k">if</span> <span class="n">gene</span> <span class="ow">in</span> <span class="n">expr</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
-<a id="__codelineno-0-48" name="__codelineno-0-48"></a>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">available</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">min_markers</span><span class="p">:</span>
-<a id="__codelineno-0-49" name="__codelineno-0-49"></a>            <span class="n">out</span><span class="p">[</span><span class="n">score_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a>            <span class="k">continue</span>
-<a id="__codelineno-0-51" name="__codelineno-0-51"></a>        <span class="n">out</span><span class="p">[</span><span class="n">score_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">expr</span><span class="p">[</span><span class="n">available</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<a id="__codelineno-0-52" name="__codelineno-0-52"></a>    <span class="k">return</span> <span class="n">out</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-22">22</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-23">23</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-24">24</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-25">25</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-26">26</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-27">27</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-28">28</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-29">29</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-30">30</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-31">31</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-32">32</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-33">33</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-34">34</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-35">35</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-37">37</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-38">38</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-40">40</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-41">41</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-42">42</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-43">43</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-44">44</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-45">45</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-46">46</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-47">47</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-48">48</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-49">49</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-50">50</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-51">51</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-52">52</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-19" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-19"></a><span class="k">def</span><span class="w"> </span><span class="nf">compute_marker_set_scores</span><span class="p">(</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-20" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-20"></a>    <span class="n">expression</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-21" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-21"></a>    <span class="n">marker_sets</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-22" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-22"></a>    <span class="n">zscore_genes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-23" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-23"></a>    <span class="n">min_markers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-24" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-24"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-25" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-25"></a><span class="w">    </span><span class="sd">"""Compute per-cell marker-set scores from expression values.</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-26" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-26"></a>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-27" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-27"></a><span class="sd">    Parameters</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-28" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-28"></a><span class="sd">    ----------</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-29" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-29"></a><span class="sd">    expression</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-30" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-30"></a><span class="sd">        Gene-expression DataFrame with cells as rows, or an AnnData-like object</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-31" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-31"></a><span class="sd">        with ``to_df``.</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-32" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-32"></a><span class="sd">    marker_sets</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-33" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-33"></a><span class="sd">        Mapping from score name to candidate marker genes.</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-34" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-34"></a><span class="sd">    zscore_genes</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-35" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-35"></a><span class="sd">        When ``True``, each gene is z-scored before set averaging.</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-36" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-36"></a><span class="sd">    min_markers</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-37" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-37"></a><span class="sd">        Minimum number of available markers required for a score.</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-38" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-38"></a><span class="sd">    """</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-39" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-39"></a>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-40" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-40"></a>    <span class="n">expr</span> <span class="o">=</span> <span class="n">_as_expression_frame</span><span class="p">(</span><span class="n">expression</span><span class="p">)</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-41" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-41"></a>    <span class="n">expr</span> <span class="o">=</span> <span class="n">expr</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"coerce"</span><span class="p">)</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-42" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-42"></a>    <span class="k">if</span> <span class="n">zscore_genes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">expr</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-43" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-43"></a>        <span class="n">expr</span> <span class="o">=</span> <span class="p">(</span><span class="n">expr</span> <span class="o">-</span> <span class="n">expr</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="n">expr</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-44" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-44"></a>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-45" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-45"></a>    <span class="n">out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">expr</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-46" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-46"></a>    <span class="k">for</span> <span class="n">score_name</span><span class="p">,</span> <span class="n">markers</span> <span class="ow">in</span> <span class="n">marker_sets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-47" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-47"></a>        <span class="n">available</span> <span class="o">=</span> <span class="p">[</span><span class="n">gene</span> <span class="k">for</span> <span class="n">gene</span> <span class="ow">in</span> <span class="n">markers</span> <span class="k">if</span> <span class="n">gene</span> <span class="ow">in</span> <span class="n">expr</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-48" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-48"></a>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">available</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">min_markers</span><span class="p">:</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-49" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-49"></a>            <span class="n">out</span><span class="p">[</span><span class="n">score_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-50" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-50"></a>            <span class="k">continue</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-51" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-51"></a>        <span class="n">out</span><span class="p">[</span><span class="n">score_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">expr</span><span class="p">[</span><span class="n">available</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a id="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-52" name="spatioev.xe.annotation.compute_marker_set_scores--source--__codelineno-0-52"></a>    <span class="k">return</span> <span class="n">out</span>
 </code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
@@ -2107,29 +2137,29 @@ with <code>to_df</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>spatioev/xe/annotation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-55">55</a></span>
-<span class="normal"><a href="#__codelineno-0-56">56</a></span>
-<span class="normal"><a href="#__codelineno-0-57">57</a></span>
-<span class="normal"><a href="#__codelineno-0-58">58</a></span>
-<span class="normal"><a href="#__codelineno-0-59">59</a></span>
-<span class="normal"><a href="#__codelineno-0-60">60</a></span>
-<span class="normal"><a href="#__codelineno-0-61">61</a></span>
-<span class="normal"><a href="#__codelineno-0-62">62</a></span>
-<span class="normal"><a href="#__codelineno-0-63">63</a></span>
-<span class="normal"><a href="#__codelineno-0-64">64</a></span>
-<span class="normal"><a href="#__codelineno-0-65">65</a></span>
-<span class="normal"><a href="#__codelineno-0-66">66</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="k">def</span><span class="w"> </span><span class="nf">summarize_cluster_marker_scores</span><span class="p">(</span>
-<a id="__codelineno-0-56" name="__codelineno-0-56"></a>    <span class="n">scores</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-<a id="__codelineno-0-57" name="__codelineno-0-57"></a>    <span class="n">labels</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-<a id="__codelineno-0-58" name="__codelineno-0-58"></a>    <span class="n">aggfunc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"median"</span><span class="p">,</span>
-<a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="w">    </span><span class="sd">"""Summarize marker scores per cluster or annotation label."""</span>
-<a id="__codelineno-0-61" name="__codelineno-0-61"></a>
-<a id="__codelineno-0-62" name="__codelineno-0-62"></a>    <span class="n">labels</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">scores</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"cluster"</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
-<a id="__codelineno-0-63" name="__codelineno-0-63"></a>    <span class="n">tmp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">labels</span><span class="p">,</span> <span class="n">scores</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"coerce"</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<a id="__codelineno-0-64" name="__codelineno-0-64"></a>    <span class="n">summary</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"cluster"</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="n">scores</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">aggfunc</span><span class="p">)</span>
-<a id="__codelineno-0-65" name="__codelineno-0-65"></a>    <span class="n">summary</span><span class="p">[</span><span class="s2">"n_cells"</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<a id="__codelineno-0-66" name="__codelineno-0-66"></a>    <span class="k">return</span> <span class="n">summary</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-55">55</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-56">56</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-57">57</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-58">58</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-59">59</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-60">60</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-61">61</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-62">62</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-63">63</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-64">64</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-65">65</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-66">66</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-55" name="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-55"></a><span class="k">def</span><span class="w"> </span><span class="nf">summarize_cluster_marker_scores</span><span class="p">(</span>
+<a id="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-56" name="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-56"></a>    <span class="n">scores</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+<a id="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-57" name="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-57"></a>    <span class="n">labels</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<a id="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-58" name="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-58"></a>    <span class="n">aggfunc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"median"</span><span class="p">,</span>
+<a id="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-59" name="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-59"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<a id="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-60" name="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-60"></a><span class="w">    </span><span class="sd">"""Summarize marker scores per cluster or annotation label."""</span>
+<a id="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-61" name="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-61"></a>
+<a id="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-62" name="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-62"></a>    <span class="n">labels</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">scores</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"cluster"</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<a id="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-63" name="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-63"></a>    <span class="n">tmp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">labels</span><span class="p">,</span> <span class="n">scores</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"coerce"</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a id="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-64" name="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-64"></a>    <span class="n">summary</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"cluster"</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="n">scores</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">aggfunc</span><span class="p">)</span>
+<a id="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-65" name="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-65"></a>    <span class="n">summary</span><span class="p">[</span><span class="s2">"n_cells"</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<a id="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-66" name="spatioev.xe.annotation.summarize_cluster_marker_scores--source--__codelineno-0-66"></a>    <span class="k">return</span> <span class="n">summary</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
 </code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
@@ -2158,95 +2188,95 @@ order, making high-confidence or specific labels easy to prioritize.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>spatioev/xe/annotation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-69"> 69</a></span>
-<span class="normal"><a href="#__codelineno-0-70"> 70</a></span>
-<span class="normal"><a href="#__codelineno-0-71"> 71</a></span>
-<span class="normal"><a href="#__codelineno-0-72"> 72</a></span>
-<span class="normal"><a href="#__codelineno-0-73"> 73</a></span>
-<span class="normal"><a href="#__codelineno-0-74"> 74</a></span>
-<span class="normal"><a href="#__codelineno-0-75"> 75</a></span>
-<span class="normal"><a href="#__codelineno-0-76"> 76</a></span>
-<span class="normal"><a href="#__codelineno-0-77"> 77</a></span>
-<span class="normal"><a href="#__codelineno-0-78"> 78</a></span>
-<span class="normal"><a href="#__codelineno-0-79"> 79</a></span>
-<span class="normal"><a href="#__codelineno-0-80"> 80</a></span>
-<span class="normal"><a href="#__codelineno-0-81"> 81</a></span>
-<span class="normal"><a href="#__codelineno-0-82"> 82</a></span>
-<span class="normal"><a href="#__codelineno-0-83"> 83</a></span>
-<span class="normal"><a href="#__codelineno-0-84"> 84</a></span>
-<span class="normal"><a href="#__codelineno-0-85"> 85</a></span>
-<span class="normal"><a href="#__codelineno-0-86"> 86</a></span>
-<span class="normal"><a href="#__codelineno-0-87"> 87</a></span>
-<span class="normal"><a href="#__codelineno-0-88"> 88</a></span>
-<span class="normal"><a href="#__codelineno-0-89"> 89</a></span>
-<span class="normal"><a href="#__codelineno-0-90"> 90</a></span>
-<span class="normal"><a href="#__codelineno-0-91"> 91</a></span>
-<span class="normal"><a href="#__codelineno-0-92"> 92</a></span>
-<span class="normal"><a href="#__codelineno-0-93"> 93</a></span>
-<span class="normal"><a href="#__codelineno-0-94"> 94</a></span>
-<span class="normal"><a href="#__codelineno-0-95"> 95</a></span>
-<span class="normal"><a href="#__codelineno-0-96"> 96</a></span>
-<span class="normal"><a href="#__codelineno-0-97"> 97</a></span>
-<span class="normal"><a href="#__codelineno-0-98"> 98</a></span>
-<span class="normal"><a href="#__codelineno-0-99"> 99</a></span>
-<span class="normal"><a href="#__codelineno-0-100">100</a></span>
-<span class="normal"><a href="#__codelineno-0-101">101</a></span>
-<span class="normal"><a href="#__codelineno-0-102">102</a></span>
-<span class="normal"><a href="#__codelineno-0-103">103</a></span>
-<span class="normal"><a href="#__codelineno-0-104">104</a></span>
-<span class="normal"><a href="#__codelineno-0-105">105</a></span>
-<span class="normal"><a href="#__codelineno-0-106">106</a></span>
-<span class="normal"><a href="#__codelineno-0-107">107</a></span>
-<span class="normal"><a href="#__codelineno-0-108">108</a></span>
-<span class="normal"><a href="#__codelineno-0-109">109</a></span>
-<span class="normal"><a href="#__codelineno-0-110">110</a></span>
-<span class="normal"><a href="#__codelineno-0-111">111</a></span>
-<span class="normal"><a href="#__codelineno-0-112">112</a></span>
-<span class="normal"><a href="#__codelineno-0-113">113</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="k">def</span><span class="w"> </span><span class="nf">assign_labels_from_marker_rules</span><span class="p">(</span>
-<a id="__codelineno-0-70" name="__codelineno-0-70"></a>    <span class="n">cluster_summary</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-<a id="__codelineno-0-71" name="__codelineno-0-71"></a>    <span class="n">marker_rules</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
-<a id="__codelineno-0-72" name="__codelineno-0-72"></a>    <span class="n">cluster_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"cluster"</span><span class="p">,</span>
-<a id="__codelineno-0-73" name="__codelineno-0-73"></a>    <span class="n">unknown_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"unassigned"</span><span class="p">,</span>
-<a id="__codelineno-0-74" name="__codelineno-0-74"></a>    <span class="n">output_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"suggested_label"</span><span class="p">,</span>
-<a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="w">    </span><span class="sd">"""Assign cluster labels using simple thresholded marker-score rules.</span>
-<a id="__codelineno-0-77" name="__codelineno-0-77"></a>
-<a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">    ``marker_rules`` maps a label to required marker-score thresholds. A</span>
-<a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">    threshold is interpreted as ``score &gt;= threshold`` when positive and</span>
-<a id="__codelineno-0-80" name="__codelineno-0-80"></a><span class="sd">    ``score &lt;= threshold`` when negative. Rules are evaluated in dictionary</span>
-<a id="__codelineno-0-81" name="__codelineno-0-81"></a><span class="sd">    order, making high-confidence or specific labels easy to prioritize.</span>
-<a id="__codelineno-0-82" name="__codelineno-0-82"></a><span class="sd">    """</span>
-<a id="__codelineno-0-83" name="__codelineno-0-83"></a>
-<a id="__codelineno-0-84" name="__codelineno-0-84"></a>    <span class="k">if</span> <span class="n">cluster_col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cluster_summary</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-<a id="__codelineno-0-85" name="__codelineno-0-85"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cluster_col</span><span class="si">!r}</span><span class="s2"> not found in cluster_summary."</span><span class="p">)</span>
-<a id="__codelineno-0-86" name="__codelineno-0-86"></a>
-<a id="__codelineno-0-87" name="__codelineno-0-87"></a>    <span class="n">out</span> <span class="o">=</span> <span class="n">cluster_summary</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<a id="__codelineno-0-88" name="__codelineno-0-88"></a>    <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-89" name="__codelineno-0-89"></a>    <span class="n">matched_rules</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-90" name="__codelineno-0-90"></a>    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-<a id="__codelineno-0-91" name="__codelineno-0-91"></a>        <span class="n">assigned</span> <span class="o">=</span> <span class="n">unknown_label</span>
-<a id="__codelineno-0-92" name="__codelineno-0-92"></a>        <span class="n">matched</span> <span class="o">=</span> <span class="s2">""</span>
-<a id="__codelineno-0-93" name="__codelineno-0-93"></a>        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">thresholds</span> <span class="ow">in</span> <span class="n">marker_rules</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-<a id="__codelineno-0-94" name="__codelineno-0-94"></a>            <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-0-95" name="__codelineno-0-95"></a>            <span class="k">for</span> <span class="n">score_name</span><span class="p">,</span> <span class="n">threshold</span> <span class="ow">in</span> <span class="n">thresholds</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-<a id="__codelineno-0-96" name="__codelineno-0-96"></a>                <span class="k">if</span> <span class="n">score_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">row</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">score_name</span><span class="p">]):</span>
-<a id="__codelineno-0-97" name="__codelineno-0-97"></a>                    <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
-<a id="__codelineno-0-98" name="__codelineno-0-98"></a>                    <span class="k">break</span>
-<a id="__codelineno-0-99" name="__codelineno-0-99"></a>                <span class="k">if</span> <span class="n">threshold</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="n">score_name</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">:</span>
-<a id="__codelineno-0-100" name="__codelineno-0-100"></a>                    <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
-<a id="__codelineno-0-101" name="__codelineno-0-101"></a>                    <span class="k">break</span>
-<a id="__codelineno-0-102" name="__codelineno-0-102"></a>                <span class="k">if</span> <span class="n">threshold</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="n">score_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
-<a id="__codelineno-0-103" name="__codelineno-0-103"></a>                    <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
-<a id="__codelineno-0-104" name="__codelineno-0-104"></a>                    <span class="k">break</span>
-<a id="__codelineno-0-105" name="__codelineno-0-105"></a>            <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
-<a id="__codelineno-0-106" name="__codelineno-0-106"></a>                <span class="n">assigned</span> <span class="o">=</span> <span class="n">label</span>
-<a id="__codelineno-0-107" name="__codelineno-0-107"></a>                <span class="n">matched</span> <span class="o">=</span> <span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">thresholds</span><span class="p">)</span>
-<a id="__codelineno-0-108" name="__codelineno-0-108"></a>                <span class="k">break</span>
-<a id="__codelineno-0-109" name="__codelineno-0-109"></a>        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">assigned</span><span class="p">)</span>
-<a id="__codelineno-0-110" name="__codelineno-0-110"></a>        <span class="n">matched_rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">matched</span><span class="p">)</span>
-<a id="__codelineno-0-111" name="__codelineno-0-111"></a>    <span class="n">out</span><span class="p">[</span><span class="n">output_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span>
-<a id="__codelineno-0-112" name="__codelineno-0-112"></a>    <span class="n">out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">output_col</span><span class="si">}</span><span class="s2">_rule"</span><span class="p">]</span> <span class="o">=</span> <span class="n">matched_rules</span>
-<a id="__codelineno-0-113" name="__codelineno-0-113"></a>    <span class="k">return</span> <span class="n">out</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-69"> 69</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-70"> 70</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-71"> 71</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-72"> 72</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-73"> 73</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-74"> 74</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-75"> 75</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-76"> 76</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-77"> 77</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-78"> 78</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-79"> 79</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-80"> 80</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-81"> 81</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-82"> 82</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-83"> 83</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-84"> 84</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-85"> 85</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-86"> 86</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-87"> 87</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-88"> 88</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-89"> 89</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-90"> 90</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-91"> 91</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-92"> 92</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-93"> 93</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-94"> 94</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-95"> 95</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-96"> 96</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-97"> 97</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-98"> 98</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-99"> 99</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-100">100</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-101">101</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-102">102</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-103">103</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-104">104</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-105">105</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-106">106</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-107">107</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-108">108</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-109">109</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-110">110</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-111">111</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-112">112</a></span>
+<span class="normal"><a href="#spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-113">113</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-69" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-69"></a><span class="k">def</span><span class="w"> </span><span class="nf">assign_labels_from_marker_rules</span><span class="p">(</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-70" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-70"></a>    <span class="n">cluster_summary</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-71" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-71"></a>    <span class="n">marker_rules</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-72" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-72"></a>    <span class="n">cluster_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"cluster"</span><span class="p">,</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-73" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-73"></a>    <span class="n">unknown_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"unassigned"</span><span class="p">,</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-74" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-74"></a>    <span class="n">output_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"suggested_label"</span><span class="p">,</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-75" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-75"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-76" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-76"></a><span class="w">    </span><span class="sd">"""Assign cluster labels using simple thresholded marker-score rules.</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-77" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-77"></a>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-78" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-78"></a><span class="sd">    ``marker_rules`` maps a label to required marker-score thresholds. A</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-79" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-79"></a><span class="sd">    threshold is interpreted as ``score &gt;= threshold`` when positive and</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-80" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-80"></a><span class="sd">    ``score &lt;= threshold`` when negative. Rules are evaluated in dictionary</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-81" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-81"></a><span class="sd">    order, making high-confidence or specific labels easy to prioritize.</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-82" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-82"></a><span class="sd">    """</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-83" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-83"></a>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-84" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-84"></a>    <span class="k">if</span> <span class="n">cluster_col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cluster_summary</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-85" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-85"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cluster_col</span><span class="si">!r}</span><span class="s2"> not found in cluster_summary."</span><span class="p">)</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-86" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-86"></a>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-87" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-87"></a>    <span class="n">out</span> <span class="o">=</span> <span class="n">cluster_summary</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-88" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-88"></a>    <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-89" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-89"></a>    <span class="n">matched_rules</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-90" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-90"></a>    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-91" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-91"></a>        <span class="n">assigned</span> <span class="o">=</span> <span class="n">unknown_label</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-92" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-92"></a>        <span class="n">matched</span> <span class="o">=</span> <span class="s2">""</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-93" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-93"></a>        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">thresholds</span> <span class="ow">in</span> <span class="n">marker_rules</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-94" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-94"></a>            <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-95" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-95"></a>            <span class="k">for</span> <span class="n">score_name</span><span class="p">,</span> <span class="n">threshold</span> <span class="ow">in</span> <span class="n">thresholds</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-96" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-96"></a>                <span class="k">if</span> <span class="n">score_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">row</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">score_name</span><span class="p">]):</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-97" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-97"></a>                    <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-98" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-98"></a>                    <span class="k">break</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-99" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-99"></a>                <span class="k">if</span> <span class="n">threshold</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="n">score_name</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">:</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-100" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-100"></a>                    <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-101" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-101"></a>                    <span class="k">break</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-102" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-102"></a>                <span class="k">if</span> <span class="n">threshold</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="n">score_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-103" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-103"></a>                    <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-104" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-104"></a>                    <span class="k">break</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-105" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-105"></a>            <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-106" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-106"></a>                <span class="n">assigned</span> <span class="o">=</span> <span class="n">label</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-107" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-107"></a>                <span class="n">matched</span> <span class="o">=</span> <span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">thresholds</span><span class="p">)</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-108" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-108"></a>                <span class="k">break</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-109" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-109"></a>        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">assigned</span><span class="p">)</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-110" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-110"></a>        <span class="n">matched_rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">matched</span><span class="p">)</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-111" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-111"></a>    <span class="n">out</span><span class="p">[</span><span class="n">output_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-112" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-112"></a>    <span class="n">out</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">output_col</span><span class="si">}</span><span class="s2">_rule"</span><span class="p">]</span> <span class="o">=</span> <span class="n">matched_rules</span>
+<a id="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-113" name="spatioev.xe.annotation.assign_labels_from_marker_rules--source--__codelineno-0-113"></a>    <span class="k">return</span> <span class="n">out</span>
 </code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
@@ -2273,31 +2303,31 @@ order, making high-confidence or specific labels easy to prioritize.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>spatioev/xe/features.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span>
-<span class="normal"><a href="#__codelineno-0-46">46</a></span>
-<span class="normal"><a href="#__codelineno-0-47">47</a></span>
-<span class="normal"><a href="#__codelineno-0-48">48</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="k">def</span><span class="w"> </span><span class="nf">available_feature_map</span><span class="p">(</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="n">columns</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>    <span class="n">candidates</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="w">    </span><span class="sd">"""Resolve canonical feature names to the first available candidate column."""</span>
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a>    <span class="n">available</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a>    <span class="n">resolved</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a>    <span class="k">for</span> <span class="n">canonical</span><span class="p">,</span> <span class="n">options</span> <span class="ow">in</span> <span class="n">candidates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-<a id="__codelineno-0-45" name="__codelineno-0-45"></a>        <span class="n">match</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">options</span> <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">available</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
-<a id="__codelineno-0-46" name="__codelineno-0-46"></a>        <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-47" name="__codelineno-0-47"></a>            <span class="n">resolved</span><span class="p">[</span><span class="n">canonical</span><span class="p">]</span> <span class="o">=</span> <span class="n">match</span>
-<a id="__codelineno-0-48" name="__codelineno-0-48"></a>    <span class="k">return</span> <span class="n">resolved</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#spatioev.xe.features.available_feature_map--source--__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#spatioev.xe.features.available_feature_map--source--__codelineno-0-37">37</a></span>
+<span class="normal"><a href="#spatioev.xe.features.available_feature_map--source--__codelineno-0-38">38</a></span>
+<span class="normal"><a href="#spatioev.xe.features.available_feature_map--source--__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#spatioev.xe.features.available_feature_map--source--__codelineno-0-40">40</a></span>
+<span class="normal"><a href="#spatioev.xe.features.available_feature_map--source--__codelineno-0-41">41</a></span>
+<span class="normal"><a href="#spatioev.xe.features.available_feature_map--source--__codelineno-0-42">42</a></span>
+<span class="normal"><a href="#spatioev.xe.features.available_feature_map--source--__codelineno-0-43">43</a></span>
+<span class="normal"><a href="#spatioev.xe.features.available_feature_map--source--__codelineno-0-44">44</a></span>
+<span class="normal"><a href="#spatioev.xe.features.available_feature_map--source--__codelineno-0-45">45</a></span>
+<span class="normal"><a href="#spatioev.xe.features.available_feature_map--source--__codelineno-0-46">46</a></span>
+<span class="normal"><a href="#spatioev.xe.features.available_feature_map--source--__codelineno-0-47">47</a></span>
+<span class="normal"><a href="#spatioev.xe.features.available_feature_map--source--__codelineno-0-48">48</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="spatioev.xe.features.available_feature_map--source--__codelineno-0-36" name="spatioev.xe.features.available_feature_map--source--__codelineno-0-36"></a><span class="k">def</span><span class="w"> </span><span class="nf">available_feature_map</span><span class="p">(</span>
+<a id="spatioev.xe.features.available_feature_map--source--__codelineno-0-37" name="spatioev.xe.features.available_feature_map--source--__codelineno-0-37"></a>    <span class="n">columns</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<a id="spatioev.xe.features.available_feature_map--source--__codelineno-0-38" name="spatioev.xe.features.available_feature_map--source--__codelineno-0-38"></a>    <span class="n">candidates</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+<a id="spatioev.xe.features.available_feature_map--source--__codelineno-0-39" name="spatioev.xe.features.available_feature_map--source--__codelineno-0-39"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<a id="spatioev.xe.features.available_feature_map--source--__codelineno-0-40" name="spatioev.xe.features.available_feature_map--source--__codelineno-0-40"></a><span class="w">    </span><span class="sd">"""Resolve canonical feature names to the first available candidate column."""</span>
+<a id="spatioev.xe.features.available_feature_map--source--__codelineno-0-41" name="spatioev.xe.features.available_feature_map--source--__codelineno-0-41"></a>
+<a id="spatioev.xe.features.available_feature_map--source--__codelineno-0-42" name="spatioev.xe.features.available_feature_map--source--__codelineno-0-42"></a>    <span class="n">available</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+<a id="spatioev.xe.features.available_feature_map--source--__codelineno-0-43" name="spatioev.xe.features.available_feature_map--source--__codelineno-0-43"></a>    <span class="n">resolved</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<a id="spatioev.xe.features.available_feature_map--source--__codelineno-0-44" name="spatioev.xe.features.available_feature_map--source--__codelineno-0-44"></a>    <span class="k">for</span> <span class="n">canonical</span><span class="p">,</span> <span class="n">options</span> <span class="ow">in</span> <span class="n">candidates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="spatioev.xe.features.available_feature_map--source--__codelineno-0-45" name="spatioev.xe.features.available_feature_map--source--__codelineno-0-45"></a>        <span class="n">match</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">options</span> <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">available</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+<a id="spatioev.xe.features.available_feature_map--source--__codelineno-0-46" name="spatioev.xe.features.available_feature_map--source--__codelineno-0-46"></a>        <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="spatioev.xe.features.available_feature_map--source--__codelineno-0-47" name="spatioev.xe.features.available_feature_map--source--__codelineno-0-47"></a>            <span class="n">resolved</span><span class="p">[</span><span class="n">canonical</span><span class="p">]</span> <span class="o">=</span> <span class="n">match</span>
+<a id="spatioev.xe.features.available_feature_map--source--__codelineno-0-48" name="spatioev.xe.features.available_feature_map--source--__codelineno-0-48"></a>    <span class="k">return</span> <span class="n">resolved</span>
 </code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
@@ -2326,81 +2356,81 @@ to override the defaults.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>spatioev/xe/features.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-51">51</a></span>
-<span class="normal"><a href="#__codelineno-0-52">52</a></span>
-<span class="normal"><a href="#__codelineno-0-53">53</a></span>
-<span class="normal"><a href="#__codelineno-0-54">54</a></span>
-<span class="normal"><a href="#__codelineno-0-55">55</a></span>
-<span class="normal"><a href="#__codelineno-0-56">56</a></span>
-<span class="normal"><a href="#__codelineno-0-57">57</a></span>
-<span class="normal"><a href="#__codelineno-0-58">58</a></span>
-<span class="normal"><a href="#__codelineno-0-59">59</a></span>
-<span class="normal"><a href="#__codelineno-0-60">60</a></span>
-<span class="normal"><a href="#__codelineno-0-61">61</a></span>
-<span class="normal"><a href="#__codelineno-0-62">62</a></span>
-<span class="normal"><a href="#__codelineno-0-63">63</a></span>
-<span class="normal"><a href="#__codelineno-0-64">64</a></span>
-<span class="normal"><a href="#__codelineno-0-65">65</a></span>
-<span class="normal"><a href="#__codelineno-0-66">66</a></span>
-<span class="normal"><a href="#__codelineno-0-67">67</a></span>
-<span class="normal"><a href="#__codelineno-0-68">68</a></span>
-<span class="normal"><a href="#__codelineno-0-69">69</a></span>
-<span class="normal"><a href="#__codelineno-0-70">70</a></span>
-<span class="normal"><a href="#__codelineno-0-71">71</a></span>
-<span class="normal"><a href="#__codelineno-0-72">72</a></span>
-<span class="normal"><a href="#__codelineno-0-73">73</a></span>
-<span class="normal"><a href="#__codelineno-0-74">74</a></span>
-<span class="normal"><a href="#__codelineno-0-75">75</a></span>
-<span class="normal"><a href="#__codelineno-0-76">76</a></span>
-<span class="normal"><a href="#__codelineno-0-77">77</a></span>
-<span class="normal"><a href="#__codelineno-0-78">78</a></span>
-<span class="normal"><a href="#__codelineno-0-79">79</a></span>
-<span class="normal"><a href="#__codelineno-0-80">80</a></span>
-<span class="normal"><a href="#__codelineno-0-81">81</a></span>
-<span class="normal"><a href="#__codelineno-0-82">82</a></span>
-<span class="normal"><a href="#__codelineno-0-83">83</a></span>
-<span class="normal"><a href="#__codelineno-0-84">84</a></span>
-<span class="normal"><a href="#__codelineno-0-85">85</a></span>
-<span class="normal"><a href="#__codelineno-0-86">86</a></span>
-<span class="normal"><a href="#__codelineno-0-87">87</a></span>
-<span class="normal"><a href="#__codelineno-0-88">88</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="k">def</span><span class="w"> </span><span class="nf">score_xenium_histology_modules</span><span class="p">(</span>
-<a id="__codelineno-0-52" name="__codelineno-0-52"></a>    <span class="n">feature_table</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-<a id="__codelineno-0-53" name="__codelineno-0-53"></a>    <span class="n">module_specs</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-54" name="__codelineno-0-54"></a>    <span class="n">min_features</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
-<a id="__codelineno-0-55" name="__codelineno-0-55"></a>    <span class="n">return_resolved</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="w">    </span><span class="sd">"""Score Xenium epithelial-niche histology modules.</span>
-<a id="__codelineno-0-58" name="__codelineno-0-58"></a>
-<a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="sd">    These scores are intentionally transparent signed averages of standardized</span>
-<a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="sd">    features. They are useful as interpretable companion axes for pooled</span>
-<a id="__codelineno-0-61" name="__codelineno-0-61"></a><span class="sd">    pseudotime analyses, while users can pass project-specific ``module_specs``</span>
-<a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="sd">    to override the defaults.</span>
-<a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="sd">    """</span>
-<a id="__codelineno-0-64" name="__codelineno-0-64"></a>
-<a id="__codelineno-0-65" name="__codelineno-0-65"></a>    <span class="n">module_specs</span> <span class="o">=</span> <span class="n">module_specs</span> <span class="ow">or</span> <span class="n">DEFAULT_XENIUM_HISTOLOGY_MODULES</span>
-<a id="__codelineno-0-66" name="__codelineno-0-66"></a>    <span class="n">out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">feature_table</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-<a id="__codelineno-0-67" name="__codelineno-0-67"></a>    <span class="n">resolved_rows</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-68" name="__codelineno-0-68"></a>    <span class="k">for</span> <span class="n">score_name</span><span class="p">,</span> <span class="n">specs</span> <span class="ow">in</span> <span class="n">module_specs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-<a id="__codelineno-0-69" name="__codelineno-0-69"></a>        <span class="n">score</span><span class="p">,</span> <span class="n">resolved</span> <span class="o">=</span> <span class="n">score_signed_feature_module</span><span class="p">(</span>
-<a id="__codelineno-0-70" name="__codelineno-0-70"></a>            <span class="n">feature_table</span><span class="p">,</span>
-<a id="__codelineno-0-71" name="__codelineno-0-71"></a>            <span class="n">specs</span><span class="p">,</span>
-<a id="__codelineno-0-72" name="__codelineno-0-72"></a>            <span class="n">min_features</span><span class="o">=</span><span class="n">min_features</span><span class="p">,</span>
-<a id="__codelineno-0-73" name="__codelineno-0-73"></a>            <span class="n">return_resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-74" name="__codelineno-0-74"></a>        <span class="p">)</span>
-<a id="__codelineno-0-75" name="__codelineno-0-75"></a>        <span class="n">out</span><span class="p">[</span><span class="n">score_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">score</span>
-<a id="__codelineno-0-76" name="__codelineno-0-76"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">resolved</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-<a id="__codelineno-0-77" name="__codelineno-0-77"></a>            <span class="n">resolved</span> <span class="o">=</span> <span class="n">resolved</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<a id="__codelineno-0-78" name="__codelineno-0-78"></a>            <span class="n">resolved</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">"score"</span><span class="p">,</span> <span class="n">score_name</span><span class="p">)</span>
-<a id="__codelineno-0-79" name="__codelineno-0-79"></a>            <span class="n">resolved_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resolved</span><span class="p">)</span>
-<a id="__codelineno-0-80" name="__codelineno-0-80"></a>
-<a id="__codelineno-0-81" name="__codelineno-0-81"></a>    <span class="n">resolved_df</span> <span class="o">=</span> <span class="p">(</span>
-<a id="__codelineno-0-82" name="__codelineno-0-82"></a>        <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">resolved_rows</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-83" name="__codelineno-0-83"></a>        <span class="k">if</span> <span class="n">resolved_rows</span>
-<a id="__codelineno-0-84" name="__codelineno-0-84"></a>        <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"score"</span><span class="p">,</span> <span class="s2">"feature"</span><span class="p">,</span> <span class="s2">"sign"</span><span class="p">])</span>
-<a id="__codelineno-0-85" name="__codelineno-0-85"></a>    <span class="p">)</span>
-<a id="__codelineno-0-86" name="__codelineno-0-86"></a>    <span class="k">if</span> <span class="n">return_resolved</span><span class="p">:</span>
-<a id="__codelineno-0-87" name="__codelineno-0-87"></a>        <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="n">resolved_df</span>
-<a id="__codelineno-0-88" name="__codelineno-0-88"></a>    <span class="k">return</span> <span class="n">out</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-51">51</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-52">52</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-53">53</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-54">54</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-55">55</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-56">56</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-57">57</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-58">58</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-59">59</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-60">60</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-61">61</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-62">62</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-63">63</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-64">64</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-65">65</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-66">66</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-67">67</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-68">68</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-69">69</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-70">70</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-71">71</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-72">72</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-73">73</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-74">74</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-75">75</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-76">76</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-77">77</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-78">78</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-79">79</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-80">80</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-81">81</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-82">82</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-83">83</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-84">84</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-85">85</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-86">86</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-87">87</a></span>
+<span class="normal"><a href="#spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-88">88</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-51" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-51"></a><span class="k">def</span><span class="w"> </span><span class="nf">score_xenium_histology_modules</span><span class="p">(</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-52" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-52"></a>    <span class="n">feature_table</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-53" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-53"></a>    <span class="n">module_specs</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-54" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-54"></a>    <span class="n">min_features</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-55" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-55"></a>    <span class="n">return_resolved</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-56" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-56"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-57" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-57"></a><span class="w">    </span><span class="sd">"""Score Xenium epithelial-niche histology modules.</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-58" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-58"></a>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-59" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-59"></a><span class="sd">    These scores are intentionally transparent signed averages of standardized</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-60" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-60"></a><span class="sd">    features. They are useful as interpretable companion axes for pooled</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-61" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-61"></a><span class="sd">    pseudotime analyses, while users can pass project-specific ``module_specs``</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-62" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-62"></a><span class="sd">    to override the defaults.</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-63" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-63"></a><span class="sd">    """</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-64" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-64"></a>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-65" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-65"></a>    <span class="n">module_specs</span> <span class="o">=</span> <span class="n">module_specs</span> <span class="ow">or</span> <span class="n">DEFAULT_XENIUM_HISTOLOGY_MODULES</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-66" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-66"></a>    <span class="n">out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">feature_table</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-67" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-67"></a>    <span class="n">resolved_rows</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-68" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-68"></a>    <span class="k">for</span> <span class="n">score_name</span><span class="p">,</span> <span class="n">specs</span> <span class="ow">in</span> <span class="n">module_specs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-69" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-69"></a>        <span class="n">score</span><span class="p">,</span> <span class="n">resolved</span> <span class="o">=</span> <span class="n">score_signed_feature_module</span><span class="p">(</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-70" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-70"></a>            <span class="n">feature_table</span><span class="p">,</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-71" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-71"></a>            <span class="n">specs</span><span class="p">,</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-72" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-72"></a>            <span class="n">min_features</span><span class="o">=</span><span class="n">min_features</span><span class="p">,</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-73" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-73"></a>            <span class="n">return_resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-74" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-74"></a>        <span class="p">)</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-75" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-75"></a>        <span class="n">out</span><span class="p">[</span><span class="n">score_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">score</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-76" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-76"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">resolved</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-77" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-77"></a>            <span class="n">resolved</span> <span class="o">=</span> <span class="n">resolved</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-78" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-78"></a>            <span class="n">resolved</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">"score"</span><span class="p">,</span> <span class="n">score_name</span><span class="p">)</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-79" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-79"></a>            <span class="n">resolved_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resolved</span><span class="p">)</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-80" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-80"></a>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-81" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-81"></a>    <span class="n">resolved_df</span> <span class="o">=</span> <span class="p">(</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-82" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-82"></a>        <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">resolved_rows</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-83" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-83"></a>        <span class="k">if</span> <span class="n">resolved_rows</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-84" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-84"></a>        <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"score"</span><span class="p">,</span> <span class="s2">"feature"</span><span class="p">,</span> <span class="s2">"sign"</span><span class="p">])</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-85" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-85"></a>    <span class="p">)</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-86" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-86"></a>    <span class="k">if</span> <span class="n">return_resolved</span><span class="p">:</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-87" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-87"></a>        <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="n">resolved_df</span>
+<a id="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-88" name="spatioev.xe.features.score_xenium_histology_modules--source--__codelineno-0-88"></a>    <span class="k">return</span> <span class="n">out</span>
 </code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
@@ -2425,31 +2455,31 @@ to override the defaults.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>spatioev/xe/features.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-91"> 91</a></span>
-<span class="normal"><a href="#__codelineno-0-92"> 92</a></span>
-<span class="normal"><a href="#__codelineno-0-93"> 93</a></span>
-<span class="normal"><a href="#__codelineno-0-94"> 94</a></span>
-<span class="normal"><a href="#__codelineno-0-95"> 95</a></span>
-<span class="normal"><a href="#__codelineno-0-96"> 96</a></span>
-<span class="normal"><a href="#__codelineno-0-97"> 97</a></span>
-<span class="normal"><a href="#__codelineno-0-98"> 98</a></span>
-<span class="normal"><a href="#__codelineno-0-99"> 99</a></span>
-<span class="normal"><a href="#__codelineno-0-100">100</a></span>
-<span class="normal"><a href="#__codelineno-0-101">101</a></span>
-<span class="normal"><a href="#__codelineno-0-102">102</a></span>
-<span class="normal"><a href="#__codelineno-0-103">103</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-91" name="__codelineno-0-91"></a><span class="k">def</span><span class="w"> </span><span class="nf">add_module_scores</span><span class="p">(</span>
-<a id="__codelineno-0-92" name="__codelineno-0-92"></a>    <span class="n">feature_table</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-<a id="__codelineno-0-93" name="__codelineno-0-93"></a>    <span class="n">scores</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-<a id="__codelineno-0-94" name="__codelineno-0-94"></a>    <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-95" name="__codelineno-0-95"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<a id="__codelineno-0-96" name="__codelineno-0-96"></a><span class="w">    </span><span class="sd">"""Return ``feature_table`` with module-score columns appended."""</span>
-<a id="__codelineno-0-97" name="__codelineno-0-97"></a>
-<a id="__codelineno-0-98" name="__codelineno-0-98"></a>    <span class="n">out</span> <span class="o">=</span> <span class="n">feature_table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<a id="__codelineno-0-99" name="__codelineno-0-99"></a>    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">scores</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-<a id="__codelineno-0-100" name="__codelineno-0-100"></a>        <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-<a id="__codelineno-0-101" name="__codelineno-0-101"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">col</span><span class="si">!r}</span><span class="s2"> already exists. Set overwrite=True to replace it."</span><span class="p">)</span>
-<a id="__codelineno-0-102" name="__codelineno-0-102"></a>        <span class="n">out</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
-<a id="__codelineno-0-103" name="__codelineno-0-103"></a>    <span class="k">return</span> <span class="n">out</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#spatioev.xe.features.add_module_scores--source--__codelineno-0-91"> 91</a></span>
+<span class="normal"><a href="#spatioev.xe.features.add_module_scores--source--__codelineno-0-92"> 92</a></span>
+<span class="normal"><a href="#spatioev.xe.features.add_module_scores--source--__codelineno-0-93"> 93</a></span>
+<span class="normal"><a href="#spatioev.xe.features.add_module_scores--source--__codelineno-0-94"> 94</a></span>
+<span class="normal"><a href="#spatioev.xe.features.add_module_scores--source--__codelineno-0-95"> 95</a></span>
+<span class="normal"><a href="#spatioev.xe.features.add_module_scores--source--__codelineno-0-96"> 96</a></span>
+<span class="normal"><a href="#spatioev.xe.features.add_module_scores--source--__codelineno-0-97"> 97</a></span>
+<span class="normal"><a href="#spatioev.xe.features.add_module_scores--source--__codelineno-0-98"> 98</a></span>
+<span class="normal"><a href="#spatioev.xe.features.add_module_scores--source--__codelineno-0-99"> 99</a></span>
+<span class="normal"><a href="#spatioev.xe.features.add_module_scores--source--__codelineno-0-100">100</a></span>
+<span class="normal"><a href="#spatioev.xe.features.add_module_scores--source--__codelineno-0-101">101</a></span>
+<span class="normal"><a href="#spatioev.xe.features.add_module_scores--source--__codelineno-0-102">102</a></span>
+<span class="normal"><a href="#spatioev.xe.features.add_module_scores--source--__codelineno-0-103">103</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="spatioev.xe.features.add_module_scores--source--__codelineno-0-91" name="spatioev.xe.features.add_module_scores--source--__codelineno-0-91"></a><span class="k">def</span><span class="w"> </span><span class="nf">add_module_scores</span><span class="p">(</span>
+<a id="spatioev.xe.features.add_module_scores--source--__codelineno-0-92" name="spatioev.xe.features.add_module_scores--source--__codelineno-0-92"></a>    <span class="n">feature_table</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+<a id="spatioev.xe.features.add_module_scores--source--__codelineno-0-93" name="spatioev.xe.features.add_module_scores--source--__codelineno-0-93"></a>    <span class="n">scores</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+<a id="spatioev.xe.features.add_module_scores--source--__codelineno-0-94" name="spatioev.xe.features.add_module_scores--source--__codelineno-0-94"></a>    <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="spatioev.xe.features.add_module_scores--source--__codelineno-0-95" name="spatioev.xe.features.add_module_scores--source--__codelineno-0-95"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<a id="spatioev.xe.features.add_module_scores--source--__codelineno-0-96" name="spatioev.xe.features.add_module_scores--source--__codelineno-0-96"></a><span class="w">    </span><span class="sd">"""Return ``feature_table`` with module-score columns appended."""</span>
+<a id="spatioev.xe.features.add_module_scores--source--__codelineno-0-97" name="spatioev.xe.features.add_module_scores--source--__codelineno-0-97"></a>
+<a id="spatioev.xe.features.add_module_scores--source--__codelineno-0-98" name="spatioev.xe.features.add_module_scores--source--__codelineno-0-98"></a>    <span class="n">out</span> <span class="o">=</span> <span class="n">feature_table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<a id="spatioev.xe.features.add_module_scores--source--__codelineno-0-99" name="spatioev.xe.features.add_module_scores--source--__codelineno-0-99"></a>    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">scores</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+<a id="spatioev.xe.features.add_module_scores--source--__codelineno-0-100" name="spatioev.xe.features.add_module_scores--source--__codelineno-0-100"></a>        <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+<a id="spatioev.xe.features.add_module_scores--source--__codelineno-0-101" name="spatioev.xe.features.add_module_scores--source--__codelineno-0-101"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">col</span><span class="si">!r}</span><span class="s2"> already exists. Set overwrite=True to replace it."</span><span class="p">)</span>
+<a id="spatioev.xe.features.add_module_scores--source--__codelineno-0-102" name="spatioev.xe.features.add_module_scores--source--__codelineno-0-102"></a>        <span class="n">out</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+<a id="spatioev.xe.features.add_module_scores--source--__codelineno-0-103" name="spatioev.xe.features.add_module_scores--source--__codelineno-0-103"></a>    <span class="k">return</span> <span class="n">out</span>
 </code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
@@ -2510,10 +2540,10 @@ to override the defaults.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   

@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -28,10 +28,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -312,6 +312,8 @@
       
         
       
+        
+      
     
     
     
@@ -493,6 +495,34 @@
     
   
     5. Cell types in QuPath
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="clustering_gating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5b. Cell types by clustering and gating
   
 
     
@@ -1727,7 +1757,10 @@ most, and means you meet every screen once before using your own data.</p>
 <h2 id="what-you-will-get">What you will get<a class="headerlink" href="#what-you-will-get" title="Permanent link">¶</a></h2>
 <p>For every core (or slide):</p>
 <ul>
-<li><strong>Cell types</strong>, which you assign in QuPath with an object classifier.</li>
+<li><strong>Cell types</strong>, which you assign in QuPath with an object classifier, or
+  inside SpatioEv by clustering, gating and marker rules
+  (<a href="clustering_gating/">step 5b</a>; suited to multi-FOV TMAs segmented with
+  ARK).</li>
 <li><strong>Matrix fibers</strong> in each matrix channel (for example COL1, COL4, FN): how
   much matrix there is, how aligned it is, and TWOMBLI-style architecture
   (branching, curvature, gaps, fibre length).</li>
@@ -1748,16 +1781,18 @@ most, and means you meet every screen once before using your own data.</p>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        ├──► 5. Cell types in QuPath      SpatioEv hands the cells to QuPath,
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        │                                 you classify them, SpatioEv takes the
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        │                                 classes back
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        │
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        ├──► 6. Matrix fibers             runs on the image only, so it can run
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        │                                 before or while you work in QuPath
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        │
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        └──► 7. Tissue regions            needs 5 (and uses 6)
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                   │
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                   └──► 8. Co-localisation      needs 7 (and uses 6)
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                              │
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                              └──► 9. Compare groups   needs 7 and 8 for
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                                                        every core
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        │     (or 5b. by clustering and   cell types assigned inside SpatioEv
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        │      gating)                    from clusters, gates and marker rules
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        │
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        ├──► 6. Matrix fibers             runs on the image only, so it can run
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        │                                 before or while you work in QuPath
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        │
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        └──► 7. Tissue regions            needs 5 (and uses 6)
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                   │
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                   └──► 8. Co-localisation      needs 7 (and uses 6)
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                              │
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                              └──► 9. Compare groups   needs 7 and 8 for
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>                                                        every core
 </code></pre></div>
 <table>
 <thead>
@@ -1773,6 +1808,12 @@ most, and means you meet every screen once before using your own data.</p>
 <td><a href="qupath/">5. Cell types</a></td>
 <td>SpatioEv app <strong>and</strong> QuPath</td>
 <td>cell outlines and measurements</td>
+<td>a cell type for every cell</td>
+</tr>
+<tr>
+<td><a href="clustering_gating/">5b. … or by clustering and gating</a></td>
+<td>SpatioEv app</td>
+<td>ARK cell tables, marker list, images, marker rules</td>
 <td>a cell type for every cell</td>
 </tr>
 <tr>
@@ -1927,10 +1968,10 @@ person who supports you the <strong>full</strong> error text and a screenshot.</
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   

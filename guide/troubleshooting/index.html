@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -28,10 +28,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -312,6 +312,8 @@
       
         
       
+        
+      
     
     
     
@@ -493,6 +495,34 @@
     
   
     5. Cell types in QuPath
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../clustering_gating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5b. Cell types by clustering and gating
   
 
     
@@ -728,6 +758,17 @@
     <span class="md-ellipsis">
       
         The app
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clustering-and-gating-steps-0003" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clustering and gating (steps 00–03)
       
     </span>
   </a>
@@ -1771,6 +1812,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#clustering-and-gating-steps-0003" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clustering and gating (steps 00–03)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#qupath" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1916,7 +1968,79 @@
 <tr>
 <td><em>Run for every core</em> reports <strong>failed</strong> for a core</td>
 <td>That core's run hit an error.</td>
-<td>Look in that core's results folder for <code>&lt;core&gt;_…_worker.log</code>; the end of the file shows the error. Other cores are not affected.</td>
+<td>Open <code>logs/&lt;core&gt;_&lt;stage&gt;.log</code> in that core's results folder; the end of the file shows the error. Other cores are not affected.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="clustering-and-gating-steps-0003">Clustering and gating (steps 00–03)<a class="headerlink" href="#clustering-and-gating-steps-0003" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th>What you see</th>
+<th>Why</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Marker order CSV lists … markers but … has … image channels</em> (page 00)</td>
+<td>The marker CSV found does not belong to these images, often an older copy in a parent folder.</td>
+<td>Type the path of the right <code>markers_bs.csv</code> into <strong>Marker order CSV</strong>. Check the <strong>Marker order</strong> tab before building.</td>
+</tr>
+<tr>
+<td>A warning that the AnnData <em>was built by an older SpatioEv</em> (pages 01–02)</td>
+<td>Made with SpatioEv 0.2.0 or earlier, which paired markers with the wrong image planes.</td>
+<td>Rebuild it with page 00, then redo clustering and gating (<a href="../clustering_gating/#b-prepare-anndata-page-00">step 5b</a>).</td>
+</tr>
+<tr>
+<td>Clusters on page 01 come mostly from one or two FOVs</td>
+<td>Cores were stained or imaged unevenly, and scaling over all cells keeps those differences.</td>
+<td>Tick <strong>Z-score within each FOV</strong> and run Level-0 clustering again (<a href="../clustering_gating/#c-find-the-tissue-structures-page-01">step 5b</a>).</td>
+</tr>
+<tr>
+<td>Image review is greyed out, or a FOV is missing from the FOV list (pages 01–03)</td>
+<td>That FOV has no image in the image folder. Its cells are still converted and analysed.</td>
+<td>Copy its OME-TIFF into the folder (name it with the FOV number, e.g. <code>22.ome.tif</code>), or review another FOV.</td>
+</tr>
+<tr>
+<td><em>Workflow markers absent from AnnData</em> (page 03)</td>
+<td>A marker column of the rules file matches no marker, not even after ignoring suffixes such as <code>_1</code>/<code>_2</code>.</td>
+<td>Rename the column to the marker name in your panel, or delete it.</td>
+</tr>
+<tr>
+<td><em>Workflow markers absent from gate CSV</em> (page 03)</td>
+<td>The gate table has no row for a marker the rules use.</td>
+<td>Add a gate for it (step 02 calculates one for every marker), or remove it from the rules.</td>
+</tr>
+<tr>
+<td><em>No gate for SOX9 in fov2, …</em> (page 03)</td>
+<td>A per-FOV gate table has no value for those FOVs.</td>
+<td>Choose how to fill them under <strong>Images without a gate for a marker</strong>, or list only the gated FOVs in <strong>Image IDs to phenotype</strong>.</td>
+</tr>
+<tr>
+<td>A note that a row uses a single <code>pos</code> / <code>neg</code> marker (page 03)</td>
+<td>scimap only averages that marker into the score, so cells that break it can still get the type.</td>
+<td>Use <code>allpos</code> / <code>allneg</code> when the marker must be positive / negative (<a href="../clustering_gating/#the-rules-file">why</a>).</td>
+</tr>
+<tr>
+<td><em>N cells … were set to Unknown because their phenotype had fewer than K cells in that image</em></td>
+<td><strong>Minimum cells per phenotype per image</strong> removes small populations per FOV.</td>
+<td>Set it to 0 for small cores, or lower it.</td>
+</tr>
+<tr>
+<td>Many cells of a broadly expressed marker are called negative</td>
+<td>The marker was left blank in the staining questionnaire, so it got a cautious upper-tail gate.</td>
+<td>Answer <strong>Staining condition</strong>, <strong>Compartment</strong> and <strong>Artifact</strong> for it on page 02 and calculate again.</td>
+</tr>
+<tr>
+<td>A marker is flagged <code>3GMM_high_is_majority</code> and called positive in only a few percent of cells (page 02)</td>
+<td>Its values have no separate positive peak. The usual gate would have called most cells positive, so a stricter upper-tail gate was used, which calls at most about a quarter of cells positive.</td>
+<td>Check the marker on the image (<strong>Generate spatial QC images</strong>). If it really is in many cells, move its gate in napari review.</td>
+</tr>
+<tr>
+<td>Distances or areas look 3× too large or too small (pages 04–06)</td>
+<td>The pixel size is wrong. Some scanners write a wrong one into the OME-TIFF, and page 04 fills it in from there.</td>
+<td>Check it: a typical nucleus is 5–10 µm across. Type your scan's pixel size (0.325 µm/px for our TMA scans) and run again.</td>
 </tr>
 </tbody>
 </table>
@@ -2059,10 +2183,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   
