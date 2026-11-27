@@ -20,6 +20,14 @@ The Markdown tutorial below is the public website-style version.
 
 - [Mastering Spatial Evolution Analysis](md/spatial_evolution_spatioev.md)
 
+## From cell tables to cell types and tubules
+
+[Cell types by clustering and gating](../guide/clustering_gating.md), in the
+step-by-step guide, goes from ARK cell tables of a multi-FOV TMA to cell types
+(broad clustering, marker gating and scimap-style rules) and on to tubule
+composition and co-localisation, on a synthetic testis TMA made with
+`spatioev demo <folder> --kind testis`.
+
 ## Runnable examples
 
 Three notebooks under `examples/` execute end to end on synthetic data, so

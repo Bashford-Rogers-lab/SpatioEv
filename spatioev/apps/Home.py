@@ -8,6 +8,7 @@ from pathlib import Path
 import streamlit as st
 
 from spatioev.apps._common import default_project_root
+from spatioev.workflows.marker_gating import default_sample_paths, stage_output_dirs
 
 
 def _apply_context(project_root: str, sample_id: str) -> None:
@@ -57,29 +58,30 @@ def main() -> None:
 
     root = Path(root_text).expanduser()
     sample = sample_id.strip() or "sample"
+    stage_dirs = stage_output_dirs(sample, root)
     stages = [
         (
             "00 Prepare AnnData",
             "pages/00_prepare_anndata.py",
-            root / f"{sample}_adata.h5ad",
+            default_sample_paths(sample, root).adata_path,
             ":material/table_view:",
         ),
         (
             "01 Broad clustering",
             "pages/01_broad_clustering.py",
-            root / "results" / f"{sample}_clustering_workflow",
+            stage_dirs["clustering"],
             ":material/scatter_plot:",
         ),
         (
             "02 Marker autogating",
             "pages/02_marker_autogating.py",
-            root / "results" / f"{sample}_marker_gating_qc",
+            stage_dirs["gating"],
             ":material/tune:",
         ),
         (
             "03 Subset phenotyping",
             "pages/03_subset_phenotyping.py",
-            root / "results" / f"{sample}_scimap_phenotyping_interface",
+            stage_dirs["phenotyping"],
             ":material/account_tree:",
         ),
         (

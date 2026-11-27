@@ -17,9 +17,14 @@ import pandas as pd
 # read_marker_manifest lives in cellsam so both conversion paths apply one
 # rule: the marker order CSV's row order defines the channel order.
 from spatioev.workflows.cellsam import (
+    canonical_name,
+    find_marker_csv,
+    marker_key,
     now,
+    plane_display_names,
     read_marker_manifest,
     resolve_marker_columns,
+    table_schema,
     write_h5ad_atomically,
     write_json,
     write_qc,
@@ -36,7 +41,9 @@ from spatioev.workflows.image_collection import (
 class TMAConversionPlan:
     project_root: Path
     image_dir: Path
-    marker_manifest: Path
+    # Marker order CSV. ``None`` looks for ``background/markers_bs.csv`` (and
+    # the other names in cellsam.MARKER_CSV_NAMES) under the project folder.
+    marker_manifest: Path | None
     dataset_id: str
     output_path: Path
     primary_filename: str = "cell_table_arcsinh_transformed.csv"
@@ -95,14 +102,34 @@ def _header(path: Path) -> list[str]:
     return pd.read_csv(path, nrows=0).columns.tolist()
 
 
+def resolve_tma_marker_manifest(plan: TMAConversionPlan) -> tuple[Path, str]:
+    """The marker order CSV for a TMA plan and whether it was found automatically."""
+    if plan.marker_manifest is not None and str(plan.marker_manifest).strip():
+        path = Path(plan.marker_manifest).expanduser().resolve()
+        if not path.is_file():
+            raise FileNotFoundError(f"Marker order CSV not found: {path}")
+        return path, "explicit"
+    found = find_marker_csv(plan.project_root, plan.image_dir)
+    if found is None:
+        raise FileNotFoundError(
+            "No marker order CSV was found. Put the panel's markers_bs.csv in "
+            f"{Path(plan.project_root).expanduser().resolve() / 'background'} "
+            "or choose the file explicitly."
+        )
+    return found, "auto-detected"
+
+
 def inspect_tma(plan: TMAConversionPlan) -> dict:
     if not plan.dataset_id.strip():
         raise ValueError("Dataset ID cannot be empty")
     pairs = discover_table_pairs(
         plan.project_root, plan.primary_filename, plan.secondary_filename
     )
-    markers = read_marker_manifest(plan.marker_manifest)
+    manifest_path, manifest_source = resolve_tma_marker_manifest(plan)
+    markers = read_marker_manifest(manifest_path)
     marker_order = markers["marker_name"].tolist()
+    removed = markers.loc[markers["remove"], "marker_name"].tolist()
+    expression_markers = [marker for marker in marker_order if marker not in removed]
     images = image_files(plan.image_dir)
     if not images:
         raise FileNotFoundError(f"No OME-TIFF files found under {plan.image_dir}")
@@ -136,7 +163,7 @@ def inspect_tma(plan: TMAConversionPlan) -> dict:
                 f"Cell-table columns differ across ARK batches at {pair['batch']}"
             )
         resolved, missing_markers, ambiguous = resolve_marker_columns(
-            marker_order, primary_header
+            expression_markers, primary_header
         )
         if ambiguous:
             raise ValueError(
@@ -152,7 +179,9 @@ def inspect_tma(plan: TMAConversionPlan) -> dict:
         ]
         if missing_markers or required:
             raise ValueError(
-                f"Invalid columns in {pair['batch']}: missing markers={missing_markers}; missing metadata={required}"
+                f"Invalid columns in {pair['batch']}: missing markers={missing_markers}; "
+                f"missing metadata={required}. A marker that was never quantified "
+                "can be marked remove=TRUE in the marker order CSV."
             )
         renamed = {
             marker: column for marker, column in resolved.items() if marker != column
@@ -165,6 +194,23 @@ def inspect_tma(plan: TMAConversionPlan) -> dict:
                     f"{marker!r} -> {column!r}" for marker, column in renamed.items()
                 )
             )
+        if pair is pairs[0]:
+            # Expression columns of the table's marker block (everything
+            # before "label") that the marker CSV does not list are kept as
+            # .obs, never as markers; say so instead of silently dropping them.
+            used = {marker_key(column) for column in resolved.values()} | {
+                marker_key(name) for name in removed
+            }
+            unlisted = [
+                column
+                for column in table_schema(primary).marker_columns
+                if marker_key(column) not in used
+            ]
+            if unlisted:
+                warnings.append(
+                    "These cell-table expression columns are not in the marker "
+                    f"order CSV and are kept as .obs metadata: {unlisted}"
+                )
         summary = pd.read_csv(primary, usecols=["fov", "mask_type"])
         selected = summary["mask_type"].astype(str).eq(plan.mask_type)
         fovs = sorted(
@@ -185,9 +231,30 @@ def inspect_tma(plan: TMAConversionPlan) -> dict:
     if len(all_fovs) != len(set(all_fovs)):
         duplicates = sorted({fov for fov in all_fovs if all_fovs.count(fov) > 1})
         raise ValueError(f"FOVs occur in more than one ARK batch: {duplicates}")
-    image_manifest = collection_manifest(
-        plan.image_dir, sorted(all_fovs, key=natural_key)
-    )
+    fovs = sorted(all_fovs, key=natural_key)
+    # The AnnData comes from the cell tables; an image is only needed to check
+    # the panel and, later, to review a FOV on. TMA images are ~1 GB each, so
+    # a local copy often holds only a few FOVs: convert every FOV, and say
+    # which ones cannot be reviewed on an image.
+    image_manifest = collection_manifest(plan.image_dir, fovs, allow_missing=True)
+    if not image_manifest:
+        raise ValueError(
+            f"None of the {len(fovs)} FOVs in the cell tables ({', '.join(fovs[:5])}"
+            f"{', ...' if len(fovs) > 5 else ''}) has an image under {plan.image_dir}. "
+            "Image file names must contain the FOV number, for example 5.ome.tif "
+            "or fov5.ome.tif."
+        )
+    with_image = {row["imageid"] for row in image_manifest}
+    fovs_without_image = [fov for fov in fovs if fov not in with_image]
+    if fovs_without_image:
+        shown = ", ".join(fovs_without_image[:8])
+        more = f" and {len(fovs_without_image) - 8} more" if len(fovs_without_image) > 8 else ""
+        warnings.append(
+            f"{len(fovs_without_image)} of {len(fovs)} FOVs have no image under "
+            f"{plan.image_dir} ({shown}{more}). They are converted from their cell "
+            "tables as usual; image review and overlays work only for FOVs with an "
+            f"image ({', '.join(sorted(with_image, key=natural_key))})."
+        )
     for row in image_manifest:
         channels = channel_names(Path(row["image_path"]), fallback=marker_order)
         if len(channels) != len(marker_order):
@@ -196,25 +263,37 @@ def inspect_tma(plan: TMAConversionPlan) -> dict:
                 f"{len(channels)} channels against {len(marker_order)} markers "
                 f"in the marker order CSV ({row['image_path']})"
             )
-        if channels != marker_order:
+        if [marker_key(name) for name in channels] != [
+            marker_key(name) for name in marker_order
+        ]:
             warnings.append(
                 f"The marker order CSV overrides the channel names in "
                 f"{row['imageid']}. Image order: {channels}. "
                 f"Marker order CSV: {marker_order}."
             )
 
+    if removed:
+        warnings.append(
+            f"Image planes flagged 'remove' in the marker order CSV are not used "
+            f"as markers: {removed}"
+        )
     return {
         "dataset_id": plan.dataset_id.strip(),
         "n_batches": len(pairs),
         "n_fovs": len(all_fovs),
-        "n_markers": len(marker_order),
+        "n_markers": len(expression_markers),
         "n_cells": int(sum(row["selected_cells"] for row in batch_rows)),
+        # One entry per image plane, in plane order (the CSV's row order).
         "marker_order": marker_order,
+        # The planes that become adata.X columns, in the same order.
+        "expression_markers": expression_markers,
+        "removed_markers": removed,
         # Marker name -> cell-table column. Every batch is checked against the
         # same reference header above, so the last resolution covers them all.
         "marker_columns": resolved,
         "warnings": warnings,
-        "marker_manifest": str(Path(plan.marker_manifest).expanduser().resolve()),
+        "marker_manifest": str(manifest_path),
+        "marker_manifest_source": manifest_source,
         "image_dir": str(Path(plan.image_dir).expanduser().resolve()),
         "output_path": str(Path(plan.output_path).expanduser().resolve()),
         "mask_type": plan.mask_type,
@@ -222,6 +301,7 @@ def inspect_tma(plan: TMAConversionPlan) -> dict:
         "secondary_filename": plan.secondary_filename,
         "batches": batch_rows,
         "image_manifest": image_manifest,
+        "fovs_without_image": fovs_without_image,
     }
 
 
@@ -301,6 +381,7 @@ def build_tma_anndata(
         plan.project_root, plan.primary_filename, plan.secondary_filename
     )
     marker_order = report["marker_order"]
+    expression_markers = report["expression_markers"]
     primary_parts = []
     secondary_parts = []
     for index, pair in enumerate(pairs, start=1):
@@ -338,8 +419,11 @@ def build_tma_anndata(
     update("assemble", "Assembling multi-FOV AnnData", 0.50)
     # Exclude the columns the markers actually came from. Using the manifest
     # spellings would leave a case-differing column in .obs as well as .X.
-    marker_columns = [report["marker_columns"][marker] for marker in marker_order]
-    marker_set = set(marker_columns)
+    marker_columns = [report["marker_columns"][marker] for marker in expression_markers]
+    removed_columns, _, _ = resolve_marker_columns(
+        list(report["removed_markers"]), list(primary.columns)
+    )
+    marker_set = set(marker_columns) | set(removed_columns.values())
     obs_columns = [column for column in primary.columns if column not in marker_set]
     obs = primary[obs_columns].copy()
     if "cell_size" in obs and "area" in obs:
@@ -373,17 +457,22 @@ def build_tma_anndata(
     obs["tissue_piece"] = obs["fov"]
     obs.index = _cell_index(obs, plan.dataset_id.strip())
 
-    marker_manifest = read_marker_manifest(plan.marker_manifest)
-    var = marker_manifest.set_index("marker_name").loc[marker_order].copy()
-    var.index.name = "marker"
+    marker_manifest = read_marker_manifest(Path(report["marker_manifest"]))
+    plane_of = {name: index for index, name in enumerate(marker_order)}
+    var = marker_manifest.set_index("marker_name").loc[expression_markers].copy()
+    var = var.drop(columns="remove")
+    # The same canonical spelling the single-image path and the image readers
+    # use, so a marker is found under one name everywhere.
+    var.index = pd.Index([canonical_name(name) for name in var.index], name="marker")
     var["marker_order"] = np.arange(len(var), dtype=int)
+    var["channel_index"] = [plane_of[name] for name in expression_markers]
     var["source_column"] = marker_columns
     x = primary[marker_columns].to_numpy(dtype=np.float32, copy=True)
     layer = secondary[marker_columns].to_numpy(dtype=np.float32, copy=True)
     adata = ad.AnnData(X=x, obs=obs, var=var)
     adata.layers[plan.layer_name] = layer
     adata.obsm["spatial"] = obs[["X_centroid", "Y_centroid"]].to_numpy(dtype=np.float32)
-    adata.uns["all_markers"] = np.asarray(marker_order, dtype=str)
+    adata.uns["all_markers"] = np.asarray(plane_display_names(marker_order), dtype=str)
     adata.uns["image_manifest"] = pd.DataFrame(report["image_manifest"]).set_index(
         "imageid"
     )
@@ -391,7 +480,9 @@ def build_tma_anndata(
         "created_at": now(),
         "dataset_id": plan.dataset_id.strip(),
         "project_root": str(Path(plan.project_root).expanduser().resolve()),
-        "marker_manifest": str(Path(plan.marker_manifest).expanduser().resolve()),
+        "marker_manifest": report["marker_manifest"],
+        "marker_manifest_source": report["marker_manifest_source"],
+        "removed_markers": list(report["removed_markers"]),
         "image_dir": str(Path(plan.image_dir).expanduser().resolve()),
         "source_ark_wdirs": [str(pair["batch"]) for pair in pairs],
         "mask_type": plan.mask_type,
@@ -402,7 +493,8 @@ def build_tma_anndata(
     adata.uns["cellsam_conversion"] = {
         "created_at": now(),
         "imageid": plan.dataset_id.strip(),
-        "channel_order_source": "marker manifest",
+        "channel_order_source": "marker order CSV",
+        "marker_manifest": report["marker_manifest"],
     }
 
     output_path = Path(plan.output_path).expanduser().resolve()
@@ -419,7 +511,10 @@ def build_tma_anndata(
         .value_counts()
         .reindex(sorted(adata.obs["imageid"].astype(str).unique(), key=natural_key))
     )
-    counts_path = output_path.with_name(f"{output_path.stem}_cells_per_fov.csv")
+    # Beside the other conversion QC rather than as one more file next to the
+    # H5AD.
+    counts_path = output_path.parent / f"{output_path.stem}_qc" / "cells_per_fov.csv"
+    counts_path.parent.mkdir(parents=True, exist_ok=True)
     counts.rename_axis("imageid").reset_index(name="n_cells").to_csv(
         counts_path, index=False
     )
@@ -445,7 +540,12 @@ def parser() -> argparse.ArgumentParser:
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("--project-root", type=Path, required=True)
     cli.add_argument("--image-dir", type=Path, required=True)
-    cli.add_argument("--marker-manifest", type=Path, required=True)
+    cli.add_argument(
+        "--marker-manifest",
+        type=Path,
+        help="Marker order CSV. Default: background/markers_bs.csv (or "
+        "marker_bs.csv / markers.csv) found under --project-root.",
+    )
     cli.add_argument("--dataset-id", required=True)
     cli.add_argument("--output", type=Path, required=True)
     cli.add_argument("--primary-filename", default="cell_table_arcsinh_transformed.csv")

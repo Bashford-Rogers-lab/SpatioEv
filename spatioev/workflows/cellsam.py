@@ -15,10 +15,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
-os.environ.setdefault(
-    "MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "spatioev_cellsam_matplotlib")
-)
-Path(os.environ["MPLCONFIGDIR"]).mkdir(parents=True, exist_ok=True)
+from spatioev.workflows._io import configure_caches
+
+configure_caches()
 
 import anndata as ad
 import matplotlib.pyplot as plt
@@ -96,6 +95,10 @@ class ConversionPlan:
     # instead of the OME metadata, because TMA exports routinely lose their
     # channel names and an unnamed image cannot arbitrate its own marker order.
     marker_manifest: Path | None = None
+    # When no marker order CSV is given, look for one next to the data
+    # (``background/markers_bs.csv`` and friends, see find_marker_csv) and use
+    # it. Set False to take the order from the OME metadata instead.
+    auto_marker_manifest: bool = True
 
 
 StatusCallback = Callable[[str, str, float], None]
@@ -124,6 +127,11 @@ def read_marker_manifest(path: Path) -> pd.DataFrame:
             manifest["marker_name"].duplicated(keep=False), "marker_name"
         ].tolist()
         raise ValueError(f"Marker manifest contains duplicated names: {duplicated}")
+    manifest["remove"] = (
+        manifest["remove"].map(_truthy).astype(bool)
+        if "remove" in manifest
+        else False
+    )
     if "channel_number" in manifest:
         numbers = pd.to_numeric(manifest["channel_number"], errors="raise")
         # Repeats mean the column is cycle-local (1, 2, 3, 1, 2, 3, ...) rather
@@ -159,18 +167,173 @@ def read_marker_manifest(path: Path) -> pd.DataFrame:
     return manifest.reset_index(drop=True)
 
 
-def manifest_marker_order(plan: ConversionPlan) -> list[str] | None:
-    """Marker order from ``plan.marker_manifest``, or ``None`` when unset."""
-    if plan.marker_manifest is None:
-        return None
-    order = read_marker_manifest(plan.marker_manifest)["marker_name"].tolist()
+def _truthy(value: object) -> bool:
+    """Read a ``remove`` cell: TRUE/True/1/yes/x mean "drop this channel"."""
+    if value is None or (isinstance(value, float) and np.isnan(value)):
+        return False
+    return str(value).strip().lower() in {"true", "t", "1", "1.0", "yes", "y", "x"}
+
+
+#: Marker order CSV names, most specific first. ``markers_bs.csv`` describes
+#: the background-subtracted image stack whose planes the cell tables were
+#: quantified from, so it is the one that matches the image channel order.
+MARKER_CSV_NAMES = ("markers_bs.csv", "marker_bs.csv", "markers.csv")
+
+
+def _marker_csv_candidates(folder: Path):
+    for name in MARKER_CSV_NAMES:
+        yield folder / "background" / name
+    yield folder / "background" / f"{folder.name}_markers.csv"
+    for name in MARKER_CSV_NAMES:
+        yield folder / name
+    # Earlier SpatioEv versions suggested dearray/<project>_markers.csv.
+    yield folder / "dearray" / f"{folder.name}_markers.csv"
+
+
+def _looks_like_marker_csv(path: Path) -> bool:
+    try:
+        return "marker_name" in [column.strip() for column in read_header(path)]
+    except (OSError, StopIteration, UnicodeDecodeError, csv.Error):
+        return False
+
+
+def find_marker_csv(*anchors: Path | None, max_levels: int = 3) -> Path | None:
+    """Find the marker order CSV that belongs to a dataset.
+
+    Each anchor (a cell-table folder, an image or image folder, a project
+    folder) is searched first, then up to ``max_levels`` parent folders, so
+    ``<dataset>/background/markers_bs.csv`` is found from
+    ``<dataset>/ark_wdir_1/segmentation/cell_table`` as well as from
+    ``<dataset>``. In each folder the names in :data:`MARKER_CSV_NAMES` are
+    tried inside ``background/`` first, then in the folder itself. Only a CSV
+    with a ``marker_name`` column counts. The nearest match wins.
+    """
+    seen: set[Path] = set()
+    for anchor in anchors:
+        if anchor is None or not str(anchor).strip():
+            continue
+        directory = Path(anchor).expanduser().resolve()
+        if directory.is_file() or directory.suffix.lower() in {".tif", ".tiff"}:
+            directory = directory.parent
+        for level, folder in enumerate([directory, *directory.parents]):
+            if level > max_levels:
+                break
+            if folder in seen:
+                continue
+            seen.add(folder)
+            for candidate in _marker_csv_candidates(folder):
+                if candidate.is_file() and _looks_like_marker_csv(candidate):
+                    return candidate
+    return None
+
+
+def plan_marker_manifest(plan: ConversionPlan) -> tuple[Path | None, str]:
+    """The marker order CSV a single-image plan will use, and where it came from.
+
+    Returns ``(path, source)`` with ``source`` one of ``"explicit"``,
+    ``"auto-detected"`` or ``"none"``.
+    """
+    if plan.marker_manifest is not None and str(plan.marker_manifest).strip():
+        return Path(plan.marker_manifest).expanduser().resolve(), "explicit"
+    if not plan.auto_marker_manifest:
+        return None, "none"
+    found = find_marker_csv(Path(plan.primary_csv).parent, Path(plan.image_path))
+    return (found, "auto-detected") if found is not None else (None, "none")
+
+
+def _manifest_plane_check(order: list[str], planes: int, image: Path, path: Path, source: str) -> None:
+    if len(order) == planes:
+        return
+    hint = (
+        " It was found automatically; choose the marker CSV that describes "
+        "this image, or switch off automatic detection."
+        if source == "auto-detected"
+        else ""
+    )
+    raise ValueError(
+        f"Marker order CSV {path} lists {len(order)} markers but "
+        f"{Path(image).name} has {planes} image channels.{hint}"
+    )
+
+
+def plan_manifest(plan: ConversionPlan) -> tuple[pd.DataFrame | None, Path | None, str]:
+    """Read the plan's marker order CSV, checked against the image's plane count."""
+    path, source = plan_marker_manifest(plan)
+    if path is None:
+        return None, None, source
+    manifest = read_marker_manifest(path)
     planes = len(image_channel_names(plan.image_path))
-    if len(order) != planes:
-        raise ValueError(
-            f"Marker order CSV lists {len(order)} markers but "
-            f"{Path(plan.image_path).name} has {planes} image channels"
+    _manifest_plane_check(manifest["marker_name"].tolist(), planes, plan.image_path, path, source)
+    return manifest, path, source
+
+
+def manifest_marker_order(plan: ConversionPlan) -> list[str] | None:
+    """Marker order from the plan's marker order CSV, or ``None`` when there is none."""
+    manifest, _, _ = plan_manifest(plan)
+    return None if manifest is None else manifest["marker_name"].tolist()
+
+
+def plane_display_names(names: list[str]) -> list[str]:
+    """Canonical name per image plane, with repeated names suffixed ``(2)``, ``(3)``."""
+    seen: dict[str, int] = {}
+    display: list[str] = []
+    for name in names:
+        canonical = canonical_name(name)
+        seen[canonical] = seen.get(canonical, 0) + 1
+        display.append(
+            canonical if seen[canonical] == 1 else f"{canonical} ({seen[canonical]})"
         )
-    return order
+    return display
+
+
+def marker_order_warning(adata: ad.AnnData) -> str | None:
+    """Explain why an AnnData's marker order cannot be trusted, if it cannot.
+
+    SpatioEv 0.2.0 and earlier sorted the marker order CSV by its
+    ``channel_number`` column. In a cycle-based panel (``markers_bs.csv``)
+    that column restarts every cycle, so sorting it interleaves the cycles and
+    every marker after the first is paired with the wrong image plane. Such a
+    file is recognisable: its markers are sorted by a repeating
+    ``channel_number`` while their ``cycle_number`` goes backwards.
+    """
+    var = adata.var
+    if {"channel_number", "cycle_number"}.issubset(var.columns):
+        channel = pd.to_numeric(var["channel_number"], errors="coerce")
+        cycle = pd.to_numeric(var["cycle_number"], errors="coerce")
+        if (
+            channel.notna().all()
+            and cycle.notna().all()
+            and channel.duplicated().any()
+            and channel.is_monotonic_increasing
+            and not cycle.is_monotonic_increasing
+        ):
+            return (
+                "This AnnData was built by an older SpatioEv that sorted the "
+                "marker CSV by its cycle-local 'channel_number' column, so its "
+                "markers are paired with the wrong image planes. Rebuild it with "
+                "step 00 (Prepare AnnData) before clustering or gating."
+            )
+    conversion = dict(adata.uns.get("tma_conversion", {}) or {}) or dict(
+        adata.uns.get("cellsam_conversion", {}) or {}
+    )
+    manifest_path = conversion.get("marker_manifest")
+    recorded = adata.uns.get("all_markers")
+    if not manifest_path or recorded is None or not Path(str(manifest_path)).is_file():
+        return None
+    try:
+        expected = read_marker_manifest(Path(str(manifest_path)))["marker_name"].tolist()
+    except Exception:
+        return None
+    recorded_names = [str(name) for name in np.asarray(recorded).ravel().tolist()]
+    if [marker_key(name) for name in recorded_names] != [
+        marker_key(name) for name in plane_display_names(expected)
+    ]:
+        return (
+            f"The marker order stored in this AnnData differs from the row order "
+            f"of {manifest_path}. If the CSV is right, rebuild the AnnData with "
+            "step 00 (Prepare AnnData)."
+        )
+    return None
 
 
 def write_h5ad_atomically(adata: ad.AnnData, output_path: Path) -> None:
@@ -349,15 +512,7 @@ def display_channel_names(image_path: Path) -> list[str]:
     returns a name per plane so they line up again, suffixing repeats
     (``DAPI``, ``DAPI (2)``) to keep napari layers distinguishable.
     """
-    seen: dict[str, int] = {}
-    display: list[str] = []
-    for name in image_channel_names(image_path):
-        canonical = canonical_name(name)
-        seen[canonical] = seen.get(canonical, 0) + 1
-        display.append(
-            canonical if seen[canonical] == 1 else f"{canonical} ({seen[canonical]})"
-        )
-    return display
+    return plane_display_names(image_channel_names(image_path))
 
 
 def canonical_name(name: str) -> str:
@@ -484,12 +639,28 @@ def inspect_inputs(plan: ConversionPlan) -> dict:
     if primary.path == secondary.path:
         raise ValueError("Primary and secondary CSV files must be different")
     file_channels = image_channel_names(plan.image_path)
-    manifest_order = manifest_marker_order(plan)
+    manifest, manifest_path, manifest_source = plan_manifest(plan)
+    manifest_order = None if manifest is None else manifest["marker_name"].tolist()
     # The manifest replaces the OME channel names positionally: manifest row i
     # names image plane i. Everything downstream keys off `image_channels`, so
     # substituting here is enough to put var_names in marker-order-CSV order.
     image_channels = manifest_order if manifest_order is not None else file_channels
-    roles, targets, reasons = _automatic_roles(primary.columns, image_channels)
+    # Planes flagged in the CSV's optional `remove` column stay in the plane
+    # list (they are still in the image) but never become markers.
+    removed_channels = (
+        []
+        if manifest is None
+        else manifest.loc[manifest["remove"], "marker_name"].tolist()
+    )
+    removed_keys = {marker_key(name) for name in removed_channels}
+    active_channels = [
+        channel for channel in image_channels if marker_key(channel) not in removed_keys
+    ]
+    roles, targets, reasons = _automatic_roles(primary.columns, active_channels)
+    for column in primary.columns:
+        if marker_key(column) in removed_keys and roles[column] != ROLE_CELL_ID:
+            roles[column] = ROLE_IGNORE
+            reasons[column] = "Flagged 'remove' in the marker order CSV"
 
     for column, role in (plan.column_roles or {}).items():
         if column not in roles:
@@ -535,12 +706,18 @@ def inspect_inputs(plan: ConversionPlan) -> dict:
         column
         for column in primary.marker_columns
         if roles.get(column) == ROLE_OBSERVATION
+        and marker_key(column) not in removed_keys
     ]
     if demoted:
         warnings.append(
             f"These expression columns have no matching image channel and are "
             f"kept as .obs metadata rather than markers: {demoted}. Supply a "
             f"marker order CSV if they should be markers."
+        )
+    if removed_channels:
+        warnings.append(
+            f"Image planes flagged 'remove' in the marker order CSV are not "
+            f"used as markers: {removed_channels}"
         )
     image_channel_keys = [marker_key(channel) for channel in image_channels]
     duplicate_image_channels = sorted(
@@ -581,7 +758,7 @@ def inspect_inputs(plan: ConversionPlan) -> dict:
     # would keep the last, which is both arbitrary and surprising: in cyclic
     # imaging the first occurrence is the reference round.
     channel_by_key: dict[str, str] = {}
-    for channel in image_channels:
+    for channel in active_channels:
         channel_by_key.setdefault(marker_key(channel), channel)
     resolved_targets: dict[str, str] = {}
     for column in role_columns[ROLE_MARKER]:
@@ -625,13 +802,21 @@ def inspect_inputs(plan: ConversionPlan) -> dict:
     missing_channels = sorted(
         {
             channel
-            for channel in image_channels
+            for channel in active_channels
             if marker_key(channel) not in covered_keys
         },
         key=image_channels.index,
     )
     if missing_channels:
-        errors.append(f"OME channels without an expression column: {missing_channels}")
+        errors.append(
+            f"Image channels without an expression column: {missing_channels}. "
+            + (
+                "Mark them remove=TRUE in the marker order CSV if they were "
+                "never quantified."
+                if manifest_path is not None
+                else ""
+            )
+        )
 
     secondary_missing = [
         column
@@ -654,7 +839,7 @@ def inspect_inputs(plan: ConversionPlan) -> dict:
     seen_channel_keys: set[str] = set()
     for channel_index, channel in enumerate(image_channels):
         channel_key = marker_key(channel)
-        if channel_key in seen_channel_keys:
+        if channel_key in seen_channel_keys or channel_key in removed_keys:
             continue
         seen_channel_keys.add(channel_key)
         source = next(
@@ -699,6 +884,9 @@ def inspect_inputs(plan: ConversionPlan) -> dict:
         "output_path": str(Path(plan.output_path).expanduser().resolve()),
         "layer_name": plan.layer_name,
         "image_channels": image_channels,
+        "marker_manifest": str(manifest_path) if manifest_path is not None else None,
+        "marker_manifest_source": manifest_source,
+        "removed_channels": removed_channels,
         "marker_mapping": marker_rows,
         "column_roles": role_rows,
         "errors": errors,
@@ -967,9 +1155,13 @@ def build_anndata(
                 )
                 break
     obs.index = _obs_names(obs, plan.imageid.strip(), cell_id_column, group_column)
+    # channel_index is the marker's 0-based plane in the image, so a marker
+    # can always be found in the image even when planes repeat or are removed.
     var = pd.DataFrame(
         {
-            "channel_index": np.arange(len(output_markers), dtype=int),
+            "channel_index": [
+                int(row["channel_index"]) for row in report["marker_mapping"]
+            ],
             "source_column": source_columns,
         },
         index=pd.Index(output_markers, name="marker"),
@@ -984,12 +1176,16 @@ def build_anndata(
             dtype=float
         )
     # One name per *image plane*, not per marker: scimap.pl.image_viewer
-    # asserts these line up with the channels in the file. A marker order CSV
-    # already supplies exactly one name per plane, so it is used verbatim;
-    # otherwise the OME names are de-duplicated for the repeated-channel case.
-    manifest_order = manifest_marker_order(plan)
+    # asserts these line up with the channels in the file, and the later
+    # stages read the image planes by these names. They use the same
+    # canonical spelling as var_names, so every marker is found by name.
+    manifest_order = (
+        None
+        if report["marker_manifest"] is None
+        else read_marker_manifest(Path(report["marker_manifest"]))["marker_name"].tolist()
+    )
     adata.uns["all_markers"] = np.asarray(
-        manifest_order
+        plane_display_names(manifest_order)
         if manifest_order is not None
         else display_channel_names(plan.image_path),
         dtype=str,
@@ -1011,11 +1207,9 @@ def build_anndata(
         "channel_order_source": (
             "marker order CSV" if manifest_order is not None else "OME metadata"
         ),
-        "marker_manifest": (
-            str(Path(plan.marker_manifest).expanduser().resolve())
-            if plan.marker_manifest is not None
-            else None
-        ),
+        "marker_manifest": report["marker_manifest"],
+        "marker_manifest_source": report["marker_manifest_source"],
+        "removed_channels": list(report["removed_channels"]),
         "column_roles": roles,
     }
 
@@ -1035,7 +1229,8 @@ def build_anndata(
         "n_cells": int(adata.n_obs),
         "n_markers": int(adata.n_vars),
         "obs_columns": list(adata.obs.columns),
-        "all_markers": list(adata.var_names),
+        "markers": list(adata.var_names),
+        "all_markers": [str(name) for name in adata.uns["all_markers"]],
         "qc_outputs": qc_outputs,
     }
     manifest_path = output_path.with_suffix(".manifest.json")
@@ -1058,6 +1253,12 @@ def parser() -> argparse.ArgumentParser:
         type=Path,
         help="Marker order CSV. Its row order defines the channel order, "
         "overriding the OME channel names.",
+    )
+    cli.add_argument(
+        "--no-auto-marker-csv",
+        action="store_true",
+        help="Do not look for background/markers_bs.csv when --marker-manifest "
+        "is not given; take the channel order from the OME metadata.",
     )
     cli.add_argument("--schema-config", type=Path)
     cli.add_argument("--no-qc", action="store_true")
@@ -1082,6 +1283,7 @@ def main() -> None:
         column_roles=schema_config.get("column_roles"),
         marker_targets=schema_config.get("marker_targets"),
         marker_manifest=args.marker_manifest,
+        auto_marker_manifest=not args.no_auto_marker_csv,
     )
 
     def status(stage: str, message: str, progress: float) -> None:

@@ -18,7 +18,10 @@ SpatioEv app in your web browser, and classify cells in QuPath.
 
 For every core (or slide):
 
-- **Cell types**, which you assign in QuPath with an object classifier.
+- **Cell types**, which you assign in QuPath with an object classifier, or
+  inside SpatioEv by clustering, gating and marker rules
+  ([step 5b](clustering_gating.md); suited to multi-FOV TMAs segmented with
+  ARK).
 - **Matrix fibers** in each matrix channel (for example COL1, COL4, FN): how
   much matrix there is, how aligned it is, and TWOMBLI-style architecture
   (branching, curvature, gaps, fibre length).
@@ -41,6 +44,8 @@ Across your cohort:
         ├──► 5. Cell types in QuPath      SpatioEv hands the cells to QuPath,
         │                                 you classify them, SpatioEv takes the
         │                                 classes back
+        │     (or 5b. by clustering and   cell types assigned inside SpatioEv
+        │      gating)                    from clusters, gates and marker rules
         │
         ├──► 6. Matrix fibers             runs on the image only, so it can run
         │                                 before or while you work in QuPath
@@ -56,6 +61,7 @@ Across your cohort:
 | Step | Where you do it | What it needs | What it gives you |
 |---|---|---|---|
 | [5. Cell types](qupath.md) | SpatioEv app **and** QuPath | cell outlines and measurements | a cell type for every cell |
+| [5b. … or by clustering and gating](clustering_gating.md) | SpatioEv app | ARK cell tables, marker list, images, marker rules | a cell type for every cell |
 | [6. Matrix fibers](fibers.md) | SpatioEv app | the image | fibers, matrix area and architecture per channel |
 | [7. Tissue regions](regions.md) | SpatioEv app | cell types (+ fibers) | tumour / envelope / stroma, composition, matrix per region |
 | [8. Co-localisation](colocalisation.md) | SpatioEv app | tissue regions (+ fibers) | cell–cell and cell–matrix co-localisation |

@@ -119,3 +119,69 @@ def test_build_tma_anndata_discovers_batches_and_maps_fovs(tmp_path):
         result.obsm["spatial"], [[30, 20], [50, 40], [30, 20], [50, 40]]
     )
     assert list(result.uns["image_manifest"].index) == ["fov1", "fov2"]
+
+
+def _two_fov_project(tmp_path, image_fovs):
+    _write_batch(tmp_path, "ark_wdir_1", "fov1", 0)
+    _write_batch(tmp_path, "ark_wdir_2", "fov2", 20)
+    image_dir = tmp_path / "dearray"
+    image_dir.mkdir()
+    for fov in image_fovs:
+        tifffile.imwrite(
+            image_dir / f"{fov}.ome.tif",
+            np.zeros((2, 5, 5), dtype=np.uint16),
+            ome=True,
+            photometric="minisblack",
+            metadata={"axes": "CYX"},
+        )
+    marker_manifest = tmp_path / "markers.csv"
+    pd.DataFrame({"channel_number": [1, 2], "marker_name": ["M1", "M2"]}).to_csv(
+        marker_manifest, index=False
+    )
+    return TMAConversionPlan(
+        project_root=tmp_path,
+        image_dir=image_dir,
+        marker_manifest=marker_manifest,
+        dataset_id="TMA1",
+        output_path=tmp_path / "tma.h5ad",
+        make_qc=False,
+    )
+
+
+def test_fovs_without_an_image_are_converted_with_a_warning(tmp_path):
+    """A TMA's images are large, so often only some FOVs are copied locally."""
+    plan = _two_fov_project(tmp_path, image_fovs=[2])
+
+    report = inspect_tma(plan)
+
+    assert report["n_fovs"] == 2
+    assert report["fovs_without_image"] == ["fov1"]
+    assert any("1 of 2 FOVs have no image" in warning for warning in report["warnings"])
+    build_tma_anndata(plan)
+    result = ad.read_h5ad(plan.output_path)
+    assert result.n_obs == 4
+    assert set(result.obs["imageid"].astype(str)) == {"fov1", "fov2"}
+    assert list(result.uns["image_manifest"].index) == ["fov2"]
+
+
+def test_conversion_needs_at_least_one_fov_image(tmp_path):
+    plan = _two_fov_project(tmp_path, image_fovs=[7])
+
+    with pytest.raises(ValueError, match="must contain the FOV number"):
+        inspect_tma(plan)
+
+
+def test_imageids_with_images(tmp_path):
+    from spatioev.workflows.image_collection import imageids_with_images
+
+    folder = tmp_path / "dearray"
+    folder.mkdir()
+    for name in ("2.ome.tif", "fov5.ome.tiff"):
+        tifffile.imwrite(folder / name, np.zeros((1, 4, 4), dtype=np.uint16))
+    ids = ["fov1", "fov2", "fov5"]
+
+    assert imageids_with_images(folder, ids) == ["fov2", "fov5"]
+    assert imageids_with_images(folder / "2.ome.tif", ids) == ids
+    assert imageids_with_images(tmp_path / "missing", ids) == []
+    assert imageids_with_images("", ids) == []
+    assert imageids_with_images(None, ids) == []

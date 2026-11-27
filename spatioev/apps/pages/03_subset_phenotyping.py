@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import json
-import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -12,41 +11,75 @@ import pandas as pd
 import streamlit as st
 
 from spatioev.apps._common import default_project_root, module_command, resource_path
-from spatioev.workflows._io import read_json
-from spatioev.workflows.scimap_phenotyping import inspect_inputs, write_json
+from spatioev.workflows import marker_gating as mgq
+from spatioev.workflows._io import read_json, run_files, start_logged_process
+from spatioev.workflows.scimap_phenotyping import (
+    MISSING_GATE_POLICIES,
+    inspect_inputs,
+    write_json,
+)
+
+MISSING_GATE_LABELS = {
+    "error": "Stop and list them",
+    "median": "Use the marker's median gate of the other images",
+    "gmm": "Estimate with scimap's Gaussian mixture",
+}
 
 AUTO_REFRESH_SECONDS = 2.0
 
 
 def standard_defaults(sample_id: str, project_root: Path) -> dict[str, str]:
+    """Inputs taken from the earlier stages' standard output folders.
+
+    The AnnData is step 01's export when it exists (it already carries the
+    broad labels, so no separate annotation CSV is needed), otherwise step
+    00's. The gates are step 02's canonical table, and the gate layer is the
+    one step 02 recorded, so the gates are applied to the values they were
+    drawn on.
+    """
     sample_id = sample_id.strip()
-    gating_dir = project_root / "results" / f"{sample_id}_marker_gating_qc"
-    manifest_path = gating_dir / f"{sample_id}_interactive_gate_review_manifest.json"
+    project_root = Path(project_root)
+    dirs = mgq.stage_output_dirs(sample_id, project_root)
+    paths = mgq.default_sample_paths(sample_id, project_root)
+    gating_dir = dirs["gating"]
     manifest = {}
-    if manifest_path.exists():
-        try:
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            manifest = {}
+    for manifest_path in (
+        mgq.gate_table_paths(gating_dir, sample_id)["manifest"],
+        gating_dir / f"{sample_id}_interactive_gate_review_manifest.json",
+    ):
+        if manifest_path.exists():
+            try:
+                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                break
+            except json.JSONDecodeError:
+                continue
+    phenotyped = dirs["clustering"] / f"{sample_id}_phenotyped.h5ad"
+    annotation_candidates = [
+        dirs["clustering"] / f"{sample_id}_phenotyping_annotations.csv",
+        project_root / "results" / f"{sample_id}_phenotyping_annotations.csv",
+    ]
+    annotations = next((path for path in annotation_candidates if path.exists()), None)
+    workflow = next(
+        (
+            path
+            for path in (
+                project_root / f"{sample_id}_phenotype_workflow.csv",
+                project_root / "phenotype_workflow.csv",
+            )
+            if path.exists()
+        ),
+        resource_path("hcc_immune_phenotype_workflow_example.csv"),
+    )
     return {
-        "scimap_gated_h5ad": str(
-            manifest.get("gated_h5ad", gating_dir / f"{sample_id}_autogated_interactive.h5ad")
-        ),
-        "scimap_annotations": str(project_root / "results" / f"{sample_id}_phenotyping_annotations.csv"),
-        "scimap_image": str(
-            manifest.get(
-                "image_path",
-                project_root / sample_id / "processed" / f"{sample_id}_combined.ome.tif",
-            )
-        ),
-        "scimap_gates": str(
-            manifest.get(
-                "scimap_manual_gates",
-                gating_dir / f"{sample_id}_scimap_manual_gates_interactive.csv",
-            )
-        ),
-        "scimap_workflow": str(resource_path("hcc_immune_phenotype_workflow_example.csv")),
-        "scimap_output": str(project_root / "results" / f"{sample_id}_scimap_phenotyping_interface"),
+        "scimap_gated_h5ad": str(phenotyped if phenotyped.exists() else paths.adata_path),
+        "scimap_annotations": ""
+        if phenotyped.exists() or annotations is None
+        else str(annotations),
+        "scimap_image": str(manifest.get("image_path") or paths.image_path),
+        "scimap_gates": str(mgq.latest_scimap_gates(gating_dir, sample_id)),
+        "scimap_gate_layer": str(manifest.get("gate_layer") or ""),
+        "scimap_workflow": str(workflow),
+        "scimap_output": str(dirs["phenotyping"]),
     }
 
 
@@ -61,25 +94,35 @@ def initialize_state() -> None:
     )
     for key, value in defaults.items():
         st.session_state.setdefault(key, value)
+    st.session_state.setdefault("scimap_missing_gates", "error")
+    st.session_state.setdefault("scimap_imageids", "")
 
 
 
 
 def inspection_config() -> dict:
+    imageids = [
+        value.strip()
+        for value in str(st.session_state.get("scimap_imageids", "")).replace(";", ",").split(",")
+        if value.strip()
+    ]
     return {
         "gated_h5ad": st.session_state["scimap_gated_h5ad"],
         "broad_annotations": st.session_state["scimap_annotations"],
         "image_path": st.session_state["scimap_image"],
         "gate_csv": st.session_state["scimap_gates"],
+        "gate_layer": st.session_state.get("scimap_gate_layer", "").strip(),
+        "missing_gate_policy": st.session_state.get("scimap_missing_gates", "error"),
+        "imageids": imageids,
         "workflow_csv": st.session_state["scimap_workflow"],
     }
 
 
 def start_worker(config: dict, output_dir: Path) -> tuple[int, Path, Path]:
     output_dir.mkdir(parents=True, exist_ok=True)
-    config_path = output_dir / f"{config['sample_id']}_scimap_interface_config.json"
-    status_path = output_dir / f"{config['sample_id']}_scimap_interface_status.json"
-    log_path = output_dir / f"{config['sample_id']}_scimap_interface_worker.log"
+    config_path, status_path, log_path = run_files(
+        output_dir, f"{config['sample_id']}_scimap_phenotyping"
+    )
     write_json(config_path, config)
     write_json(
         status_path,
@@ -98,9 +141,7 @@ def start_worker(config: dict, output_dir: Path) -> tuple[int, Path, Path]:
         "--status",
         str(status_path),
     )
-    with log_path.open("ab") as log:
-        process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
-    return process.pid, status_path, log_path
+    return start_logged_process(command, log_path), status_path, log_path
 
 
 def launch_napari(
@@ -110,7 +151,7 @@ def launch_napari(
     output_dir: Path,
     imageid: str | None = None,
 ) -> tuple[int, Path]:
-    log_path = output_dir / "scimap_napari_review.log"
+    _, _, log_path = run_files(output_dir, "scimap_napari_review")
     command = module_command(
         "spatioev.workflows.clustering_review",
         "--adata",
@@ -122,9 +163,7 @@ def launch_napari(
     )
     if imageid is not None:
         command.extend(["--imageid", imageid])
-    with log_path.open("ab") as log:
-        process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
-    return process.pid, log_path
+    return start_logged_process(command, log_path), log_path
 
 
 @st.fragment(run_every=AUTO_REFRESH_SECONDS)
@@ -165,16 +204,24 @@ def render_status(status_path: Path, log_path: Path, image_path: str, output_dir
 
     outputs = status.get("outputs", {})
     st.success(status.get("message", "SCIMAP phenotyping complete"))
+    for warning in outputs.get("warnings", []):
+        st.warning(warning)
     metric1, metric2, metric3 = st.columns(3)
     metric1.metric("Selected cells", f"{outputs.get('n_subset_cells', 0):,}")
     metric2.metric("Phenotypes", outputs.get("n_phenotypes", 0))
     metric3.metric("Full tissue cells", f"{outputs.get('n_full_cells', 0):,}")
 
     button_column, _ = st.columns([0.25, 0.75])
-    if button_column.button("Open napari review", icon=":material/open_in_new:", width="stretch"):
+    review_image_path = outputs.get("review_image_path", image_path)
+    if button_column.button(
+        "Open napari review",
+        icon=":material/open_in_new:",
+        width="stretch",
+        disabled=not review_image_path,
+    ):
         pid, napari_log = launch_napari(
             outputs["subset_h5ad"],
-            outputs.get("review_image_path", image_path),
+            review_image_path,
             outputs["phenotype_label"],
             output_dir,
             outputs.get("review_imageid"),
@@ -182,7 +229,14 @@ def render_status(status_path: Path, log_path: Path, image_path: str, output_dir
         st.toast(f"Napari started (PID {pid})")
         st.caption(f"Napari log: {napari_log}")
 
-    st.code(outputs.get("subset_h5ad", ""), language=None)
+    st.code(
+        "\n".join(
+            path
+            for path in (outputs.get("full_h5ad"), outputs.get("annotations_csv"), outputs.get("summary_csv"))
+            if path
+        ),
+        language=None,
+    )
     image_paths = [
         outputs.get("count_png"),
         outputs.get("heatmap_png"),
@@ -217,12 +271,43 @@ def main() -> None:
 
     with st.container(border=True):
         left, right = st.columns(2)
-        left.text_input("Gated full-marker H5AD", key="scimap_gated_h5ad")
-        right.text_input("Broad annotation CSV", key="scimap_annotations")
+        left.text_input(
+            "Full-marker H5AD",
+            key="scimap_gated_h5ad",
+            help="Step 01's exported *_phenotyped.h5ad carries the broad labels already.",
+        )
+        right.text_input(
+            "Broad annotation CSV (optional)",
+            key="scimap_annotations",
+            help="Only needed when the H5AD does not already hold the broad labels.",
+        )
         left.text_input("Source OME-TIFF or FOV image folder", key="scimap_image")
-        right.text_input("Reviewed SCIMAP gate CSV", key="scimap_gates")
+        right.text_input(
+            "Gate CSV",
+            key="scimap_gates",
+            help="markers,gates (one gate for every image) or markers,fov1,fov2,... "
+            "(one column per image ID). Values are log1p of the gate layer.",
+        )
         left.text_input("Phenotype workflow CSV", key="scimap_workflow")
         right.text_input("Output folder", key="scimap_output")
+        left.text_input(
+            "Gate layer (blank = adata.X)",
+            key="scimap_gate_layer",
+            help="The expression values the gates were drawn on. Step 02 records "
+            "the layer it used; gates drawn on size-normalised intensities need "
+            "'size_normalized' here.",
+        )
+        right.selectbox(
+            "Images without a gate for a marker",
+            list(MISSING_GATE_POLICIES),
+            format_func=MISSING_GATE_LABELS.get,
+            key="scimap_missing_gates",
+        )
+        st.text_input(
+            "Image IDs to phenotype (comma-separated, blank = all)",
+            key="scimap_imageids",
+            help="For example the FOVs a per-image gate table covers: fov5, fov13.",
+        )
 
     inspect_column, _ = st.columns([0.22, 0.78])
     if inspect_column.button("Inspect inputs", icon=":material/search:", width="stretch"):
@@ -242,12 +327,22 @@ def main() -> None:
         metric1.metric("Cells", f"{report['n_cells']:,}")
         metric2.metric("Markers", report["n_markers"])
         metric3.metric("Workflow phenotypes", report["workflow"]["workflow_rows"])
+        for note in report["workflow"].get("notes", []):
+            st.info(note, icon=":material/info:")
         # A key is required: without one the widget has no session-state entry,
         # so the recomputed `index` forces the value back to the default on
         # every rerun and the selection can never stick.
+        run_imageids = report.get("selected_imageids") or report["imageids"]
+        # Only FOVs with an image can be shown on one (a TMA image folder may
+        # hold a few of them); without any, overlays are skipped.
+        reviewable = [
+            imageid for imageid in run_imageids if imageid in report.get("imageids_with_image", run_imageids)
+        ] or run_imageids
+        if st.session_state.get("scimap_review_imageid") not in reviewable:
+            st.session_state.pop("scimap_review_imageid", None)
         review_imageid = st.selectbox(
             "FOV used for original-image overlays and napari review",
-            report["imageids"],
+            reviewable,
             key="scimap_review_imageid",
         )
         st.caption(
@@ -295,7 +390,18 @@ def main() -> None:
         with st.expander("Run settings"):
             setting1, setting2, setting3 = st.columns(3)
             phenotype_gate = setting1.number_input("Phenotype positivity threshold", 0.0, 1.0, 0.5, 0.01)
-            pheno_threshold_abs = setting2.number_input("Minimum cells per phenotype", 1, 10000, 10, 1)
+            pheno_threshold_abs = setting2.number_input(
+                "Minimum cells per phenotype per image",
+                0,
+                10000,
+                10,
+                1,
+                help=(
+                    "In each image, a phenotype with fewer cells than this is set to Unknown "
+                    "(scimap's pheno_threshold_abs). Use 0 to turn it off, for example for small "
+                    "TMA cores; the run reports how many cells it relabelled."
+                ),
+            )
             plot_min_cells = setting3.number_input("Minimum cells shown as separate QC label", 1, 10000, 50, 1)
             write_full_h5ad = st.checkbox("Write full-tissue combined H5AD", value=True)
             make_image_overlays = st.checkbox("Generate original-image crop overlays", value=True)

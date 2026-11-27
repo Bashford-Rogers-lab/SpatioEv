@@ -11,15 +11,14 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
-import tempfile
 import traceback
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
-os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "spatioev_fiber_matplotlib"))
-Path(os.environ["MPLCONFIGDIR"]).mkdir(parents=True, exist_ok=True)
+from spatioev.workflows._io import configure_caches
+
+configure_caches()
 
 import matplotlib
 

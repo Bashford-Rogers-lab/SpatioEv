@@ -137,7 +137,7 @@ table lists each core:
 | `done` | Segmented with your settings. |
 | `skipped` | Already had a result (for example the core you set up on). |
 | `missing input` | A file it needs is missing; the message says which. |
-| `failed` | Something went wrong for this core; see its `…_worker.log`. |
+| `failed` | Something went wrong for this core; see the `.log` file in its results folder's `logs/`. |
 
 Then open a few cores' QC pictures (in each `results/<core>_fiber_segmentation/qc/`
 folder) to check that the settings suit them too.

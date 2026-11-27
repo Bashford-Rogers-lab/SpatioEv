@@ -72,8 +72,16 @@ def _demo_parser(subparsers: argparse._SubParsersAction) -> None:
         "for trying every step of the workflow. Contains no real patient data.",
     )
     parser.add_argument("destination", type=Path, help="Folder to create the demo cores in")
-    parser.add_argument("--cores", type=int, default=6, help="Number of cores (half in group A, half in group B)")
-    parser.add_argument("--size", type=int, default=1500, help="Core image size in pixels")
+    parser.add_argument(
+        "--kind",
+        choices=["cores", "testis"],
+        default="cores",
+        help="'cores': one folder per core, for the QuPath route (steps 5-9). "
+        "'testis': one multi-FOV testis TMA in the ARK layout (background/markers_bs.csv, dearray/, "
+        "ark_wdir_*), for stages 00-03 (clustering, gating and scimap phenotyping).",
+    )
+    parser.add_argument("--cores", type=int, default=6, help="Number of cores, or FOVs for --kind testis (half in each group)")
+    parser.add_argument("--size", type=int, default=None, help="Image size in pixels (default: 1500 for cores, 400 for testis)")
     parser.add_argument("--with-classes", action="store_true", help="Also write ready-made QuPath classes, to skip QuPath")
     parser.add_argument("--overwrite", action="store_true", help="Replace demo cores that already exist")
     parser.add_argument("--seed", type=int, default=0)
@@ -110,10 +118,20 @@ def run_batch(args: argparse.Namespace) -> int:
 
 
 def run_demo(args: argparse.Namespace) -> int:
+    if args.kind == "testis":
+        from spatioev.io.demo_testis import make_demo_testis_tma
+
+        root = make_demo_testis_tma(
+            args.destination, n_fovs=args.cores, size=args.size or 400, seed=args.seed, overwrite=args.overwrite,
+        )
+        print(f"Created the demo testis TMA in {root}")
+        print(f"Open it with: spatioev ui --project-root {root}   (sample ID: {root.name})")
+        return 0
+
     from spatioev.io.demo import make_demo_tma
 
     cores = make_demo_tma(
-        args.destination, n_cores=args.cores, size=args.size, seed=args.seed,
+        args.destination, n_cores=args.cores, size=args.size or 1500, seed=args.seed,
         with_classes=args.with_classes, overwrite=args.overwrite,
     )
     print(f"Created {len(cores)} demo cores in {args.destination.expanduser().resolve()}:")

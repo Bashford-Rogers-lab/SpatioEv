@@ -39,12 +39,17 @@ also be supplied with the `SPATIOEV_PROJECT_ROOT` environment variable.
 
 ## Workflow order
 
-1. **Prepare AnnData** converts the two CellSAM expression tables into one H5AD.
-   OME-TIFF channels define the marker matrix and its order by default;
-   supplying the optional **Marker order CSV** overrides that, so the CSV's
-   row order becomes the order of `var_names`. Use it when the image has
-   lost its channel names, or when the stored names disagree with the panel
-   that was actually run. Unmatched table columns are preserved as
+1. **Prepare AnnData** converts the two CellSAM/ARK expression tables into
+   one H5AD. In both the single-image and the multi-FOV mode, a marker order
+   CSV (`markers_bs.csv`, `marker_bs.csv` or `markers.csv`, in a `background/`
+   folder or next to the data, up to three folders above it) is found
+   automatically, and its *row* order becomes the order of `var_names`, so
+   column *n* of `adata.X` is image plane *n*. Without one, the OME-TIFF
+   channel names define the order. Type a path into **Marker order CSV** to
+   use a different file; an optional `remove` column (`TRUE`) keeps a plane
+   out of `adata.X`. AnnData files from SpatioEv 0.2.0 and earlier, which
+   sorted a cycle-based panel by its cycle-local `channel_number`, are
+   recognised and the clustering and gating pages ask for them to be rebuilt. Unmatched table columns are preserved as
    observation metadata regardless of their CSV position, and are now named
    in a warning rather than dropped from the matrix silently.
    An editable schema review supports marker, cell-ID, coordinate,
@@ -56,12 +61,28 @@ also be supplied with the `SPATIOEV_PROJECT_ROOT` environment variable.
 2. **Broad clustering** performs unsupervised clustering, supports spatial
    Napari review, and exports broad tissue-population annotations.
 3. **Marker autogating** combines a marker-condition questionnaire with
-   distribution diagnostics and a strategy profile. Calculated gates remain
-   adjustable in the original-image Napari overlay before accepted gates and a
-   gated H5AD are written.
+   distribution diagnostics and a strategy profile, on `adata.X` or a named
+   layer (**Expression layer**; the layer is recorded in the gating manifest
+   and filled in on the phenotyping page). Saved questionnaire answers are
+   loaded again. Calculated gates remain adjustable in the original-image
+   Napari overlay; exporting from it replaces the gate tables and keeps the
+   previous ones in `details/`.
 4. **Subset phenotyping** selects any broad population and applies a user-chosen
-   SCIMAP phenotype workflow. It writes subset and optional full-tissue H5ADs,
+   SCIMAP phenotype workflow. Gate tables may hold one gate per marker
+   (`markers,gates`) or one column per image (`markers,fov1,fov2,...`), on
+   `adata.X` or a named **Gate layer**; images without a gate stop the run, take
+   the marker's median gate, or use scimap's GMM estimate. Workflow marker names
+   that differ only in a numeric suffix or case (`CLDN11_1` / `CLDN11_2`) are
+   matched and reported. The inspection notes rows where scimap's scoring
+   treats a lone `pos`/`neg` marker as a preference, and the run reports how
+   many cells the per-image minimum-cell setting turned into `Unknown`. Runs
+   can be chained (a second population phenotyped on the first run's
+   full-tissue H5AD). It writes subset and optional full-tissue H5ADs,
    tables, publication-ready heatmaps, spatial plots, and image overlays.
+
+The [step-by-step guide](guide/clustering_gating.md) walks through stages
+00–03 and the spatial analysis on a synthetic testis TMA
+(`spatioev demo <folder> --kind testis`).
 
 The spatial-analysis stages start from the phenotyped H5AD and the original
 OME-TIFF. Every stage writes CSV tables, PNG plots and a manifest JSON under
@@ -160,9 +181,10 @@ multiple `ark_wdir*` batches and one OME-TIFF per FOV. The importer:
 - lets users assign the CSV used for `adata.X` and the CSV used for the named
   layer, applying those filenames to every discovered ARK batch;
 - takes the channel order from the marker order CSV, whose *row* order is
-  authoritative -- a `channel_number` column that disagrees with the row
-  order is rejected, and named OME channels that disagree are overridden
-  with a warning;
+  authoritative -- a global `channel_number` column (unique values) that
+  disagrees with the row order is rejected, a cycle-local one (restarting in
+  every cycle, as in `markers_bs.csv`) is kept as metadata, and named OME
+  channels that disagree are overridden with a warning;
 - combines paired `whole_cell` and `nuclear` rows into one cell observation;
 - creates unique cell IDs from dataset, FOV, and segmentation label;
 - sets `obs["imageid"]` to the FOV value for per-image SCIMAP rescaling;
@@ -194,13 +216,16 @@ match the H5AD.
 ## Reproducibility
 
 Long-running operations execute in background Python processes and record a
-configuration JSON, status JSON, and log next to their outputs. Napari review
-writes reviewed gate tables separately from calculated gates. Keep these files
-with the final H5AD to preserve both the automated starting point and manual
-decisions.
+configuration JSON, status JSON, and log in a `logs/` folder inside their
+output folder. Figures go to `qc/`, and intermediate tables and checkpoints
+to `details/` and `checkpoints/`, so the top of each output folder holds only
+the results the next stage reads. Re-calculating gates or exporting a napari
+review keeps the gate tables it replaces in `details/` as `*_previous.csv`.
+Keep these files with the final H5AD to preserve both the automated starting
+point and manual decisions.
 
-The AnnData conversion schema is also written beside the H5AD as
-`*.conversion_schema.json`. This records every reviewed column role and manual
+The AnnData conversion schema is also written to `logs/<h5ad name>_conversion_config.json`
+next to the H5AD. This records every reviewed column role and manual
 marker-to-channel assignment, allowing the same interpretation to be audited
 or reused when CSV column order changes.
 

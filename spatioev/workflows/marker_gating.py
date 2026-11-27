@@ -10,15 +10,14 @@ from __future__ import annotations
 
 import argparse
 import math
-import os
-import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
 import anndata as ad
 
-os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "spatioev_marker_gating_matplotlib"))
-Path(os.environ["MPLCONFIGDIR"]).mkdir(parents=True, exist_ok=True)
+from spatioev.workflows._io import configure_caches
+
+configure_caches()
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,7 +26,14 @@ import tifffile
 import zarr
 from sklearn.mixture import GaussianMixture
 
-from spatioev.workflows.image_collection import channel_names, zarr_array
+from spatioev.workflows._io import now, write_json
+from spatioev.workflows.image_collection import (
+    channel_names,
+    imageids_with_images,
+    plane_marker_names,
+    resolve_image,
+    zarr_array,
+)
 
 try:
     from skimage.filters import threshold_otsu
@@ -82,6 +88,15 @@ DIRECT_METHOD_COLUMNS = {
     "robust_q99_mad3": ("robust_q99_mad3_gate", "robust_q99_mad3_pos_frac"),
 }
 
+# Above this share of cells, the 3-component GMM "high" component is the main
+# population rather than a positive group. That happens for a marker with no
+# separate positive peak: on a 28-FOV testis TMA it called 69% of cells
+# CD68-positive (0.65% by hand) and 80% GFRA1-positive (13% by hand). The
+# automatic choice then falls back to the upper-tail q75 gate, which never
+# calls more than about a quarter of cells positive. A strategy profile that
+# names 3component_gmm_high still gets it.
+GMM3_HIGH_MAX_POSITIVE_FRACTION = 0.5
+
 
 @dataclass(frozen=True)
 class SamplePaths:
@@ -94,14 +109,94 @@ class SamplePaths:
 
 
 def default_sample_paths(sample_id: str, project_root: Path) -> SamplePaths:
+    """Where each stage expects a sample's files, for either project layout.
+
+    A multi-FOV/TMA project (step 00's TMA mode) keeps one AnnData in
+    ``data/<sample>_adata.h5ad`` and the per-FOV images in ``dearray/``; a
+    single-image project keeps ``data/<sample>/<sample>_adata.h5ad`` and
+    ``<sample>/processed/<sample>_combined.ome.tif``. Whichever exists wins;
+    when neither does yet, the presence of ``dearray/`` decides.
+    """
+    project_root = Path(project_root)
+    tma_adata = project_root / "data" / f"{sample_id}_adata.h5ad"
+    single_adata = project_root / "data" / sample_id / f"{sample_id}_adata.h5ad"
+    tma_images = project_root / "dearray"
+    single_image = project_root / sample_id / "processed" / f"{sample_id}_combined.ome.tif"
+    tma_layout = tma_adata.exists() or (tma_images.is_dir() and not single_adata.exists())
+    output_dir = project_root / "results" / f"{sample_id}_marker_gating_qc"
+    # The conditions saved by the last gating run, else a hand-written file
+    # next to the AnnData.
+    saved_conditions = gate_table_paths(output_dir, sample_id)["conditions"]
+    if saved_conditions.exists():
+        condition_path = saved_conditions
+    elif tma_layout:
+        condition_path = project_root / "data" / f"{sample_id}_marker_condition_for_gating.csv"
+    else:
+        condition_path = project_root / "data" / sample_id / "marker_condition_for_gating.csv"
     return SamplePaths(
         sample_id=sample_id,
         project_root=project_root,
-        adata_path=project_root / "data" / sample_id / f"{sample_id}_adata.h5ad",
-        image_path=project_root / sample_id / "processed" / f"{sample_id}_combined.ome.tif",
-        marker_condition_path=project_root / "data" / sample_id / "marker_condition_for_gating.csv",
-        output_dir=project_root / "results" / f"{sample_id}_marker_gating_qc",
+        adata_path=tma_adata if tma_layout else single_adata,
+        image_path=tma_images if tma_layout and tma_images.is_dir() else single_image,
+        marker_condition_path=condition_path,
+        output_dir=output_dir,
     )
+
+
+def stage_output_dirs(sample_id: str, project_root: Path) -> dict[str, Path]:
+    """The results folder of each stage, ``<project>/results/<sample>_<stage>``."""
+    results = Path(project_root) / "results"
+    return {
+        "clustering": results / f"{sample_id}_clustering_workflow",
+        "gating": results / f"{sample_id}_marker_gating_qc",
+        # The name step 03 has always used; existing projects keep working.
+        "phenotyping": results / f"{sample_id}_scimap_phenotyping_interface",
+    }
+
+
+def gate_table_paths(output_dir: Path, sample_id: str) -> dict[str, Path]:
+    """Canonical files of a gating run. Both the web page and the napari review
+    write these, so the last reviewed gates are always in the same place."""
+    output_dir = Path(output_dir)
+    return {
+        "conditions": output_dir / f"{sample_id}_marker_conditions.csv",
+        "selected": output_dir / f"{sample_id}_selected_marker_gates.csv",
+        "scimap": output_dir / f"{sample_id}_scimap_manual_gates.csv",
+        "manifest": output_dir / f"{sample_id}_gating_manifest.json",
+        "details": output_dir / "details",
+        "qc": output_dir / "qc",
+    }
+
+
+def latest_scimap_gates(output_dir: Path, sample_id: str) -> Path:
+    """The scimap gate table a phenotyping run should use for this sample.
+
+    The canonical table, else the newest one an earlier SpatioEv version wrote
+    (``…_scimap_manual_gates_interactive.csv`` / ``…_web.csv``).
+    """
+    output_dir = Path(output_dir)
+    canonical = gate_table_paths(output_dir, sample_id)["scimap"]
+    if canonical.exists():
+        return canonical
+    legacy = [
+        output_dir / f"{sample_id}_scimap_manual_gates_interactive.csv",
+        output_dir / f"{sample_id}_scimap_manual_gates_web.csv",
+    ]
+    existing = [path for path in legacy if path.exists()]
+    return max(existing, key=lambda path: path.stat().st_mtime) if existing else canonical
+
+
+def keep_previous(path: Path, details_dir: Path) -> None:
+    """Copy *path* to ``details/<name>_previous<suffix>`` before it is overwritten.
+
+    One level of undo: re-running the gate calculation must not silently
+    discard gates that were tuned by hand in the napari review.
+    """
+    path = Path(path)
+    if path.exists():
+        details_dir = Path(details_dir)
+        details_dir.mkdir(parents=True, exist_ok=True)
+        (details_dir / f"{path.stem}_previous{path.suffix}").write_bytes(path.read_bytes())
 
 
 CONDITION_COLUMNS = {
@@ -587,11 +682,44 @@ def condition_based_method(row: pd.Series) -> str:
     return "manual_review"
 
 
+def gmm3_high_is_majority(row: pd.Series) -> bool:
+    fraction = float(row.get("gmm3_high_pos_frac", np.nan))
+    return bool(np.isfinite(fraction) and fraction > GMM3_HIGH_MAX_POSITIVE_FRACTION)
+
+
+def plan_may_use_gmm3_high(row: pd.Series) -> bool:
+    method = str(row.get("condition_based_method", ""))
+    return method.startswith("3component_gmm_high") or method == "manual_review"
+
+
+def gmm3_high_choice(row: pd.Series, source: str) -> tuple[str, float, str] | None:
+    """The 3-component high gate, or upper-tail q75 if the high gate calls most cells positive.
+
+    Returns None when there is no 3-component gate, so the caller's own
+    fallback applies. See ``GMM3_HIGH_MAX_POSITIVE_FRACTION``.
+    """
+    gate = float(row.get("gmm3_high_gate", np.nan))
+    if not np.isfinite(gate):
+        return None
+    if not gmm3_high_is_majority(row):
+        return "3component_gmm_high", gate, source
+    reason = (
+        f"3-component GMM high component held {float(row['gmm3_high_pos_frac']):.0%} of cells, "
+        "so it is the main population rather than a positive group"
+    )
+    q75 = float(row.get("upper_tail_q75_gate", np.nan))
+    if np.isfinite(q75):
+        return "upper_tail_gmm_q75", q75, f"{reason}; upper-tail q75 used instead"
+    return "robust_q95_mad2", float(row.get("robust_q95_mad2_gate", np.nan)), f"{reason}; robust q95/MAD used instead"
+
+
 def review_flags(row: pd.Series) -> str:
     flags: list[str] = []
     gmm2_frac = float(row.get("gmm2_pos_frac", np.nan))
     if str(row["expression_condition"]) == "bimodal" and (not np.isfinite(gmm2_frac) or gmm2_frac > 0.70):
         flags.append("2GMM_all_cells_too_inclusive")
+    if gmm3_high_is_majority(row) and plan_may_use_gmm3_high(row):
+        flags.append("3GMM_high_is_majority")
     if str(row["staining_condition"]) in {"diffuse_background", "high_background_specific_tail"}:
         flags.append("background_aware_gate")
     if str(row["artifact_level"]) in {"medium", "high", "severe"}:
@@ -634,10 +762,11 @@ def fill_blank_expression_conditions(candidates: pd.DataFrame) -> pd.DataFrame:
     if "expression_condition" not in out.columns:
         out["expression_condition"] = ""
 
+    # An all-blank column is read from CSV as float NaN: make it text first.
     answered = out["expression_condition"].fillna("").astype(str).str.strip()
     inferred = out["inferred_expression_condition"].fillna("").astype(str).str.strip()
     use_inferred = (answered == "") & (inferred != "")
-    out.loc[use_inferred, "expression_condition"] = inferred[use_inferred]
+    out["expression_condition"] = answered.where(~use_inferred, inferred)
     out["expression_condition_source"] = np.where(use_inferred, "inferred", "answered")
     return out
 
@@ -702,18 +831,21 @@ def choose_gate(row: pd.Series, x_values: np.ndarray | None = None) -> tuple[str
         return "otsu", float(row["otsu_gate"]), "Otsu fallback because 2-component GMM gate was unavailable"
 
     if method == "3component_gmm_high":
-        if np.isfinite(row.get("gmm3_high_gate", np.nan)):
-            return "3component_gmm_high", float(row["gmm3_high_gate"]), "3-component GMM high-vs-rest gate"
+        choice = gmm3_high_choice(row, "3-component GMM high-vs-rest gate")
+        if choice is not None:
+            return choice
         return "upper_tail_gmm_q90", float(row["upper_tail_q90_gate"]), "upper-tail q90 fallback because 3-component GMM was unavailable"
 
     if method == "3component_gmm_high_or_negative_reference_controlled":
-        if np.isfinite(row.get("gmm3_high_gate", np.nan)):
-            return "3component_gmm_high", float(row["gmm3_high_gate"]), "negative-reference-aware marker; using 3-component high gate as initial automatic gate"
+        choice = gmm3_high_choice(row, "negative-reference-aware marker; using 3-component high gate as initial automatic gate")
+        if choice is not None:
+            return choice
         return "upper_tail_gmm_q90", float(row["upper_tail_q90_gate"]), "upper-tail q90 fallback"
 
     if method == "3component_gmm_high_or_upper_tail_q75":
-        if np.isfinite(row.get("gmm3_high_gate", np.nan)):
-            return "3component_gmm_high", float(row["gmm3_high_gate"]), "clear broad-gradient marker; using high-component gate"
+        choice = gmm3_high_choice(row, "clear broad-gradient marker; using high-component gate")
+        if choice is not None:
+            return choice
         return "upper_tail_gmm_q75", float(row["upper_tail_q75_gate"]), "upper-tail q75 fallback"
 
     if method == "upper_tail_gmm_q75":
@@ -740,8 +872,9 @@ def choose_gate(row: pd.Series, x_values: np.ndarray | None = None) -> tuple[str
         return "robust_q99_mad3", float(row["robust_q99_mad3_gate"]), "negative/failed marker conservative robust tail"
 
     # Final fallback.
-    if np.isfinite(row.get("gmm3_high_gate", np.nan)):
-        return "3component_gmm_high", float(row["gmm3_high_gate"]), "manual-review fallback to 3-component high gate"
+    choice = gmm3_high_choice(row, "manual-review fallback to 3-component high gate")
+    if choice is not None:
+        return choice
     return "robust_q99_mad3", float(row["robust_q99_mad3_gate"]), "manual-review fallback to robust q99/MAD"
 
 
@@ -993,9 +1126,12 @@ def choose_crop_windows(
         if best is None:
             continue
         _, yy, xx = best
-        fy = int(np.clip(round(yy * sy - crop_size / 2), 0, full_y - crop_size))
-        fx = int(np.clip(round(xx * sx - crop_size / 2), 0, full_x - crop_size))
-        windows.append((fy, fx))
+        # An image smaller than the crop (a TMA core, say) gives one crop at
+        # the origin, not a negative offset.
+        fy = int(np.clip(round(yy * sy - crop_size / 2), 0, max(0, full_y - crop_size)))
+        fx = int(np.clip(round(xx * sx - crop_size / 2), 0, max(0, full_x - crop_size)))
+        if (fy, fx) not in windows:
+            windows.append((fy, fx))
     return windows, None
 
 
@@ -1013,6 +1149,7 @@ def save_crop_box_overview(
         low, sy, sx = read_overview_array(tif)
 
     hoechst_low = normalize_image(low[idx[nuclear_channel(channels)]], 1, 99.5, 0.8)
+    full_y, full_x = hoechst_low.shape[0] * sy, hoechst_low.shape[1] * sx
 
     fig, ax = plt.subplots(figsize=(7, 7), dpi=180)
     ax.imshow(hoechst_low, cmap="gray")
@@ -1022,8 +1159,8 @@ def save_crop_box_overview(
         ax.add_patch(
             plt.Rectangle(
                 (fx / sx, fy / sy),
-                crop_size / sx,
-                crop_size / sy,
+                min(crop_size, full_x - fx) / sx,
+                min(crop_size, full_y - fy) / sy,
                 fill=False,
                 edgecolor=color,
                 linewidth=2,
@@ -1031,7 +1168,6 @@ def save_crop_box_overview(
         )
         ax.text(fx / sx, fy / sy, f"crop {i}", color=color, fontsize=9, weight="bold")
     ax.axis("off")
-    fig.tight_layout(pad=0)
     fig.savefig(output_path, bbox_inches="tight")
     plt.close(fig)
     return output_path
@@ -1185,7 +1321,7 @@ def save_gate_spatial_overlays(
     output_dir.mkdir(parents=True, exist_ok=True)
     paths: list[Path] = []
     obs = gated_adata.obs
-    channel_names = canonical_channel_names(image_path, list(gated_adata.var_names.astype(str)))
+    channel_names = canonical_channel_names(image_path, plane_marker_names(gated_adata))
     idx = {marker: i for i, marker in enumerate(channel_names)}
     nuclear = nuclear_channel(channel_names)
     markers = [m for m in review_markers if m in idx and f"{prefix}_{m}_positive" in obs.columns]
@@ -1255,8 +1391,22 @@ def run_qc(
     make_image_qc: bool = True,
     make_gate_overlay_qc: bool = True,
     write_gated_h5ad: bool = False,
+    review_imageid: str | None = None,
 ) -> dict[str, Path]:
+    """Calculate gates and write them with QC, in the web page's layout.
+
+    The gate tables used next (``<sample>_selected_marker_gates.csv``,
+    ``<sample>_scimap_manual_gates.csv``) and ``<sample>_gating_manifest.json``
+    go at the top of ``paths.output_dir``; candidate tables go in
+    ``details/`` and figures in ``qc/``. The previous gate tables are kept as
+    ``details/*_previous.csv``. For a multi-FOV AnnData the image QC uses
+    one FOV, ``review_imageid`` (default: the first).
+    """
     paths.output_dir.mkdir(parents=True, exist_ok=True)
+    files = gate_table_paths(paths.output_dir, paths.sample_id)
+    qc_dir, details_dir = files["qc"], files["details"]
+    qc_dir.mkdir(exist_ok=True)
+    details_dir.mkdir(exist_ok=True)
     review_markers = review_markers or DEFAULT_REVIEW_MARKERS
     marker_conditions = read_marker_conditions(paths.marker_condition_path)
     strategy_profile = read_strategy_profile(strategy_profile_path)
@@ -1273,13 +1423,17 @@ def run_qc(
     selected = selected_gate_table(method_plan, adata=adata, layer=layer)
     gated = apply_selected_gates(adata, selected, layer=layer)
 
+    sid = paths.sample_id
     outputs: dict[str, Path] = {}
-    outputs["candidate_table"] = paths.output_dir / f"{paths.sample_id}_marker_condition_evaluation_with_gate_candidates.csv"
-    outputs["method_plan"] = paths.output_dir / f"{paths.sample_id}_marker_gating_method_plan.csv"
-    outputs["selected_gates"] = paths.output_dir / f"{paths.sample_id}_selected_marker_gates.csv"
-    outputs["scimap_manual_gates"] = paths.output_dir / f"{paths.sample_id}_scimap_manual_gates.csv"
-    outputs["histograms"] = paths.output_dir / f"{paths.sample_id}_marker_histograms_candidate_gates.png"
-    outputs["gate_summary"] = paths.output_dir / f"{paths.sample_id}_selected_gate_summary.png"
+    outputs["candidate_table"] = details_dir / f"{sid}_marker_gate_candidates.csv"
+    outputs["method_plan"] = details_dir / f"{sid}_marker_gating_method_plan.csv"
+    outputs["selected_gates"] = files["selected"]
+    outputs["scimap_manual_gates"] = files["scimap"]
+    outputs["histograms"] = qc_dir / f"{sid}_marker_histograms_candidate_gates.png"
+    outputs["gate_summary"] = qc_dir / f"{sid}_selected_gate_summary.png"
+    keep_previous(files["selected"], details_dir)
+    keep_previous(files["scimap"], details_dir)
+    marker_conditions.to_csv(files["conditions"], index=False)
 
     method_plan.to_csv(outputs["candidate_table"], index=False)
     selected.to_csv(outputs["selected_gates"], index=False)
@@ -1313,36 +1467,85 @@ def run_qc(
     save_gate_summary_qc(selected, outputs["gate_summary"])
 
     windows: list[tuple[int, int]] = []
+    planes = plane_marker_names(adata)
+    # A TMA image folder holds one image per FOV: review one FOV, and overlay
+    # only that FOV's cells on it.
+    imageids = (
+        sorted(adata.obs["imageid"].astype(str).unique(), key=lambda value: (len(value), value))
+        if "imageid" in adata.obs
+        else []
+    )
+    image_notes: list[str] = []
+    if Path(paths.image_path).is_dir() and imageids:
+        # A TMA image folder may hold images for only some FOVs.
+        with_image = imageids_with_images(paths.image_path, imageids)
+        if review_imageid is None and with_image:
+            review_imageid = with_image[0]
+        if (make_image_qc or make_gate_overlay_qc) and str(review_imageid) not in with_image:
+            image_notes.append(
+                f"Image QC skipped: no image for {review_imageid or 'any FOV'} under "
+                f"{paths.image_path}. The gates are unaffected."
+            )
+            make_image_qc = make_gate_overlay_qc = False
+    image_path = paths.image_path
+    review_cells = gated
+    if make_image_qc or make_gate_overlay_qc:
+        image_path = resolve_image(Path(paths.image_path), review_imageid)
+        if review_imageid is not None and imageids:
+            review_cells = gated[gated.obs["imageid"].astype(str).eq(str(review_imageid))]
     if make_image_qc:
-        grayscale, overlay = save_image_overviews(paths.image_path, marker_conditions, paths.output_dir, sample_id=paths.sample_id)
+        grayscale, overlay = save_image_overviews(image_path, marker_conditions, qc_dir, sample_id=sid, channel_markers=planes)
         outputs["image_grayscale_overview"] = grayscale
         outputs["image_overlay_overview"] = overlay
-        windows, _ = choose_crop_windows(paths.image_path)
-        crop_boxes = paths.output_dir / f"{paths.sample_id}_selected_crop_boxes.png"
-        save_crop_box_overview(paths.image_path, windows, crop_boxes)
+        windows, _ = choose_crop_windows(image_path, channel_markers=planes)
+        crop_boxes = qc_dir / f"{sid}_selected_crop_boxes.png"
+        save_crop_box_overview(image_path, windows, crop_boxes, channel_markers=planes)
         outputs["crop_boxes"] = crop_boxes
-        save_review_marker_crops(paths.image_path, review_markers, paths.output_dir, sample_id=paths.sample_id, windows=windows)
+        save_review_marker_crops(image_path, review_markers, qc_dir, sample_id=sid, windows=windows, channel_markers=planes)
 
     if make_gate_overlay_qc:
         if not windows:
-            windows, _ = choose_crop_windows(paths.image_path)
+            windows, _ = choose_crop_windows(image_path, channel_markers=planes)
         overlay_paths = save_gate_spatial_overlays(
-            gated,
+            review_cells,
             selected,
-            paths.image_path,
+            image_path,
             review_markers,
-            paths.output_dir,
-            sample_id=paths.sample_id,
+            qc_dir,
+            sample_id=sid,
             windows=windows,
         )
         if overlay_paths:
             outputs["selected_gate_overlay_example"] = overlay_paths[0]
 
+    for note in image_notes:
+        print(note, flush=True)
+
     if write_gated_h5ad:
-        gated_path = paths.output_dir / f"{paths.sample_id}_autogated.h5ad"
-        gated.write_h5ad(gated_path)
+        from spatioev.workflows.cellsam import write_h5ad_atomically
+
+        gated_path = paths.output_dir / f"{sid}_autogated.h5ad"
+        write_h5ad_atomically(gated, gated_path)
         outputs["gated_h5ad"] = gated_path
 
+    # Step 03 reads gate_layer from here: the gates are log1p values of that
+    # layer (or of .X when it is null) and must be applied to the same data.
+    outputs["manifest"] = files["manifest"]
+    write_json(
+        files["manifest"],
+        {
+            "sample_id": sid,
+            "created_at": now(),
+            "adata_path": str(paths.adata_path),
+            "image_path": str(paths.image_path),
+            "review_imageid": review_imageid,
+            "gate_layer": layer,
+            "gate_source": "calculated with python -m spatioev.workflows.marker_gating",
+            "selected_gates": str(files["selected"]),
+            "scimap_manual_gates": str(files["scimap"]),
+            "marker_conditions": str(files["conditions"]),
+        },
+    )
     return outputs
 
 
@@ -1367,6 +1570,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-image-qc", action="store_true")
     parser.add_argument("--skip-gate-overlay-qc", action="store_true")
     parser.add_argument("--write-gated-h5ad", action="store_true")
+    parser.add_argument(
+        "--review-imageid",
+        default=None,
+        help="FOV used for the image QC when --image-path is a folder of FOV images (default: the first).",
+    )
     return parser.parse_args()
 
 
@@ -1397,6 +1605,7 @@ def main() -> None:
         make_image_qc=not args.skip_image_qc,
         make_gate_overlay_qc=not args.skip_gate_overlay_qc,
         write_gated_h5ad=args.write_gated_h5ad,
+        review_imageid=args.review_imageid,
     )
     for name, path in outputs.items():
         print(f"{name}: {path}")

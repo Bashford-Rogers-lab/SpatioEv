@@ -125,6 +125,10 @@ def rescale(
     m = pd.DataFrame(index=dataset_markers, columns=dataset_images).reset_index()
     m = pd.melt(m, id_vars=[m.columns[0]])
     m.columns = ['markers', 'imageid', 'gate']
+    # MODIFIED FROM UPSTREAM: start the gate column as float, not object, so
+    # filling it with the manual gates does not raise pandas' FutureWarning
+    # about silent downcasting on every run. Values are unchanged.
+    m['gate'] = pd.to_numeric(m['gate'], errors='coerce')
 
     # Manipulate m with and without provided manual gates
     if gate is None:

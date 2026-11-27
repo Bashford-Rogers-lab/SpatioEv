@@ -226,3 +226,41 @@ def _page_module(name: str):
     return module
 
 
+
+
+def test_questionnaire_starts_from_saved_answers(tmp_path):
+    """Answers from the last run come back; a TMA's data/ file is the fallback."""
+    module = _page_module("_pg_saved")
+    root = tmp_path / "tma"
+    (root / "dearray").mkdir(parents=True)
+    (root / "data").mkdir()
+    output = tmp_path / "gating"
+
+    table, source = module.starting_condition_table(
+        ["CD8", "CD4", "SOX9"], output_dir=output, sample_id="ST", project_root=root
+    )
+    assert source is None and table["staining_condition"].eq("").all()
+
+    standard = _condition_csv(root / "data" / "ST_marker_condition_for_gating.csv")
+    table, source = module.starting_condition_table(
+        ["CD8", "CD4", "SOX9"], output_dir=output, sample_id="ST", project_root=root
+    )
+    assert source == standard
+    assert table["staining_condition"].tolist() == ["clear_specific", "clear_specific", ""]
+
+    saved = output / "ST_marker_conditions.csv"
+    output.mkdir()
+    module.conditions_for_engine(
+        table.assign(artifact_level=["high", "low", ""], expected_positive_max_pct=[20.0, None, None])
+    ).to_csv(saved, index=False)
+    table, source = module.starting_condition_table(
+        ["CD8", "CD4", "SOX9"], output_dir=output, sample_id="ST", project_root=root
+    )
+    assert source == saved
+    assert table["artifact_level"].tolist() == ["high", "low", ""]
+    assert table["expected_positive_max_pct"].iloc[0] == pytest.approx(20.0)
+
+    saved.write_text("not,a,condition,table\n1,2,3,4\n")  # unreadable: fall back
+    assert module.starting_condition_table(
+        ["CD8"], output_dir=output, sample_id="ST", project_root=root
+    )[1] == standard

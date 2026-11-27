@@ -10,15 +10,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
-import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
-os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "spatioev_marker_gating_review_matplotlib"))
-os.environ.setdefault("NUMBA_CACHE_DIR", str(Path(tempfile.gettempdir()) / "spatioev_marker_gating_review_numba"))
-Path(os.environ["MPLCONFIGDIR"]).mkdir(parents=True, exist_ok=True)
-Path(os.environ["NUMBA_CACHE_DIR"]).mkdir(parents=True, exist_ok=True)
+from spatioev.workflows._io import configure_caches
+
+configure_caches()
 
 import anndata as ad
 import dask.array as da
@@ -30,7 +27,7 @@ import zarr
 from spatioev.workflows import marker_gating as mgq
 
 from ._io import now as utc_now
-from .image_collection import zarr_array
+from .image_collection import plane_marker_names, zarr_array
 
 STAINING_OPTIONS = [
     "clear_specific",
@@ -329,7 +326,7 @@ class MarkerGatingController:
             self.display_mask, ["Y_centroid", "X_centroid"]
         ].to_numpy(dtype=float)
 
-        self.pyramid = PyramidImage(image_path, list(self.adata.var_names.astype(str)))
+        self.pyramid = PyramidImage(image_path, plane_marker_names(self.adata))
         self.channel_index = {marker: i for i, marker in enumerate(self.pyramid.channels)}
         missing_channels = sorted(set(self.reviews) - set(self.channel_index))
         if missing_channels:
@@ -767,7 +764,8 @@ class MarkerGatingController:
         return pd.DataFrame(rows)
 
     def autosave_session(self) -> Path:
-        path = self.output_dir / f"{self.sample_id}_interactive_gate_review_session.csv"
+        path = self.output_dir / "details" / f"{self.sample_id}_napari_gate_review_session.csv"
+        path.parent.mkdir(parents=True, exist_ok=True)
         self.review_table().to_csv(path, index=False)
         return path
 
@@ -810,10 +808,15 @@ class MarkerGatingController:
                 return
 
         session_path = self.autosave_session()
-        condition_path = self.output_dir / f"{self.sample_id}_marker_conditions_interactive.csv"
-        gates_path = self.output_dir / f"{self.sample_id}_selected_marker_gates_interactive.csv"
-        scimap_path = self.output_dir / f"{self.sample_id}_scimap_manual_gates_interactive.csv"
-        manifest_path = self.output_dir / f"{self.sample_id}_interactive_gate_review_manifest.json"
+        # The same canonical files the web page writes: the reviewed gates
+        # replace the calculated ones, which are kept in details/ as *_previous.
+        files = mgq.gate_table_paths(self.output_dir, self.sample_id)
+        condition_path = files["conditions"]
+        gates_path = files["selected"]
+        scimap_path = files["scimap"]
+        manifest_path = files["manifest"]
+        mgq.keep_previous(gates_path, files["details"])
+        mgq.keep_previous(scimap_path, files["details"])
         final = self.final_gate_table()
         self.conditions.to_csv(condition_path, index=False)
         final.to_csv(gates_path, index=False)
@@ -821,8 +824,10 @@ class MarkerGatingController:
 
         h5ad_path = None
         if self.write_h5ad.isChecked():
-            h5ad_path = self.output_dir / f"{self.sample_id}_autogated_interactive.h5ad"
-            mgq.apply_selected_gates(self.adata, final, layer=self.layer).write_h5ad(h5ad_path)
+            h5ad_path = self.output_dir / f"{self.sample_id}_autogated.h5ad"
+            mgq.apply_selected_gates(self.adata, final, layer=self.layer).write_h5ad(
+                h5ad_path, compression="gzip"
+            )
 
         manifest = {
             "sample_id": self.sample_id,
@@ -835,6 +840,8 @@ class MarkerGatingController:
             "selected_gates": str(gates_path),
             "scimap_manual_gates": str(scimap_path),
             "gated_h5ad": str(h5ad_path) if h5ad_path else None,
+            "gate_layer": self.layer,
+            "gate_source": "napari review",
         }
         manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         QMessageBox.information(
@@ -892,8 +899,7 @@ def validate_inputs(args, paths: dict[str, Path]) -> dict[str, object]:
     adata = ad.read_h5ad(paths["adata_path"], backed="r")
     conditions = mgq.read_marker_conditions(paths["condition_path"])
     gates = pd.read_csv(paths["gate_table_path"])
-    adata_markers = [str(marker) for marker in adata.var_names]
-    channels = mgq.canonical_channel_names(paths["image_path"], adata_markers)
+    channels = mgq.canonical_channel_names(paths["image_path"], plane_marker_names(adata))
     nuclear_markers = {"HOECHST", "HOECHST2", "DAPI", "DNA_1"}
     markers = [
         marker

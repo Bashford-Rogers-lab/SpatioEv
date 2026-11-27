@@ -190,7 +190,9 @@ Example:
 
             # All positive score
             if len(allpos) != 0:
-                allpos_score = data[allpos]
+                # MODIFIED FROM UPSTREAM: .copy() -- a column is added below,
+                # which on a slice raised SettingWithCopyWarning.
+                allpos_score = data[allpos].copy()
                 allpos_score['score'] = allpos_score.max(axis=1)
                 allpos_score.loc[(allpos_score < gate).any(axis = 1), 'score'] = 0
                 allpos_score = allpos_score['score'].values + 0.01 # A small value is added to give an edge over the matching positive cell
@@ -307,11 +309,15 @@ Example:
 
     if verbose:
         print("Consolidating the phenotypes across all groups")
-    # MODIFIED FROM UPSTREAM: `fillna(method='ffill')` was removed in pandas 3.
-    # `.ffill()` is the documented replacement and behaves identically on
-    # pandas 1.x/2.x, so this is safe across all supported versions.
-    phenotype_labels_Consolidated = phenotype_labels.ffill(axis=1)
-    phenotype_labels[label] = phenotype_labels_Consolidated.iloc[:,-1].values
+    # MODIFIED FROM UPSTREAM: upstream forward-fills across the group columns
+    # (`fillna(method='ffill', axis=1)`, removed in pandas 3) and keeps the
+    # last column, i.e. each cell's deepest non-missing label. Take that value
+    # directly: same result, and no pandas downcasting FutureWarning.
+    values = phenotype_labels.to_numpy(dtype=object)
+    present = pd.notna(values)
+    last = values.shape[1] - 1 - np.argmax(present[:, ::-1], axis=1)
+    deepest = values[np.arange(values.shape[0]), last]
+    phenotype_labels[label] = np.where(present.any(axis=1), deepest, np.nan)
 
     # replace nan to 'other cells'
     phenotype_labels[label] = phenotype_labels[label].fillna('Unknown')
@@ -324,7 +330,9 @@ Example:
 
         # Function to remove phenotypes that are less than the given threshold
         def remove_phenotype(p, ID, pheno_threshold_percent, pheno_threshold_abs):
-            d = p[p[imageid] == ID]
+            # MODIFIED FROM UPSTREAM: .copy() -- `d` is modified below, and
+            # assigning into a slice raised SettingWithCopyWarning per image.
+            d = p[p[imageid] == ID].copy()
             x = pd.DataFrame(d.groupby([label]).size())
             x.columns = ['val']
             # FInd the phenotypes that are less than the given threshold
