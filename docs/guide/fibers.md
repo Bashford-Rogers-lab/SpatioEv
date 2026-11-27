@@ -31,8 +31,12 @@ segmentation* on the home page).
 4. In **Matrix channels to segment**, keep COL1 and add the other matrix
    channels you want (click the box, pick a channel, repeat). Each channel is
    segmented separately.
-5. **Pixel size** is read from the image (0.325 µm/px for the TMA scans). Only
-   change it if it shows 0.
+5. **Pixel size** is read from the image (0.325 µm/px for the TMA scans).
+   Check it anyway: some scanners write a wrong one, such as 1 µm/px. If you
+   gave a *Cell AnnData*, a yellow **Check the pixel size** box appears when
+   the pixel size makes the cells smaller than 4 µm or larger than 20 µm
+   across. Type your scan's real pixel size and the box goes away. Without
+   an AnnData, the box appears only when the image says exactly 1 µm/px.
 
 ## B. Settings { #settings }
 

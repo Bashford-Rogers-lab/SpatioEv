@@ -42,7 +42,7 @@ Find the message you see, or the step you are on. If nothing here helps, see
 | *N cells … were set to Unknown because their phenotype had fewer than K cells in that image* | **Minimum cells per phenotype per image** removes small populations per FOV. | Set it to 0 for small cores, or lower it. |
 | Many cells of a broadly expressed marker are called negative | The marker was left blank in the staining questionnaire, so it got a cautious upper-tail gate. | Answer **Staining condition**, **Compartment** and **Artifact** for it on page 02 and calculate again. |
 | A marker is flagged `3GMM_high_is_majority` and called positive in only a few percent of cells (page 02) | Its values have no separate positive peak. The usual gate would have called most cells positive, so a stricter upper-tail gate was used, which calls at most about a quarter of cells positive. | Check the marker on the image (**Generate spatial QC images**). If it really is in many cells, move its gate in napari review. |
-| Distances or areas look 3× too large or too small (pages 04–06) | The pixel size is wrong. Some scanners write a wrong one into the OME-TIFF, and page 04 fills it in from there. | Check it: a typical nucleus is 5–10 µm across. Type your scan's pixel size (0.325 µm/px for our TMA scans) and run again. |
+| Distances or areas look 3× too large or too small (pages 04–06), or page 04 says **Check the pixel size** | The pixel size is wrong. Some scanners write a wrong one into the OME-TIFF, and page 04 fills it in from there. Pages 05 and 06 copy it from the fiber result. | Check it: a typical nucleus is 5–10 µm across. Type your scan's pixel size (0.325 µm/px for our TMA scans) on page 04 and run again. Then check that pages 05 and 06 show the same value. |
 
 ## QuPath
 
